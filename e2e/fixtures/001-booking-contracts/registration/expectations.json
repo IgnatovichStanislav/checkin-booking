@@ -1,0 +1,18 @@
+{
+  "ready": "processing",
+  "missing": "missing_passport",
+  "expired": "passport_expired",
+  "rejected": "correct_data",
+  "confirmed": "completed",
+  "uncertain": "processing",
+  "permanent": "intervention_required",
+  "erased": "identity_expired",
+  "delays": [
+    5,
+    30,
+    120,
+    600
+  ],
+  "checkout": "2026-11-24T23:00:00Z",
+  "cancelled": "2026-11-24T00:30:00Z"
+}
