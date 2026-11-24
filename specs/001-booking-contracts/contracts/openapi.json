@@ -1,0 +1,1136 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "CHECKIN Salou contracts",
+    "version": "0.1.0",
+    "description": "Approved G2 interface. Scope every operation by the authenticated hotel and permissions."
+  },
+  "security": [
+    {
+      "hotelCredential": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "hotelCredential": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "paths": {
+    "/api/v1/bookings": {
+      "post": {
+        "operationId": "importBooking",
+        "responses": {
+          "200": {
+            "description": "Identical accepted snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Mappings"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Committed new booking",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Mappings"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "required": true,
+                "description": "Owned update URL",
+                "schema": {
+                  "type": "string",
+                  "format": "uri-reference"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body or immutable source field",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient action permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Different existing snapshot. Return the owned updatePath, including for distinct updatedAt after erasure. Record known equal-time collision before response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/ExistingImportConflict"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload too large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Intake unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Expired first import, or equal-time retry after erasure. For an indeterminate comparison, durably record or join the active reconciliation intent before 410.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./types.schema.json#/$defs/Snapshot"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bookings/{bookingId}": {
+      "put": {
+        "operationId": "updateBooking",
+        "responses": {
+          "200": {
+            "description": "Applied, duplicate or stale. Current accepted mappings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Mappings"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body or immutable source field",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient action permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable in authorized scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Equal-time conflict recorded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload too large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Intake unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "Newer input with expired deadline, or equal-time request after erasure. Record or join the active reconciliation intent for indeterminate comparison before 410.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./types.schema.json#/$defs/Snapshot"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "bookingId",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ]
+    },
+    "/api/v1/bookings/{bookingId}/status": {
+      "get": {
+        "operationId": "getBookingStatus",
+        "responses": {
+          "200": {
+            "description": "Current public status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Status"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient action permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable in authorized scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "bookingId",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ]
+    },
+    "/api/v1/bookings/{bookingId}/guests/{guestId}/attendance-events": {
+      "post": {
+        "operationId": "reportAttendance",
+        "responses": {
+          "200": {
+            "description": "Exact retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/AttendanceReceipt"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Event appended",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/AttendanceReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body or immutable source field",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient action permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable in authorized scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload too large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./types.schema.json#/$defs/Attendance"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "bookingId",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "in": "path",
+          "name": "guestId",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ]
+    },
+    "/api/v1/bookings/{bookingId}/guests/{guestId}/attendance-events/{attendanceEventId}/corrections": {
+      "post": {
+        "operationId": "correctAttendance",
+        "responses": {
+          "200": {
+            "description": "Exact retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/AttendanceReceipt"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Event appended",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/AttendanceReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body or immutable source field",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient action permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable in authorized scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload too large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./types.schema.json#/$defs/Correction"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "bookingId",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "in": "path",
+          "name": "guestId",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "in": "path",
+          "name": "attendanceEventId",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ]
+    },
+    "/api/v1/hotels/{propertyId}/subscriptions": {
+      "post": {
+        "operationId": "createSubscription",
+        "responses": {
+          "201": {
+            "description": "Created with provisioned key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Subscription"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body or immutable source field",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient action permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable in authorized scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload too large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./types.schema.json#/$defs/SubscriptionInput"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "propertyId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "listSubscriptions",
+        "responses": {
+          "200": {
+            "description": "Authorized subscriptions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "./types.schema.json#/$defs/Subscription"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient action permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable in authorized scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/hotels/{propertyId}/subscriptions/{subscriptionId}": {
+      "get": {
+        "operationId": "getSubscription",
+        "responses": {
+          "200": {
+            "description": "Settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Subscription"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient action permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable in authorized scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "propertyId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "path",
+          "name": "subscriptionId",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "put": {
+        "operationId": "updateSubscription",
+        "responses": {
+          "200": {
+            "description": "Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Subscription"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body or immutable source field",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient action permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable in authorized scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload too large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./types.schema.json#/$defs/SubscriptionInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/hotels/{propertyId}/subscriptions/{subscriptionId}/signing-key": {
+      "put": {
+        "operationId": "rotateSigningKey",
+        "responses": {
+          "200": {
+            "description": "Provisioned hotel signing key activated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Subscription"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body or immutable source field",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient action permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable in authorized scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Payload too large",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./types.schema.json#/$defs/Rotation"
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "propertyId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "path",
+          "name": "subscriptionId",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ]
+    },
+    "/api/v1/hotels/{propertyId}/subscriptions/{subscriptionId}/deliveries": {
+      "get": {
+        "operationId": "listDeliveries",
+        "responses": {
+          "200": {
+            "description": "Scoped delivery history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "./types.schema.json#/$defs/Delivery"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient action permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable in authorized scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "propertyId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "path",
+          "name": "subscriptionId",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ]
+    },
+    "/api/v1/hotels/{propertyId}/subscriptions/{subscriptionId}/deliveries/{deliveryId}/retries": {
+      "post": {
+        "operationId": "retryDelivery",
+        "responses": {
+          "202": {
+            "description": "Scheduled failed delivery retry",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Delivery"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing credential",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient action permission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable in authorized scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./types.schema.json#/$defs/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "in": "path",
+          "name": "propertyId",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "in": "path",
+          "name": "subscriptionId",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        {
+          "in": "path",
+          "name": "deliveryId",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ]
+    }
+  },
+  "webhooks": {
+    "registrationChanged": {
+      "post": {
+        "operationId": "registrationChanged",
+        "security": [],
+        "summary": "Signed CHECKIN registration change",
+        "parameters": [
+          {
+            "name": "X-Checkin-Timestamp",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Checkin-Key-Id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Checkin-Signature",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./types.schema.json#/$defs/Notification"
+              }
+            }
+          }
+        },
+        "responses": {
+          "2XX": {
+            "description": "Accepted"
+          }
+        },
+        "description": "Stopped unsent work sends the historical operation ID, null registrationStatus and registration_stopped reason."
+      }
+    }
+  }
+}

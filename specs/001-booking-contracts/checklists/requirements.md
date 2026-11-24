@@ -28,3 +28,5 @@ This checklist records an editorial and contract review. The Owner approved the 
 ## Notes
 
 The Owner selected database-first acceptance, public ID mappings and distinct internal and public registration states. The companion record explains where these decisions supersede older project guidance. G1 approval permits planning.
+
+On 2026-11-24 the Owner approved the G2 plan, including C01 retention-boundary decisions and C02 stopped-operation representations. The approved specification, wire schemas and test guide cover both changes. Executable results remain pending.
