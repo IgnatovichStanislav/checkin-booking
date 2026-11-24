@@ -15,6 +15,7 @@ public sealed partial class ContractCases
     private static readonly string AttendanceFixtures = Path.Combine(AppContext.BaseDirectory, "fixtures", "attendance");
 
     [TestMethod, TestCategory("A02"), TestCategory("A03"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("SAL", "attendance/GuestMembership.json", "intake/restricted/snapshot.json")]
     public void GuestMembership()
     {
         var hotel = AttendanceHotel();
@@ -105,6 +106,7 @@ public sealed partial class ContractCases
     }
 
     [TestMethod, TestCategory("A04"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("SAL", "attendance/AttendanceChronology.json", "intake/restricted/snapshot.json")]
     public void AttendanceChronology()
     {
         var fixture = AttendanceFixture(nameof(AttendanceChronology));
@@ -172,6 +174,7 @@ public sealed partial class ContractCases
     }
 
     [TestMethod, TestCategory("A05"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("SAL", "attendance/CorrectAttendance.json", "intake/restricted/snapshot.json")]
     public void CorrectAttendance()
     {
         var fixture = AttendanceFixture(nameof(CorrectAttendance));

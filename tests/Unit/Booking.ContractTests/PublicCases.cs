@@ -40,6 +40,8 @@ public sealed partial class ContractCases
     }
 
     [TestMethod, TestCategory("A07"), TestCategory("A10"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("SAL", "wire/expected.json#Status,Notification,SubscriptionInput,Subscription,Delivery,Rotation",
+        "registration/expectations.json#delays", "intake/restricted/snapshot.json")]
     public void PublicProjection()
     {
         var booking = RegistrationBooking();
@@ -157,6 +159,7 @@ public sealed partial class ContractCases
     }
 
     [TestMethod, TestCategory("SAL-02"), TestCategory("A05"), TestCategory("A09"), TestCategory("A10"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("SAL", "wire/expected.json#Subscription,SubscriptionInput", "intake/restricted/snapshot.json")]
     public void ScopedResources()
     {
         var booking = RegistrationBooking();
@@ -205,6 +208,7 @@ public sealed partial class ContractCases
     }
 
     [TestMethod, TestCategory("FR-08"), TestCategory("FR-09"), TestCategory("A08"), TestCategory("SAL-02"), TestCategory("INT-01"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("SAL", "wire/expected.json#BookingEvent,Status,Notification,AttendanceReceipt,Error,ExistingImportConflict", "intake/restricted/snapshot.json")]
     public void SafeReferences()
     {
         var input = EligibleSnapshot();
@@ -231,6 +235,11 @@ public sealed partial class ContractCases
     }
 
     [TestMethod, TestCategory("INT-05"), TestCategory("A04"), TestCategory("A07"), TestCategory("A10"), TestCategory("Evidence:contract")]
+    [TestCategory("FR-01"), TestCategory("FR-02"), TestCategory("FR-03"), TestCategory("FR-04"), TestCategory("FR-05")]
+    [TestCategory("FR-06"), TestCategory("FR-07"), TestCategory("FR-08"), TestCategory("FR-09")]
+    [EvidenceFixtures("SAL", "wire/expected.json#Status,Notification,SubscriptionInput,Subscription,Rotation,Delivery,"
+        + "Attendance,Correction,AttendanceReceipt,BookingEvent,Error,ExistingImportConflict",
+        "wire/operations.json", "intake/restricted/snapshot.json")]
     public void WireRoundTrip()
     {
         foreach (var (name, value) in WireExpected.AsObject())

@@ -1,17 +1,17 @@
 # Validating feature 001
 
-The plan contains executable interface descriptions. The C# projects below will exist after G2, task design and implementation. No host, database, Kafka process or PDS simulator is required for the contract suite.
+The contract suite exercises booking decisions and wire representations with executable interface descriptions. It runs without a host, database, Kafka process or PDS simulator.
 
-## Planned run
+## Run the suite
 
-Use SDK 10.0.404, ICU with IANA zone data, and the repository root as the working directory. The implementation pins MSTest.Sdk/4.5.3 in the test project and selects Microsoft.Testing.Platform under test.runner in global.json. Initial restore creates the lock files. Subsequent runs use locked restore.
+Use SDK 10.0.404, ICU with IANA zone data, and the repository root as the working directory. The test project pins MSTest.Sdk/4.5.3 and global.json selects Microsoft.Testing.Platform under test.runner. Restore with the checked-in lock file.
 
 ```powershell
 rtk dotnet restore tests/Unit/Booking.ContractTests/Booking.ContractTests.csproj --locked-mode
-rtk dotnet test --project tests/Unit/Booking.ContractTests/Booking.ContractTests.csproj --report-trx --results-directory test-results/001-current
+dotnet run --project tests/Unit/Booking.ContractTests/Booking.ContractTests.csproj --no-restore -- --scenario-evidence "test-results/001-$([guid]::NewGuid().ToString('N'))"
 ```
 
-Use a fresh result directory per execution. Expect individually named test methods in namespace Booking.ContractTests, class ContractCases, with the method names below. Give methods TestCategory tags for their scenario IDs and evidence level. Use multiple assertions or internal fixture loops with safe case IDs. Keep stable method identities for reporting.
+The evidence command uses the executable from the existing test project. It runs the full suite using the pinned SDK's generated MicrosoftTestingPlatformApplication helper and joins its TRX after execution finishes. For focused tests, use the usual `rtk dotnet test --project` command with the MSTest `--filter` option. The business methods below are in Booking.ContractTests.ContractCases and use stable method names, TestCategory tags and safe fixture case IDs.
 
 | Test method | Scenario references | Contract assertion | Outstanding runtime proof |
 | --- | --- | --- | --- |
@@ -41,6 +41,10 @@ For every row add both permitted and rejected fixtures where applicable. Share s
 
 ## Evidence
 
-Produce an explicit sidecar at test-results/<run>/scenario-map.json from the compiled test metadata. Each record carries assembly, class, method, case references, path (SAL or all) and evidence level (contract or runtime). Keep feature-local A01–A10 distinct from the catalog. Normalize TRX TestDefinitions/UnitTest/TestMethod className and name, join definition ID to UnitTestResult.testId and match the sidecar by assembly/class/method. Verify the adapter with a known tagged test and compare the sidecar to the table above. Exercise join failures, missing results, skips and a deliberate sample failure using synthetic result documents. Fail the report if entries collide or a result has no mapping. Report a test failure as failed, a missing/skipped result as pending. A catalog cell passes only after all required runtime proofs for that path ran and passed. Existing TRX files from other invocations are excluded.
+The evidence command writes `scenario-map.json`, `booking-contracts.trx`, and `scenario-results.json` in the selected run directory. It rejects existing directories and reads only the named TRX from that invocation. Read the joined report with `Get-Content test-results/<run>/scenario-results.json -Raw | ConvertFrom-Json`, replacing `<run>` with the directory name.
 
-All tests and runtime proofs are pending at plan time. INT-06 requires simultaneous first imports and newer updates against real PostgreSQL, with unique identity, ordered decision and transactional outbox checks. No pure test claims this ID. INT-01–05 and SAL-01–02 remain pending for Salou runtime; H10/CAS intake equivalents and H10-01–04/CAS-01–04 await separate adapters. BRK-01–04 and KFK-01–03 require the 003 crash, replay and dead-letter harness. PDS-01–07 await 004. Prior to 005 include the complete catalog/path matrix and reasons for pending or inapplicable cells in the verifier handoff.
+The sidecar uses compiled method metadata and includes the assembly, class, method, intake path, and evidence level. It records catalog scenario IDs, feature-local A01–A10, and FR requirement references separately. Fixture references carry repository-relative paths and existing case IDs, object keys or operation IDs. Input files without named cases contribute only their paths. The report joins TRX definition IDs to result test IDs and matches normalized method identities to the sidecar. FirstImport joins to INT-01 and SAL-01 for the SAL contract path.
+
+The joined report contains one outcome per method, with harness checks in their own collection. Fixture references describe what a method is designed to exercise. A method failure gives no individual verdict for assertions or fixture cases it may never have reached. Skipped and missing methods appear as pending. Failed, skipped or missing tests give a nonzero command exit. Malformed, stale, duplicate or unmapped TRX entries prevent the joined report from being written. The report copies no TRX failure messages or payload values.
+
+A catalog cell passes only after all required runtime proofs for that path ran and passed. INT-06 requires simultaneous first imports and newer updates against real PostgreSQL, with unique identity, ordered decision and transactional outbox checks. INT-01–05 and SAL-01–02 remain pending for Salou runtime. H10/CAS intake equivalents and H10-01–04/CAS-01–04 await separate adapters. BRK-01–04 and KFK-01–03 require the 003 crash, replay and dead-letter harness. PDS-01–07 await 004. Prior to 005 include the complete catalog/path matrix and reasons for pending or inapplicable cells in the verifier handoff.

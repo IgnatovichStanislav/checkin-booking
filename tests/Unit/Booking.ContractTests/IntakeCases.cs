@@ -67,6 +67,7 @@ public sealed partial class ContractCases
     }
 
     [TestMethod, TestCategory("INT-01"), TestCategory("SAL-01"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("SAL", "intake/FirstImport.json", "intake/restricted/snapshot.json", "intake/expected-mappings.json")]
     public void FirstImport()
     {
         Cases(nameof(FirstImport), (id, effect, status) =>
@@ -90,6 +91,7 @@ public sealed partial class ContractCases
     }
 
     [TestMethod, TestCategory("INT-02"), TestCategory("SAL-01"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("SAL", "intake/DuplicateSnapshot.json", "intake/restricted/snapshot.json")]
     public void DuplicateSnapshot()
     {
         var confirmed = Snapshot();
@@ -119,6 +121,7 @@ public sealed partial class ContractCases
     }
 
     [TestMethod, TestCategory("INT-03"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("SAL", "intake/StaleUpdate.json", "intake/restricted/snapshot.json", "intake/expected-mappings.json")]
     public void StaleUpdate()
     {
         Cases(nameof(StaleUpdate), (id, effect, status) =>
@@ -135,6 +138,7 @@ public sealed partial class ContractCases
     }
 
     [TestMethod, TestCategory("INT-04"), TestCategory("A01"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("SAL", "intake/ConflictingSnapshot.json", "intake/restricted/snapshot.json")]
     public void ConflictingSnapshot()
     {
         Cases(nameof(ConflictingSnapshot), (id, effect, status) =>
@@ -155,6 +159,7 @@ public sealed partial class ContractCases
     }
 
     [TestMethod, TestCategory("A01"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("SAL", "intake/ExistingImportAndUnknownUpdate.json", "intake/restricted/snapshot.json")]
     public void ExistingImportAndUnknownUpdate()
     {
         Cases(nameof(ExistingImportAndUnknownUpdate), (id, effect, status) =>
@@ -183,6 +188,7 @@ public sealed partial class ContractCases
     }
 
     [TestMethod, TestCategory("INT-05"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("SAL", "intake/InvalidSnapshot.json", "intake/restricted/snapshot.json")]
     public void InvalidSnapshot()
     {
         foreach (var row in CaseRows(nameof(InvalidSnapshot)))

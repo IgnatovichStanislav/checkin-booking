@@ -37,6 +37,7 @@ public sealed partial class ContractCases
             Hotel.Zone, Now, Ids(start)).Accepted!;
 
     [TestMethod, TestCategory("PDS-01"), TestCategory("PDS-02"), TestCategory("PDS-03"), TestCategory("PDS-06"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("all", "registration/expectations.json#ready,missing,expired,confirmed,rejected", "intake/restricted/snapshot.json")]
     public void OperationOutcomes()
     {
         var booking = RegistrationBooking();
@@ -74,6 +75,7 @@ public sealed partial class ContractCases
     }
 
     [TestMethod, TestCategory("PDS-04"), TestCategory("PDS-05"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("all", "registration/expectations.json#delays,uncertain,permanent", "intake/restricted/snapshot.json")]
     public void RetryAndReconcile()
     {
         var booking = RegistrationBooking();
@@ -112,6 +114,7 @@ public sealed partial class ContractCases
     }
 
     [TestMethod, TestCategory("PDS-07"), TestCategory("A06"), TestCategory("A09"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("all", "intake/restricted/snapshot.json")]
     public void RegistrationChange()
     {
         var booking = RegistrationBooking();
@@ -184,6 +187,7 @@ public sealed partial class ContractCases
     }
 
     [TestMethod, TestCategory("A08"), TestCategory("Evidence:contract")]
+    [EvidenceFixtures("SAL", "registration/expectations.json#cancelled,checkout,erased", "intake/restricted/snapshot.json")]
     public void IdentityDeadline()
     {
         var prior = RegistrationBooking();
