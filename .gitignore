@@ -70,3 +70,6 @@ __pycache__/
 *.suo
 # Local encryption keys and credentials
 /secrets/
+
+# Generated scenario coverage and timelines
+/test-results/

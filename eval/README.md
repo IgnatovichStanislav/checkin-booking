@@ -14,7 +14,9 @@ The Docker prompts and verification assets are imported unchanged inside each sk
 ## Project harness checks
 
 - Graphify: query a real current file; report missing or stale coverage; never invent graph relationships. Rebuild only when appropriate and requested by project guidance.
-- Spec Kit: select the requested stage, preserve user decisions, and treat the unfilled constitution as a template. Do not start implementation during a specification-only request.
+- Spec Kit: select the requested stage, preserve user decisions, and check against constitution v1.0.0, ratified by the Owner on 2026-11-24. Tooling checks do not replace Owner approval. Do not start implementation during a specification-only request.
 - All targets: use agents/skills and agents/hooks, avoid project .codex/.claude folders, and do not recreate deleted broker/schema folders without a request. Follow the booking-to-PDS test stand scope and UTC timestamp rules in AGENTS.md.
 
-Results have not been run or graded. targets.json is an inventory for manual selection, not a native agent runner configuration.
+Behavioral evaluations have not been run or graded. targets.json remains an inventory for manual selection, not a native agent runner configuration. Tooling smoke checks are recorded separately and do not change those target statuses.
+
+Latest tooling smoke check: [2026-11-24](Workflow_smoke_2026-11-24.md).

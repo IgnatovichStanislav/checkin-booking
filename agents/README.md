@@ -1,5 +1,7 @@
 # Skill routing
 
+Feature stages, roles, review gates and handoffs: [WORKFLOW.md](WORKFLOW.md). Load it when coordinating feature work; this index remains the skill lookup. Planned folder and dependency boundaries: [LAYOUT.md](LAYOUT.md).
+
 Read only the skill needed for the task. Paths below are relative to agents/; every skill entry resolves to skills/<name>/SKILL.md. Root AGENTS.md governs the shared harness. This index does not register plugins or execute hooks.
 
 | Task | Skill name |

@@ -10,9 +10,12 @@ Planned stack: .NET, PostgreSQL, Redis, webhooks and Blazor. All hotels, guest d
 
 - [AGENTS.md](AGENTS.md): scope, business rules and coding guidance.
 - [agents/README.md](agents/README.md): shared Graphify, Spec Kit and Docker skill routing.
-- [.specify/](.specify/): Spec Kit templates and workflows; the constitution at .specify/memory/constitution.md (v1.0.0) is ratified and governs specs, plans, tasks and implementation.
+- [agents/WORKFLOW.md](agents/WORKFLOW.md): AI workflow, review gates and handoffs.
+- [agents/LAYOUT.md](agents/LAYOUT.md): planned folder and project boundaries; create folders as features need them.
+- [e2e/fixtures/scenarios.md](e2e/fixtures/scenarios.md): stable scenario IDs and expected outcomes; tests remain planned.
+- [.specify/](.specify/): Spec Kit templates and workflows; the constitution at .specify/memory/constitution.md (v1.0.0) was ratified by the Owner on 2026-11-24 and governs specs, plans, tasks and implementation.
 - [diagrams/](diagrams/): editable draw.io diagrams.
-- [eval/README.md](eval/README.md): manual skill evaluation workflow; no evaluations have been run.
+- [eval/README.md](eval/README.md): manual skill evaluation workflow and recorded tooling smoke checks; behavioral evaluations remain not run.
 
 Start with booking intake and registration contracts, then implement the end-to-end flow. Project folders are created only as needed.
 
