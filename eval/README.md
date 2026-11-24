@@ -15,6 +15,6 @@ The Docker prompts and verification assets are imported unchanged inside each sk
 
 - Graphify: query a real current file; report missing or stale coverage; never invent graph relationships. Rebuild only when appropriate and requested by project guidance.
 - Spec Kit: select the requested stage, preserve user decisions, and treat the unfilled constitution as a template. Do not start implementation during a specification-only request.
-- All targets: use agents/skills and agents/hooks, avoid project .codex/.claude folders, and do not recreate deleted broker/schema folders without a request. Follow the booking-to-DPS test stand scope and UTC timestamp rules in AGENTS.md.
+- All targets: use agents/skills and agents/hooks, avoid project .codex/.claude folders, and do not recreate deleted broker/schema folders without a request. Follow the booking-to-PDS test stand scope and UTC timestamp rules in AGENTS.md.
 
 Results have not been run or graded. targets.json is an inventory for manual selection, not a native agent runner configuration.

@@ -1,19 +1,19 @@
-# Checkin Booking: MQ test stand
+# Checkin Booking: PMS to PDS
 
 ## Goal and scope
 
-Build a local .NET test stand comparing Kafka, RabbitMQ and Google Cloud Pub/Sub with the same booking rules and synthetic fixtures. Expose each broker's routing, ordering, acknowledgments, retries, dead letters and replay; do not hide differences behind a generic queue abstraction.
+Build a local .NET test stand that receives PMS bookings, registers stays and guests with a Police Department System (PDS), and tracks registration status. Use consistent booking rules and synthetic fixtures across messaging implementations. Expose each broker's routing, ordering, acknowledgments, retries, dead letters and replay; do not hide differences behind a generic queue abstraction.
 
-Flow: hotel/PMS -> map booking -> broker -> save booking -> register stay/guests with fictional police system DPS -> receive result -> expose status to hotel/API/Blazor.
+Flow: hotel/PMS -> map booking -> broker -> save booking -> register stay/guests with fictional Police Department System (PDS) -> receive result -> expose status to hotel/API/Blazor.
 
-Stack: .NET, PostgreSQL (durable state/outbox), Redis (disposable cache), webhooks, Blazor monitoring/test UI. Redis/UI are optional for the first broker example. Use Docker Desktop/local services and a Pub/Sub emulator. DPS is a simulator; this is not H10's real architecture or legal guidance.
+Stack: .NET, PostgreSQL (durable state/outbox), Redis (disposable cache), webhooks, Blazor monitoring/test UI. Redis/UI are optional for the first broker example. Use Docker Desktop/local services and a Pub/Sub emulator. PDS is a simulator; this is not H10's real architecture or legal guidance.
 
 Current workspace contains guidance/tooling, diagrams and evals, not an implemented booking application. The user removed Kafke_Booking/, Input_Schemas/, Outbox_Schemas/ and RabbitMQ_Booking/. Create projects/contracts only when requested and needed; do not restore old drafts. Roadmap: agree contracts/local ports and setup/teardown -> Kafka -> comparable RabbitMQ/Pub/Sub cases -> monitoring/Redis as needed. Output adapters (PMS POST, webhook, file export, GET) still need contracts.
 
 ## Working rules
 
 - Read closer AGENTS.md files and relevant schemas before editing; never silently change contracts/rules to pass tests.
-- Synthetic data only. Keep guest names, DOB and passports in restricted registration storage, outside broker records, logs and screenshots; never expose credentials. DPS receives only required synthetic registration data.
+- Synthetic data only. Keep guest names, DOB and passports in restricted registration storage, outside broker records, logs and screenshots; never expose credentials. PDS receives only required synthetic registration data.
 - Keep changes/dependencies small. Run focused checks and report actual results, failures and unverified behavior. Do not run/change another example's services or delete its volumes. Cloud provisioning/deployment needs explicit authorization.
 - Keep shared guidance, skills and hooks under agents/. Do not create project .codex/.claude configuration or change global hooks during routine work. Hooks are explicitly invoked scripts; custom folders do not guarantee native skill discovery.
 - Use editable draw.io files in diagrams/ for diagrams.
@@ -46,13 +46,13 @@ Atomically compare updatedAt per booking in PostgreSQL:
 
 Exclude eventId/receivedAt from business-data comparisons. Guard concurrent arrivals in the database. Acknowledge intake only after durable acceptance (Kafka broker confirmation for the Kafka path); commit consumer offset/ack only after DB commit. Test redelivery without duplicate effects; do not claim exactly-once delivery. Hand dead letters off durably before acknowledging failed work.
 
-## DPS and status
+## PDS and status
 
-Reservation status (e.g. confirmed/cancelled), guest check-in (pending/checkedIn after required checks), and DPS status are separate. DPS acceptance does not check a guest in.
+Reservation status (e.g. confirmed/cancelled), guest check-in (pending/checkedIn after required checks), and PDS status are separate. PDS acceptance does not check a guest in.
 
-Proposed DPS states: pending (queued), awaitingData (missing information), submitted (processing), registered (confirmed), rejected (correct data), retryPending (known temporary failure), unknown (uncertain outcome; reconcile before resubmitting), error (investigate). Names/contracts remain provisional.
+Proposed PDS states: pending (queued), awaitingData (missing information), submitted (processing), registered (confirmed), rejected (correct data), retryPending (known temporary failure), unknown (uncertain outcome; reconcile before resubmitting), error (investigate). Names/contracts remain provisional.
 
-Correlate DPS results with a stable registration request ID; retries must not duplicate registrations. Track DPS status independently of PMS timestamps; delayed/duplicate results must not regress completed registration. Resume when missing information arrives. Expose status/safe error reasons through API/UI. Define amendments/cancellation explicitly; deleting a local booking does not cancel DPS registration.
+Correlate PDS results with a stable registration request ID; retries must not duplicate registrations. Track PDS status independently of PMS timestamps; delayed/duplicate results must not regress completed registration. Resume when missing information arrives. Expose status/safe error reasons through API/UI. Define amendments/cancellation explicitly; deleting a local booking does not cancel PDS registration.
 
 ## Required scenarios
 
@@ -61,7 +61,7 @@ Correlate DPS results with a stable registration request ID; retries must not du
 - Salou VIP: POST retry after timeout, unauthorized property.
 - Cassis West: pagination, overlapping timestamp boundaries, interrupted polls and durable cursor recovery.
 - Brokers: crash after DB commit/before ack, no duplicate booking/outbox effect, bounded retry and durable dead-letter handoff. Compare Kafka keyed offsets/replay, RabbitMQ routing/manual ack, Pub/Sub subscriptions/ack deadlines/ordering/retry and emulator limits.
-- DPS: success, missing data, rejection/correction, outage, uncertain timeout, duplicates, booking changes while pending.
+- PDS: success, missing data, rejection/correction, outage, uncertain timeout, duplicates, booking changes while pending.
 
 ## Load tools only when relevant
 
