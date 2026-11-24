@@ -193,7 +193,7 @@ public sealed partial class ContractCases
         Assert.AreEqual(Instant((string)OpExpected["checkout"]!), prior.Deadline);
         var removed = Changed(prior, input with { Guests = [input.Guests[1]] });
         Assert.AreEqual(prior.Deadline, removed.Deadline);
-        foreach (var ticks in new[] { -1, 0, 1 })
+        foreach (var ticks in new[] { 0, -1, 1 })
         {
             var now = Deadline.AddTicks(ticks);
             bool expired = ticks >= 0;
@@ -218,6 +218,43 @@ public sealed partial class ContractCases
             var future = Decide(newer with { DepartureDate = input.DepartureDate.AddDays(4) }, prior, true, now);
             Assert.AreEqual(IntakeKind.Apply, future.Kind);
             Assert.AreEqual(expired, future.ErasePriorIdentity);
+            var unsent = Start(prior);
+            var original = unsent.Current!;
+            var nextBooking = future.Accepted!;
+            var local = OperationHotel(RegistrationPolicy.LocalLpds);
+            var evidenceAtDecision = expired ? new[] { BookingIntake.EraseIdentityIfDue(prior, now)!, prior } : [prior];
+            foreach (var evidence in evidenceAtDecision)
+            {
+                var evaluated = unsent.Evaluate(local, nextBooking, Id(2), now, evidence, allocate: Ids(180));
+                Assert.IsNull(evaluated.ComparisonNeededForSnapshotId);
+                Assert.HasCount(expired ? 2 : 1, evaluated.Operations, "purge-before-worker");
+                var active = evaluated.Current!;
+                Assert.AreEqual(expired, original.OperationId != active.OperationId);
+                Assert.AreEqual(expired, original.RegistrationRequestId != active.RegistrationRequestId);
+                Assert.AreEqual(expired ? "local" : "gpds", active.DestinationId);
+                if (expired)
+                {
+                    var retired = evaluated.Operations[0];
+                    Assert.AreEqual(OperationReason.IdentityExpired, retired.Reason);
+                    Assert.AreEqual(OperationState.Failed, retired.State);
+                    Assert.AreEqual(original.SnapshotId, retired.SnapshotId);
+                    Assert.AreEqual(original.RegistrationRequestId, retired.RegistrationRequestId);
+                    Assert.AreEqual(original.OperationId, active.PriorOperationId);
+                    Assert.IsTrue(retired.Attempts.IsEmpty);
+                    Assert.AreSame(retired, retired.ManualRetry(local, "operator", nextBooking, now));
+                }
+                var sent = active.BeginSubmission(nextBooking, Hotel.Zone, now);
+                Assert.HasCount(1, sent.Attempts);
+                Assert.AreEqual(nextBooking.SnapshotId, sent.Attempts[0].SnapshotId);
+            }
+            foreach (var evidence in new AcceptedBooking?[] { null, prior with { SnapshotId = Id(999) },
+                prior with { BookingId = Id(998) } })
+            {
+                var unknown = unsent.Evaluate(local, nextBooking, Id(2), now, evidence);
+                Assert.AreEqual(nextBooking.SnapshotId, unknown.ComparisonNeededForSnapshotId, "missing-prior-retention-evidence");
+                Assert.AreEqual(original.SnapshotId, unknown.Current!.SnapshotId);
+                Assert.IsTrue(unknown.Current.BeginSubmission(nextBooking, Hotel.Zone, now).Attempts.IsEmpty);
+            }
             var op = Start(prior).Current!.BeginSubmission(prior, Hotel.Zone, now);
             Assert.AreEqual(expired, op.Reason == OperationReason.IdentityExpired);
             if (expired)

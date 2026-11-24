@@ -132,15 +132,28 @@ public sealed record RegistrationHistory(ImmutableArray<RegistrationOperation> O
         bool needsCancellation = !active && registered;
         bool identityAvailable = booking.Restricted != null && !(now >= booking.Deadline);
         var history = this;
+        bool previousMatches = previous != null && previous.SnapshotId == current?.SnapshotId &&
+            previous.BookingId == booking.BookingId && previous.Key == booking.Key;
+        bool previousIdentityAvailable = previousMatches && previous!.Restricted != null && !(now >= previous.Deadline);
+        if (active && identityAvailable && current is { State: not OperationState.Confirmed, Reason: not OperationReason.IdentityExpired } &&
+            current.Attempts.IsEmpty && current.SnapshotId != booking.SnapshotId)
+        {
+            if (!previousMatches) return this with { ComparisonNeededForSnapshotId = booking.SnapshotId };
+            if (!previousIdentityAvailable)
+            {
+                history = Replace(current, current.Prepare(current.SnapshotId, OperationReason.IdentityExpired));
+                current = history.Current;
+            }
+        }
         if (current is { Reason: OperationReason.IdentityExpired })
         {
             if (!identityAvailable || booking.SnapshotId == current.SnapshotId) return this;
-            history = this with { CurrentRetired = true, ComparisonNeededForSnapshotId = null };
+            history = history with { CurrentRetired = true, ComparisonNeededForSnapshotId = null };
             current = null;
         }
         if (active && current is { Kind: OperationKind.Cancel, State: OperationState.Confirmed })
         {
-            history = this with { CurrentRetired = true, ComparisonNeededForSnapshotId = null };
+            history = history with { CurrentRetired = true, ComparisonNeededForSnapshotId = null };
             current = null;
         }
         if (!active && current is { State: not OperationState.Confirmed, Kind: not OperationKind.Cancel })
@@ -159,8 +172,7 @@ public sealed record RegistrationHistory(ImmutableArray<RegistrationOperation> O
         bool changed = false;
         if (active && current != null && booking.SnapshotId != current.SnapshotId)
         {
-            if (identityAvailable && previous?.SnapshotId == current.SnapshotId && previous.BookingId == booking.BookingId &&
-                previous.Key == booking.Key && previous.Restricted != null && !(now >= previous.Deadline))
+            if (identityAvailable && previousIdentityAvailable)
                 changed = !SameInput(previous, booking, guestId);
             else if (current.State == OperationState.Confirmed || identityAvailable && !current.Attempts.IsEmpty)
                 return this with { ComparisonNeededForSnapshotId = booking.SnapshotId };
