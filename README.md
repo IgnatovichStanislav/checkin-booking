@@ -10,7 +10,7 @@ Planned stack: .NET, PostgreSQL, Redis, webhooks and Blazor. All hotels, guest d
 
 - [AGENTS.md](AGENTS.md): scope, business rules and coding guidance.
 - [agents/README.md](agents/README.md): shared Graphify, Spec Kit and Docker skill routing.
-- [.specify/](.specify/): Spec Kit templates and workflows; constitution remains a template.
+- [.specify/](.specify/): Spec Kit templates and workflows; the constitution at .specify/memory/constitution.md (v1.0.0) is ratified and governs specs, plans, tasks and implementation.
 - [diagrams/](diagrams/): editable draw.io diagrams.
 - [eval/README.md](eval/README.md): manual skill evaluation workflow; no evaluations have been run.
 
