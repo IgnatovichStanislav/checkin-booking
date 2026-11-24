@@ -69,7 +69,8 @@ public sealed record RegistrationOperation
         if (eligible != OperationReason.Ready) return Prepare(SnapshotId, eligible);
         int number = Attempts.Count(a => a.Series == Series) + 1;
         if (number > 5) return this;
-        return this with { Attempts = Attempts.Add(new(Series, number, SnapshotId, now, null)), Reason = OperationReason.Uncertain, NextAttemptAt = null };
+        var contentSnapshot = Attempts.IsEmpty ? SnapshotId : Attempts[0].SnapshotId;
+        return this with { Attempts = Attempts.Add(new(Series, number, contentSnapshot, now, null)), Reason = OperationReason.Uncertain, NextAttemptAt = null };
     }
 
     public RegistrationOperation Resolve(Guid operationId, Guid requestId, int series, int number, DestinationResult result, DateTimeOffset at)
@@ -97,7 +98,7 @@ public sealed record RegistrationOperation
     public RegistrationOperation ManualRetry(HotelIntegration? verified, string actor, AcceptedBooking booking,
         DateTimeOffset now, bool supportsChange = false)
     {
-        if ((Reason == OperationReason.Unsupported && !supportsChange) || string.IsNullOrWhiteSpace(actor) || State != OperationState.Failed || IsStopped ||
+        if (Reason == OperationReason.IdentityExpired || (Reason == OperationReason.Unsupported && !supportsChange) || string.IsNullOrWhiteSpace(actor) || State != OperationState.Failed || IsStopped ||
             HotelIntegration.Authorize(verified, HotelAction.ManageRegistration, Scope, booking.Key.Scope == Scope &&
                 booking.BookingId == BookingId && booking.SnapshotId == SnapshotId) != Access.Allowed) return this;
         var reason = Eligibility(booking, GuestId, Kind, verified!.Zone, now);
@@ -108,7 +109,9 @@ public sealed record RegistrationOperation
 
 public sealed record RegistrationHistory(ImmutableArray<RegistrationOperation> Operations)
 {
-    public RegistrationOperation? Current => Operations.LastOrDefault() is { IsStopped: false } last ? last : null;
+    private bool CurrentRetired { get; init; }
+    public Guid? ComparisonNeededForSnapshotId { get; private init; }
+    public RegistrationOperation? Current => !CurrentRetired && Operations.LastOrDefault() is { IsStopped: false } last ? last : null;
 
     public RegistrationHistory Replace(RegistrationOperation expected, RegistrationOperation operation) =>
         ReferenceEquals(Current, expected) && expected.OperationId == operation.OperationId && expected.RegistrationRequestId == operation.RegistrationRequestId
@@ -127,18 +130,41 @@ public sealed record RegistrationHistory(ImmutableArray<RegistrationOperation> O
         var lastConfirmed = Operations.LastOrDefault(o => o.State == OperationState.Confirmed);
         bool registered = lastConfirmed != null && lastConfirmed.Kind != OperationKind.Cancel;
         bool needsCancellation = !active && registered;
+        bool identityAvailable = booking.Restricted != null && !(now >= booking.Deadline);
         var history = this;
+        if (current is { Reason: OperationReason.IdentityExpired })
+        {
+            if (!identityAvailable || booking.SnapshotId == current.SnapshotId) return this;
+            history = this with { CurrentRetired = true, ComparisonNeededForSnapshotId = null };
+            current = null;
+        }
+        if (active && current is { Kind: OperationKind.Cancel, State: OperationState.Confirmed })
+        {
+            history = this with { CurrentRetired = true, ComparisonNeededForSnapshotId = null };
+            current = null;
+        }
         if (!active && current is { State: not OperationState.Confirmed, Kind: not OperationKind.Cancel })
         {
             history = Replace(current, current.Stop());
             current = null;
         }
         if (!active && !needsCancellation) return history;
-        if (!active && current?.Kind == OperationKind.Cancel) return this;
+        if (!active && current?.Kind == OperationKind.Cancel)
+        {
+            var cancellation = identityAvailable ? current with { SnapshotId = booking.SnapshotId } :
+                current.Prepare(current.SnapshotId, OperationReason.IdentityExpired);
+            return Replace(current, cancellation);
+        }
 
-        bool identityAvailable = booking.Restricted != null && !(now >= booking.Deadline);
-        bool changed = identityAvailable && current != null && booking.SnapshotId != current.SnapshotId &&
-            (previous?.SnapshotId != current.SnapshotId || previous.Restricted == null || now >= previous.Deadline || !SameInput(previous, booking, guestId));
+        bool changed = false;
+        if (active && current != null && booking.SnapshotId != current.SnapshotId)
+        {
+            if (identityAvailable && previous?.SnapshotId == current.SnapshotId && previous.BookingId == booking.BookingId &&
+                previous.Key == booking.Key && previous.Restricted != null && !(now >= previous.Deadline))
+                changed = !SameInput(previous, booking, guestId);
+            else if (current.State == OperationState.Confirmed || identityAvailable && !current.Attempts.IsEmpty)
+                return this with { ComparisonNeededForSnapshotId = booking.SnapshotId };
+        }
         if (active && current is { State: OperationState.Confirmed, Kind: not OperationKind.Cancel } && !changed)
             return Replace(current, current with { SnapshotId = booking.SnapshotId });
 
@@ -157,7 +183,7 @@ public sealed record RegistrationHistory(ImmutableArray<RegistrationOperation> O
             return new(history.Operations.Add(next));
         }
 
-        if (!identityAvailable) return Replace(current!, current!.Prepare(booking.SnapshotId, OperationReason.IdentityExpired));
+        if (!identityAvailable) return Replace(current!, current!.Prepare(current.SnapshotId, OperationReason.IdentityExpired));
         if (current!.State == OperationState.Failed || current.Reason is OperationReason.CorrectData or OperationReason.TemporaryFailure)
             return Replace(current, current with { SnapshotId = booking.SnapshotId });
         return Replace(current, current.Prepare(booking.SnapshotId, RegistrationOperation.Eligibility(booking, guestId, kind, hotel.Zone, now)));

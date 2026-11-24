@@ -138,6 +138,11 @@ public sealed partial class ContractCases
         Assert.AreEqual(stamp, headers["X-Checkin-Timestamp"]);
         Assert.AreEqual("primary", headers["X-Checkin-Key-Id"]);
         Assert.IsTrue(CallbackSignature.Verify(sub, headers, Now.AddMinutes(-5), body, Lookup));
+        Assert.IsFalse(CallbackSignature.Verify(sub, headers, Now.AddMinutes(-5).AddTicks(-1), body, Lookup));
+        Assert.IsTrue(CallbackSignature.Verify(sub, headers, Now.AddMinutes(-5).AddTicks(1), body, Lookup));
+        Assert.IsTrue(CallbackSignature.Verify(sub, headers, Now.AddMinutes(5).AddTicks(-1), body, Lookup));
+        Assert.IsTrue(CallbackSignature.Verify(sub, headers, Now.AddMinutes(5), body, Lookup));
+        Assert.IsFalse(CallbackSignature.Verify(sub, headers, Now.AddMinutes(5).AddTicks(1), body, Lookup));
         Assert.IsFalse(CallbackSignature.Verify(sub, headers, Now.AddSeconds(-301), body, Lookup));
         Assert.IsFalse(CallbackSignature.Verify(sub, headers, Now, [.. body, 32], Lookup));
         Assert.IsFalse(CallbackSignature.Verify(sub, headers.SetItem(CallbackSignature.SignatureHeader, new string('F', 64)), Now, body, Lookup));

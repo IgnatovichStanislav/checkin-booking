@@ -191,7 +191,8 @@ public static class CallbackSignature
             (id != subscription.View.ActiveKeyId && (!subscription.VerificationUntil.TryGetValue(id, out var end) || now > end)) ||
             !headers.TryGetValue(TimestampHeader, out string? stamp) ||
             !long.TryParse(stamp, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out long seconds) ||
-            seconds.ToString(CultureInfo.InvariantCulture) != stamp || Math.Abs((decimal)now.ToUnixTimeSeconds() - seconds) > 300 ||
+            seconds.ToString(CultureInfo.InvariantCulture) != stamp ||
+            Math.Abs((now - DateTimeOffset.UnixEpoch).Ticks - (decimal)seconds * TimeSpan.TicksPerSecond) > TimeSpan.FromMinutes(5).Ticks ||
             !headers.TryGetValue(SignatureHeader, out string? hex) || hex.Length != 64 ||
             hex.Any(c => !(c is >= '0' and <= '9' or >= 'a' and <= 'f')) || resolve(id) is not { Length: > 0 } key) return false;
         return CryptographicOperations.FixedTimeEquals(Convert.FromHexString(hex), Mac(stamp, body, key));

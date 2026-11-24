@@ -135,6 +135,16 @@ public sealed partial class ContractCases
         Assert.AreSame(uncertain, uncertain.Evaluate(disabled, edited, Id(2), Now, booking));
         Assert.AreSame(uncertain, uncertain.Evaluate(disabled, cancelled, Id(2), Now, booking));
         var done = uncertain.Replace(sent, Resolve(sent, DestinationResult.Confirmed, Now));
+        var otherGuest = input.Guests[1] with { Passport = input.Guests[0].Passport };
+        var unrelated = Changed(booking, input with { Guests = input.Guests.SetItem(1, otherGuest) });
+        var missingEvidence = done.Evaluate(disabled, unrelated, Id(2), Now);
+        Assert.AreEqual(op.OperationId, missingEvidence.Current!.OperationId, "missing-comparison");
+        Assert.AreEqual(unrelated.SnapshotId, missingEvidence.ComparisonNeededForSnapshotId);
+        Assert.IsNull(RegistrationStatus.Change(done, missingEvidence, Id(75), Now).Outbox);
+        var compared = missingEvidence.Evaluate(disabled, unrelated, Id(2), Now, booking);
+        Assert.AreEqual(op.OperationId, compared.Current!.OperationId, "unrelated-guest");
+        Assert.IsNull(compared.ComparisonNeededForSnapshotId);
+        Assert.IsNull(RegistrationStatus.Change(done, compared, Id(75), Now).Outbox);
         var amend = done.Evaluate(disabled, edited, Id(2), Now, booking, allocate: Ids(80));
         var cancel = done.Evaluate(disabled, cancelled, Id(2), Now, booking, allocate: Ids(90));
         Assert.AreEqual(OperationKind.Amend, amend.Current!.Kind);
@@ -142,6 +152,33 @@ public sealed partial class ContractCases
         Assert.AreNotEqual(op.OperationId, cancel.Current.OperationId);
         Assert.AreEqual("local", cancel.Current.DestinationId);
         Assert.AreEqual(OperationState.Confirmed, cancel.Operations[0].State);
+        var refreshed = Changed(cancelled, cancelled.Restricted! with { Guests = [input.Guests[0]] }, 110);
+        var actionable = cancel.Evaluate(disabled, refreshed, Id(2), Now, cancelled);
+        var attempt = actionable.Current!.BeginSubmission(refreshed, Hotel.Zone, Now);
+        Assert.HasCount(1, attempt.Attempts, "cancel-later-snapshot");
+        Assert.AreEqual(cancel.Current.RegistrationRequestId, attempt.RegistrationRequestId);
+        var pending = cancel.Current.BeginSubmission(cancelled, Hotel.Zone, Now);
+        var waiting = cancel.Replace(cancel.Current, pending);
+        Assert.AreSame(waiting, waiting.Evaluate(disabled, refreshed, Id(2), Now, cancelled));
+        foreach (var result in new[] { DestinationResult.TemporaryFailure, DestinationResult.PermanentFailure })
+        {
+            var known = waiting.Replace(pending, Resolve(pending, result, Now)).Evaluate(disabled, refreshed, Id(2), Now, cancelled);
+            var retry = known.Current!;
+            if (result == DestinationResult.PermanentFailure) retry = retry.ManualRetry(disabled, "operator", refreshed, Now);
+            retry = retry.BeginSubmission(refreshed, Hotel.Zone, Now.AddSeconds(5));
+            Assert.HasCount(2, retry.Attempts, "cancel-still-actionable");
+            Assert.AreEqual(pending.RegistrationRequestId, retry.RegistrationRequestId);
+            Assert.AreEqual("local", retry.DestinationId);
+            Assert.IsTrue(retry.Attempts.All(a => a.SnapshotId == cancelled.SnapshotId), "cancel-content-lineage");
+        }
+        var completedCancel = waiting.Replace(pending, Resolve(pending, DestinationResult.Confirmed, Now));
+        var restored = Changed(cancelled, input, 120);
+        var restoredDisabled = completedCancel.Evaluate(disabled, restored, Id(2), Now, cancelled);
+        Assert.IsNull(restoredDisabled.Current, "disabled-after-cancellation");
+        Assert.AreEqual(OperationState.Confirmed, restoredDisabled.Operations[^1].State);
+        var restoredDefault = completedCancel.Evaluate(Hotel, restored, Id(2), Now, cancelled, allocate: Ids(130));
+        Assert.AreEqual("gpds", restoredDefault.Current!.DestinationId);
+        Assert.AreNotEqual(pending.RegistrationRequestId, restoredDefault.Current.RegistrationRequestId);
         Assert.AreSame(cancel, cancel.Replace(sent, Resolve(sent, DestinationResult.Rejected, Now)));
         Assert.AreEqual(OperationState.Failed, done.Evaluate(disabled, cancelled, Id(2), Now, booking, false).Current!.State);
     }
@@ -191,6 +228,16 @@ public sealed partial class ContractCases
                 Assert.AreEqual((string?)OpExpected["erased"], RegistrationStatus.PublicState(retried).Reason);
                 Assert.IsTrue(retried.Attempts.IsEmpty);
                 Assert.IsTrue(retried.BeginSubmission(future.Accepted!, Hotel.Zone, now).Attempts.IsEmpty);
+                var expiredHistory = new RegistrationHistory([op]);
+                var reactivated = expiredHistory.Evaluate(OperationHotel(RegistrationPolicy.LocalLpds), future.Accepted!,
+                    Id(2), now, erased, allocate: Ids(160));
+                Assert.HasCount(2, reactivated.Operations, "expired-operation-is-historical");
+                Assert.AreEqual(prior.SnapshotId, reactivated.Operations[0].SnapshotId);
+                Assert.AreSame(op, reactivated.Operations[0].ManualRetry(OperationHotel(), "operator", future.Accepted!, now));
+                Assert.AreNotEqual(op.OperationId, reactivated.Current!.OperationId);
+                Assert.AreNotEqual(op.RegistrationRequestId, reactivated.Current.RegistrationRequestId);
+                Assert.AreEqual("local", reactivated.Current.DestinationId);
+                Assert.HasCount(1, reactivated.Current.BeginSubmission(future.Accepted!, Hotel.Zone, now).Attempts);
             }
         }
         var cancelDeadline = BookingIntake.IdentityDeadline(cancelled, Hotel.Zone)!.Value;
