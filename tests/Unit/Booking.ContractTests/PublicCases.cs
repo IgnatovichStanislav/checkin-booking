@@ -14,7 +14,7 @@ namespace Booking.ContractTests;
 
 public sealed partial class ContractCases
 {
-    private static readonly JsonNode WireExpected = Fixture("expected");
+    private static readonly JsonNode WireExpected = Fixture("wire/expected");
     private static readonly JsonNode Definitions = ContractFile("types.schema.json")["$defs"]!;
     private static JsonNode ContractFile(string file) =>
         JsonNode.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "contracts", file)))!;
@@ -349,7 +349,7 @@ public sealed partial class ContractCases
     {
         var doc = ContractFile("openapi.json");
         var paths = doc["paths"]!.AsObject();
-        var rows = Fixture("operations").AsArray();
+        var rows = Fixture("wire/operations").AsArray();
         Assert.AreEqual(rows.Count, paths.Sum(path => path.Value!.AsObject().Count(p => p.Key != "parameters")));
         const string reference = "./types.schema.json#/$defs/";
         foreach (var row in rows)

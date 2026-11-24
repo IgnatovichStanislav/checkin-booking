@@ -17,7 +17,8 @@
     <None Include="../../../e2e/fixtures/001-booking-contracts/attendance/*.json" Link="fixtures/attendance/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="../../../e2e/fixtures/001-booking-contracts/registration/*.json;../../../e2e/fixtures/001-booking-contracts/wire/*.json" Link="fixtures/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../../e2e/fixtures/001-booking-contracts/registration/*.json" Link="fixtures/registration/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../../e2e/fixtures/001-booking-contracts/wire/*.json" Link="fixtures/wire/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../specs/001-booking-contracts/contracts/*.json" Link="contracts/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../e2e/fixtures/scenarios.md" Link="scenario-catalog.md" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

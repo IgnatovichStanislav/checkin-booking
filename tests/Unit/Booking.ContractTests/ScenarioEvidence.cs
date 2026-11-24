@@ -85,15 +85,13 @@ internal static class ScenarioEvidence
             metadata?.IntakePath, level, scenarios, featureCases, requirements, fixtures);
     }
 
-    private static FixtureReference ReadFixture(string reference)
+    internal static FixtureReference ReadFixture(string reference)
     {
         string[] parts = reference.Split('#', 2);
         string path = parts[0];
         Require(Regex.IsMatch(path, @"^(?:intake/(?:restricted/)?|attendance/|registration/|wire/)[a-zA-Z0-9-]+\.json$"),
             "Invalid fixture path.");
-        string copiedPath = path.StartsWith("intake/", StringComparison.Ordinal) || path.StartsWith("attendance/", StringComparison.Ordinal)
-            ? path : Path.GetFileName(path);
-        string file = Path.Combine(AppContext.BaseDirectory, "fixtures", copiedPath);
+        string file = Path.Combine(AppContext.BaseDirectory, "fixtures", path);
         Require(File.Exists(file), "Mapped fixture does not exist.");
 
         string[] ids = [];
@@ -195,8 +193,7 @@ internal static class ScenarioEvidence
             Require(results.TryAdd(mapped!, outcome), "Duplicate TRX result for a method.");
         }
 
-        Require(int.TryParse((string?)counters.Attribute("total"), NumberStyles.None, CultureInfo.InvariantCulture, out int total)
-            && total == results.Count, "TRX result count does not match its summary.");
+        ValidateCounters(counters, results.Values);
         var outcomes = methods.Select(method =>
         {
             string? outcome = results.GetValueOrDefault(method);
@@ -204,6 +201,50 @@ internal static class ScenarioEvidence
         }).ToArray();
         return new(ReadId(run, "id"), outcomes.Where(row => row.Method.EvidenceLevel != "harness").ToArray(),
             outcomes.Where(row => row.Method.EvidenceLevel == "harness").ToArray());
+    }
+
+    private static void ValidateCounters(XElement counters, IReadOnlyCollection<string> outcomes)
+    {
+        const string mismatch = "TRX result counts do not match the summary.";
+        var counts = outcomes.GroupBy(outcome => outcome, StringComparer.Ordinal)
+            .ToDictionary(group => group.Key, group => group.Count(), StringComparer.Ordinal);
+        int Count(string outcome) => counts.GetValueOrDefault(outcome);
+
+        Require(counters.Attribute("total") is not null, "Missing TRX total counter.");
+        int explicitTimeouts = Count("Timeout");
+        int failedIncludingTimeouts = Count("Failed") + explicitTimeouts;
+        int timedOut = explicitTimeouts;
+        if (counters.Attribute("timeout") is { } timeout)
+        {
+            Require(int.TryParse(timeout.Value, NumberStyles.None, CultureInfo.InvariantCulture, out timedOut)
+                && timedOut >= explicitTimeouts && timedOut <= failedIncludingTimeouts, mismatch);
+        }
+
+        int failed = failedIncludingTimeouts - timedOut;
+        int passed = Count("Passed");
+        foreach (var counter in counters.Attributes())
+        {
+            int? expected = counter.Name.LocalName switch
+            {
+                "total" => outcomes.Count,
+                "executed" => passed + failed,
+                "passed" => passed,
+                "failed" => failed,
+                "timeout" => timedOut,
+                "notExecuted" => Count("NotExecuted") + Count("Skipped"),
+                "error" => Count("Error"),
+                "aborted" => Count("Aborted"),
+                "inconclusive" => Count("Inconclusive"),
+                "passedButRunAborted" => Count("PassedButRunAborted"),
+                "notRunnable" => Count("NotRunnable"),
+                "pending" => Count("Pending"),
+                "disconnected" or "warning" or "completed" or "inProgress" => 0,
+                _ => null
+            };
+            Require(counter.Name.Namespace == XNamespace.None && expected is not null
+                && int.TryParse(counter.Value, NumberStyles.None, CultureInfo.InvariantCulture, out int actual)
+                && actual == expected, mismatch);
+        }
     }
 
     private static Dictionary<(string, string, string), MethodEvidence> Index(MethodEvidence[] methods)

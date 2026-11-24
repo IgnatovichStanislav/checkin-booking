@@ -10,6 +10,7 @@ public sealed class EvidenceCases
     private static readonly DateTimeOffset Started = new(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
     private static readonly Guid FirstId = Guid.Parse("00000000-0000-0000-0000-000000000001");
     private static readonly Guid SecondId = Guid.Parse("00000000-0000-0000-0000-000000000002");
+    private static readonly Guid ThirdId = Guid.Parse("00000000-0000-0000-0000-000000000003");
 
     [TestMethod, TestCategory("Evidence:harness")]
     public void FirstImportJoinsCompiledMetadata()
@@ -27,6 +28,12 @@ public sealed class EvidenceCases
         Assert.AreEqual("contract", outcome.Method.EvidenceLevel);
         var fixture = outcome.Method.Fixtures.Single(fixture => fixture.Path.EndsWith("/intake/FirstImport.json", StringComparison.Ordinal));
         CollectionAssert.AreEqual(new[] { "first", "first-before", "first-at", "first-after", "first-failed" }, fixture.CaseIds);
+
+        var wire = ScenarioEvidence.ReadFixture("wire/expected.json#Status");
+        Assert.AreEqual("e2e/fixtures/001-booking-contracts/wire/expected.json", wire.Path);
+        CollectionAssert.AreEqual(new[] { "Status" }, wire.CaseIds);
+        Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.ReadFixture("registration/missing.json"));
+        Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.ReadFixture("registration/expected.json#Status"));
     }
 
     [TestMethod, TestCategory("Evidence:harness")]
@@ -35,14 +42,24 @@ public sealed class EvidenceCases
         var map = ScenarioEvidence.CompiledMap();
         var failed = Find(map, nameof(ContractCases.FirstImport));
         var skipped = Find(map, nameof(ContractCases.DuplicateSnapshot));
+        var passed = Find(map, nameof(ContractCases.InvalidSnapshot));
         var missing = Find(map, nameof(ContractCases.StaleUpdate));
-        var trx = Report(Started, [Definition(failed, FirstId), Definition(skipped, SecondId)],
-            [Result(FirstId, "Failed"), Result(SecondId, "NotExecuted")]);
+        var trx = Report(Started, [Definition(failed, FirstId), Definition(skipped, SecondId), Definition(passed, ThirdId)],
+            [Result(FirstId, "Failed"), Result(SecondId, "NotExecuted"), Result(ThirdId, "Passed")]);
+        Counters(trx).Add(new XAttribute("executed", 2), new XAttribute("passed", 1),
+            new XAttribute("failed", 1), new XAttribute("timeout", 0), new XAttribute("notExecuted", 1));
         var outcomes = ScenarioEvidence.Join(map, trx, Started).BusinessEvidence.ToDictionary(row => row.Method.Method);
 
         Assert.AreEqual(new MethodOutcome(failed, "Failed", "failed"), outcomes[failed.Method]);
         Assert.AreEqual(new MethodOutcome(skipped, "NotExecuted", "pending"), outcomes[skipped.Method]);
+        Assert.AreEqual(new MethodOutcome(passed, "Passed", "passed"), outcomes[passed.Method]);
         Assert.AreEqual(new MethodOutcome(missing, null, "pending"), outcomes[missing.Method]);
+
+        Counters(trx).SetAttributeValue("executed", 1);
+        Counters(trx).SetAttributeValue("failed", 0);
+        Counters(trx).SetAttributeValue("timeout", 1);
+        var timedOut = ScenarioEvidence.Join(map, trx, Started).BusinessEvidence.Single(row => row.Method == failed);
+        Assert.AreEqual(new MethodOutcome(failed, "Failed", "failed"), timedOut);
     }
 
     [TestMethod, TestCategory("Evidence:harness")]
@@ -87,6 +104,22 @@ public sealed class EvidenceCases
         XDocument inconsistent = Report(Started, [Definition(first, FirstId)], [Result(FirstId, "Passed")]);
         inconsistent.Root!.Element(Trx + "Results")!.RemoveNodes();
         Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.Join(map, inconsistent, Started));
+
+        XDocument wrongPassFail = Report(Started, [Definition(first, FirstId)], [Result(FirstId, "Passed")]);
+        Counters(wrongPassFail).Add(new XAttribute("passed", 0), new XAttribute("failed", 1));
+        Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.Join(map, wrongPassFail, Started));
+
+        XDocument wrongSkipped = Report(Started, [Definition(first, FirstId)], [Result(FirstId, "NotExecuted")]);
+        Counters(wrongSkipped).Add(new XAttribute("notExecuted", 0));
+        Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.Join(map, wrongSkipped, Started));
+
+        XDocument wrongTimeout = Report(Started, [Definition(first, FirstId)], [Result(FirstId, "Passed")]);
+        Counters(wrongTimeout).Add(new XAttribute("timeout", 1));
+        Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.Join(map, wrongTimeout, Started));
+
+        XDocument wrongExecuted = Report(Started, [Definition(first, FirstId)], [Result(FirstId, "Passed")]);
+        Counters(wrongExecuted).Add(new XAttribute("executed", 0));
+        Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.Join(map, wrongExecuted, Started));
     }
 
     [TestMethod, TestCategory("Evidence:harness")]
@@ -178,6 +211,8 @@ public sealed class EvidenceCases
 
     private static XElement Result(Guid id, string outcome) => new(Trx + "UnitTestResult",
         new XAttribute("testId", id), new XAttribute("outcome", outcome));
+
+    private static XElement Counters(XDocument document) => document.Root!.Element(Trx + "ResultSummary")!.Element(Trx + "Counters")!;
 
     private static XDocument Report(DateTimeOffset started, XElement[] definitions, XElement[] results) => new(
         new XElement(Trx + "TestRun", new XAttribute("id", Guid.NewGuid()),

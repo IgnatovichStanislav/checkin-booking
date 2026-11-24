@@ -9,7 +9,7 @@ namespace Booking.ContractTests;
 public sealed partial class ContractCases
 {
     private static JsonNode Fixture(string name) => JsonNode.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "fixtures", name + ".json")))!;
-    private static readonly JsonNode OpExpected = Fixture("expectations");
+    private static readonly JsonNode OpExpected = Fixture("registration/expectations");
     private static BookingDto EligibleSnapshot()
     {
         var source = Snapshot();
