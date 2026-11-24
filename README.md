@@ -6,6 +6,8 @@ Hotel/PMS -> normalize booking -> broker -> save booking -> fictional PDS regist
 
 Planned stack: .NET, PostgreSQL, Redis, webhooks and Blazor. All hotels, guest data and PDS integrations are synthetic. Application implementation has not started.
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contributor onboarding, the shared AI workflow and safe publishing rules.
+
 ## Workspace
 
 - [AGENTS.md](AGENTS.md): scope, business rules and coding guidance.

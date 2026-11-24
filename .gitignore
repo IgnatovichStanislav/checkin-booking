@@ -68,3 +68,5 @@ __pycache__/
 !.env.example
 *.user
 *.suo
+# Local encryption keys and credentials
+/secrets/

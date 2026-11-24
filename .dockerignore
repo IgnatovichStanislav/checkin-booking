@@ -1,0 +1,5 @@
+# Never include local secrets in Docker build contexts
+secrets/
+.git/
+.env
+.env.*
