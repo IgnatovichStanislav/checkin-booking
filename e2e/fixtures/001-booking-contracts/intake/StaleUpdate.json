@@ -1,0 +1,27 @@
+{
+  "method": "StaleUpdate",
+  "scenarioIds": [
+    "INT-03"
+  ],
+  "path": "SAL",
+  "input": "restricted/snapshot.json",
+  "sourceInstant": "2026-09-01T00:00:00.1234567Z",
+  "receiptInstant": "2026-10-25T00:30:00Z",
+  "cases": [
+    {
+      "caseId": "one-tick-earlier",
+      "effect": "stale",
+      "status": 200
+    },
+    {
+      "caseId": "erased-stale",
+      "effect": "stale",
+      "status": 200
+    },
+    {
+      "caseId": "one-tick-newer",
+      "effect": "apply",
+      "status": 200
+    }
+  ]
+}

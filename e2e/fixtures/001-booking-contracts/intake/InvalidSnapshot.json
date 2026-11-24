@@ -1,0 +1,102 @@
+{
+  "method": "InvalidSnapshot",
+  "scenarioIds": [
+    "INT-05"
+  ],
+  "path": "SAL",
+  "input": "restricted/snapshot.json",
+  "sourceInstant": "2026-09-01T00:00:00.1234567Z",
+  "receiptInstant": "2026-10-25T00:30:00Z",
+  "cases": [
+    {
+      "caseId": "malformed",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "oversized",
+      "effect": "large",
+      "status": 413
+    },
+    {
+      "caseId": "missing-passport",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "bad-country",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "duplicate-guest",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "tomorrow",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "unknown-member",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "invalid-date",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "missing-status",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "null-id",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "eight-digits",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "offset",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "too-many-scalars",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "too-many-guests",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "bad-range",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "created-later",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "cancel-missing",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "confirmed-instant",
+      "effect": "invalid",
+      "status": 400
+    }
+  ]
+}
