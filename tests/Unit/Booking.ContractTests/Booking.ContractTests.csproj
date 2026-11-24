@@ -13,5 +13,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="../../../e2e/fixtures/001-booking-contracts/intake/**/*.json" Link="fixtures/intake/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../../e2e/fixtures/001-booking-contracts/attendance/*.json" Link="fixtures/attendance/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

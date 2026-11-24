@@ -58,12 +58,12 @@ public sealed class HotelIntegration
     public DateOnly LocalDate(DateTimeOffset instant) =>
         DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(instant, Zone).DateTime);
 
-    public static Access Authorize(HotelIntegration? integration, HotelAction action, HotelScope scope,
+    public static Access Authorize(HotelIntegration? integration, HotelAction action, HotelScope? scope,
         bool parentMatches = true)
     {
         if (integration is null) return Access.Unauthenticated;
         if (!integration.Permissions.Contains(action)) return Access.Forbidden;
-        return parentMatches && integration.ProviderId == scope.ProviderId && integration.PropertyIds.Contains(scope.PropertyId)
+        return parentMatches && scope is not null && integration.ProviderId == scope.ProviderId && integration.PropertyIds.Contains(scope.PropertyId)
             ? Access.Allowed : Access.NotFound;
     }
 

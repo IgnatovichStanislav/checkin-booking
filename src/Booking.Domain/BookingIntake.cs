@@ -4,9 +4,11 @@ using Booking.Contracts;
 namespace Booking.Domain;
 
 public sealed record AcceptedBooking(Guid BookingId, Guid SnapshotId, SourceBookingKey Key, DateTimeOffset CreatedAt,
-    DateTimeOffset UpdatedAt, DateTimeOffset? Deadline, ImmutableDictionary<string, Guid> GuestIds,
+    DateTimeOffset UpdatedAt, DateTimeOffset? Deadline, GuestMembershipState Membership,
     Mappings Mappings, BookingDto? Restricted)
 {
+    public ImmutableDictionary<string, Guid> GuestIds => Membership.GuestIds;
+
     public override string ToString() => nameof(AcceptedBooking);
 }
 
@@ -19,6 +21,8 @@ public sealed record IntakeDecision(IntakeKind Kind, bool IsPost, AcceptedBookin
     bool ErasePriorIdentity = false, BookingEvent? Event = null, ReconciliationIntent? Intent = null,
     BookingDto? RestrictedConflict = null, string? InvalidField = null)
 {
+    public ImmutableArray<ParticipationChange> ParticipationChanges { get; init; } = [];
+
     public override string ToString() => nameof(IntakeDecision);
 }
 
@@ -73,18 +77,11 @@ public static class BookingIntake
         if (now >= incomingDeadline) return Result(IntakeKind.Expired);
         allocate ??= Guid.CreateVersion7;
         Guid bookingId = prior?.BookingId ?? allocate();
-        var ids = (prior?.GuestIds ?? ImmutableDictionary.Create<string, Guid>(StringComparer.Ordinal)).ToBuilder();
-        var mappings = ImmutableArray.CreateBuilder<GuestMapping>(incoming.Guests.Length);
-        foreach (var guest in incoming.Guests)
-        {
-            if (!ids.TryGetValue(guest.SrcGuestId, out var guestId))
-                ids.Add(guest.SrcGuestId, guestId = allocate());
-            mappings.Add(new(guestId, guest.SrcGuestId));
-        }
+        var membership = GuestMembership.Apply(incoming, prior?.Membership, allocate);
         var accepted = new AcceptedBooking(bookingId, allocate(), incoming.Key, incoming.CreatedAt, incoming.UpdatedAt,
-            incomingDeadline, ids.ToImmutable(), new(bookingId, incoming.Key.SrcBookingId, mappings.MoveToImmutable()), incoming);
+            incomingDeadline, membership.State, new(bookingId, incoming.Key.SrcBookingId, membership.Mappings), incoming);
         return new(prior == null ? IntakeKind.Create : IntakeKind.Apply, post, accepted, erase,
-            new(allocate(), bookingId, accepted.SnapshotId));
+            new(allocate(), bookingId, accepted.SnapshotId)) { ParticipationChanges = membership.Changes };
     }
 
     public static DateTimeOffset? IdentityDeadline(BookingDto snapshot, TimeZoneInfo zone)
