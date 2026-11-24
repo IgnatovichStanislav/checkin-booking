@@ -24,6 +24,11 @@ public sealed record IntakeDecision(IntakeKind Kind, bool IsPost, AcceptedBookin
 
 public static class BookingIntake
 {
+    public static AcceptedBooking? EraseIdentityIfDue(AcceptedBooking? prior, DateTimeOffset now) =>
+        prior is { Restricted: not null, Deadline: { } deadline } && now >= deadline
+            ? prior with { Restricted = null }
+            : null;
+
     public static IntakeDecision Decide(BookingDto incoming, Guid? updateBookingId, AcceptedBooking? prior,
         TimeZoneInfo zone, DateTimeOffset now, Func<Guid>? allocate = null, ReconciliationIntent? existingIntent = null)
     {
@@ -33,8 +38,9 @@ public static class BookingIntake
             return new(post ? IntakeKind.Unavailable : IntakeKind.Missing, post);
         if (prior == null && !post) return new(IntakeKind.Missing, false);
 
-        bool erase = prior is { Restricted: not null } && now >= prior.Deadline;
-        if (erase) prior = prior! with { Restricted = null };
+        var erased = EraseIdentityIfDue(prior, now);
+        bool erase = erased != null;
+        prior = erased ?? prior;
         IntakeDecision Result(IntakeKind kind, string? field = null) => new(kind, post, prior, erase, InvalidField: field);
 
         if (!post && prior != null)

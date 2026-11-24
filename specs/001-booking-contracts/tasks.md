@@ -1,6 +1,6 @@
 # Tasks · Booking intake contracts and BookingDto
 
-Feature 001 · G2 approved 2026-11-24 · All tasks and executable evidence pending.
+Feature 001 · G2 approved 2026-11-24 · T001–T007 implemented. Groups 2–4 and final verification pending.
 
 Implement the [plan](plan.md) against the [specification](spec.md), [approved decisions](approved-decisions.md), [data model](data-model.md), [wire types](contracts/types.schema.json), [operations](contracts/openapi.json) and [quickstart test map](quickstart.md). Paths below are relative to the repository root. Read the constitution and fixture README before work. Use deterministic clocks, allocated identifiers and scoped prior-state inputs. Return decisions describing required durable effects. Database transactions, HTTP servers, Kafka, delivery workers, real callback traffic and the simulator belong to later features.
 

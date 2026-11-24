@@ -33,7 +33,7 @@ public sealed record IntakeResponse(int Status, object Body, string? Location = 
     }
 }
 
-public sealed record SalouIntakeResult(IntakeResponse? Rejection, IntakeDecision? Decision)
+public sealed record SalouIntakeResult(IntakeResponse? Rejection, IntakeDecision? Decision, AcceptedBooking? ErasureOnRejection = null)
 {
     public override string ToString() => nameof(SalouIntakeResult);
 }
@@ -50,7 +50,11 @@ public static class SalouIntake
         if (updateBookingId.HasValue && (prior?.BookingId != updateBookingId || prior?.Key.Scope != scope))
             return new(IntakeResponse.Error(404, "not_found"), null);
         var decoded = SalouSnapshotMapper.Decode(body, scope, verified.LocalDate(now));
-        if (decoded.Error is { } invalid) return new(new(invalid.Status, invalid.Body), null);
+        if (decoded.Error is { } invalid)
+        {
+            var erasure = updateBookingId.HasValue ? BookingIntake.EraseIdentityIfDue(prior, now) : null;
+            return new(new(invalid.Status, invalid.Body), null, erasure);
+        }
         return new(null, BookingIntake.Decide(decoded.Snapshot!, updateBookingId, prior, verified.Zone, now, allocate, existingIntent));
     }
 }

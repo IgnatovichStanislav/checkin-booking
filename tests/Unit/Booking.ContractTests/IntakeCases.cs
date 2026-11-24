@@ -36,10 +36,15 @@ public sealed partial class ContractCases
         return () => Id(next++);
     }
 
-    private static void Cases(string method, Action<string, string, int> check)
+    private static JsonArray CaseRows(string method)
     {
         var file = JsonNode.Parse(File.ReadAllText(Path.Combine(IntakeFixtures, method + ".json")))!;
-        foreach (var row in file["cases"]!.AsArray())
+        return file["cases"]!.AsArray();
+    }
+
+    private static void Cases(string method, Action<string, string, int> check)
+    {
+        foreach (var row in CaseRows(method))
             check((string)row!["caseId"]!, (string)row["effect"]!, (int)row["status"]!);
     }
 
@@ -180,8 +185,10 @@ public sealed partial class ContractCases
     [TestMethod, TestCategory("INT-05"), TestCategory("Evidence:contract")]
     public void InvalidSnapshot()
     {
-        Cases(nameof(InvalidSnapshot), (id, effect, status) =>
+        foreach (var row in CaseRows(nameof(InvalidSnapshot)))
         {
+            string id = (string)row!["caseId"]!;
+            int status = (int)row["status"]!;
             var body = Wire();
             var guests = body["guests"]!.AsArray();
             var guest = guests[0]!.AsObject();
@@ -208,9 +215,13 @@ public sealed partial class ContractCases
             var parsed = SalouSnapshotMapper.Decode(bytes, Scope, Hotel.LocalDate(Now));
             Assert.IsNull(parsed.Snapshot, id);
             Assert.AreEqual(status, parsed.Error!.Status, id);
-            Assert.AreEqual(effect == "large" ? "body_too_large" : "invalid_snapshot", parsed.Error.Body.Code, id);
+            Assert.AreEqual((string)row["effect"]! == "large" ? "body_too_large" : "invalid_snapshot", parsed.Error.Body.Code, id);
+            Assert.AreEqual(1, parsed.Error.Body.Fields.Length, id);
+            var issue = parsed.Error.Body.Fields[0];
+            Assert.IsTrue(issue.Path == (string)row["fieldPath"]! && issue.Code == (string)row["fieldCode"]!, id);
             Assert.IsFalse(JsonSerializer.Serialize(parsed.Error).Contains("untrusted-sensitive-field", StringComparison.Ordinal), id);
-        });
+            if (id is "malformed" or "oversized") VerifyRejectedPut(id, bytes, status);
+        }
         Assert.AreEqual(401, SalouIntake.Evaluate(null, null, null, ReadOnlyMemory<byte>.Empty, Now).Rejection!.Status, "credentials-first");
         Assert.AreEqual(404, SalouIntake.Evaluate(Hotel, Id(7), Prior(), ReadOnlyMemory<byte>.Empty, Now).Rejection!.Status, "scope-first");
         Assert.IsFalse(HotelIntegration.TryConfigure("salou", ["salou-vip"], [], "CET", RegistrationPolicy.Disabled,
@@ -229,5 +240,29 @@ public sealed partial class ContractCases
         Assert.AreEqual(Access.Unauthenticated, HotelIntegration.Authorize(null, HotelAction.Import, Scope));
         Assert.AreEqual(Access.Forbidden, HotelIntegration.Authorize(Hotel, HotelAction.ManageSubscriptions, Scope));
         Assert.AreEqual(Access.NotFound, HotelIntegration.Authorize(Hotel, HotelAction.Update, Scope, false));
+    }
+
+    private static void VerifyRejectedPut(string id, byte[] body, int expectedStatus)
+    {
+        var prior = Prior();
+        foreach (var now in new[] { Deadline.AddTicks(-1), Deadline })
+        {
+            var result = SalouIntake.Evaluate(Hotel, prior.BookingId, prior, body, now);
+            Assert.AreEqual(expectedStatus, result.Rejection!.Status, id);
+            Assert.AreEqual(expectedStatus == 413 ? "body_too_large" : "invalid_snapshot",
+                ((SafeError)result.Rejection.Body).Code, id);
+            Assert.IsNull(result.Decision, id);
+            if (now < Deadline) Assert.IsNull(result.ErasureOnRejection, id);
+            else Assert.IsTrue(result.ErasureOnRejection == (prior with { Restricted = null }), id);
+        }
+
+        var foreign = prior with { Key = prior.Key with { Scope = Scope with { PropertyId = "other" } } };
+        foreach (var candidate in new AcceptedBooking?[] { foreign, prior with { BookingId = Id(7) }, null })
+        {
+            var result = SalouIntake.Evaluate(Hotel, prior.BookingId, candidate, body, Deadline);
+            Assert.AreEqual(404, result.Rejection!.Status, id);
+            Assert.IsNull(result.Decision, id);
+            Assert.IsNull(result.ErasureOnRejection, id);
+        }
     }
 }
