@@ -32,11 +32,18 @@ public static class Attendance
         var duplicate = guestHistory.FirstOrDefault(entry => IsRetry(entry, actor, observation, null, null));
         if (duplicate is not null) return new(AttendanceKind.Duplicate, duplicate.AttendanceEventId);
 
-        if (participant.ActiveEpisode is not { } episode ||
-            !TryReplay(guestHistory.Where(entry => entry.Episode == episode), out var latest) ||
-            (latest is not null && observation.OccurredAt <= latest.OccurredAt) ||
-            !CanTransition(latest?.Status ?? AttendanceStatus.Expected, observation.Status))
-            return new(AttendanceKind.Conflict);
+        if (participant.ActiveEpisode is not { } episode) return new(AttendanceKind.Conflict);
+
+        var currentStatus = AttendanceStatus.Expected;
+        foreach (var episodeHistory in guestHistory.GroupBy(entry => entry.Episode))
+        {
+            if (!TryReplay(episodeHistory, out var latest) ||
+                (latest is not null && observation.OccurredAt <= latest.OccurredAt))
+                return new(AttendanceKind.Conflict);
+
+            if (episodeHistory.Key == episode && latest is not null) currentStatus = latest.Status;
+        }
+        if (!CanTransition(currentStatus, observation.Status)) return new(AttendanceKind.Conflict);
 
         return Append(booking.BookingId, guestId, episode, actor, observation, receivedAt, allocate);
     }

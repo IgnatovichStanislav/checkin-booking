@@ -120,24 +120,34 @@ public sealed partial class ContractCases
             ImmutableArray<AttendanceEvent> history = [];
             var receipts = new List<Guid?>();
             var allocate = Ids(200);
+            var current = original;
             foreach (var step in row["steps"]!.AsArray())
             {
-                var booking = (bool?)step!["otherBooking"] == true ? other : original;
+                if ((bool?)step!["restore"] == true) current = RestoreFirstGuest(current);
+                var booking = (bool?)step["otherBooking"] == true ? other : current;
                 var guest = booking.Mappings.Guests[((int?)step["guest"] ?? 1) - 1].GuestId;
                 var status = (string)step["status"]!;
                 var occurredAt = instant.AddTicks((int)step["tick"]!);
                 var receivedAt = Now.AddSeconds(receipts.Count);
                 string actor = (string?)step["actor"] ?? "attendance-actor";
-                var result = Report(hotel, booking, guest, history, status, occurredAt, actor, receivedAt, allocate);
+                var episode = booking.Membership.Participants[guest].ActiveEpisode!.Value;
+                var target = (int?)step["target"] is { } index ? receipts[index] : null;
+                var result = target is { } eventId
+                    ? AttendanceContracts.Evaluate(hotel, actor, booking.BookingId, guest, eventId, booking, history,
+                        AttendanceBody(status, occurredAt, (string)step["reason"]!), receivedAt, allocate)
+                    : Report(hotel, booking, guest, history, status, occurredAt, actor, receivedAt, allocate);
                 VerifyAttendanceResponse(result, (int)step["http"]!, id, RetryId(step, receipts));
                 if (result.Append is { } entry)
                 {
-                    Assert.IsTrue(entry.BookingId == booking.BookingId && entry.GuestId == guest && entry.Episode == 1 &&
+                    Assert.IsTrue(entry.BookingId == booking.BookingId && entry.GuestId == guest && entry.Episode == episode &&
                         entry.Actor == actor && entry.Observation == new AttendanceObservation(ExpectedStatus(status), occurredAt) &&
-                        entry.ReceivedAt == receivedAt && entry.OriginalEventId is null && entry.ReasonCode is null, id);
+                        entry.ReceivedAt == receivedAt && entry.OriginalEventId == target &&
+                        entry.ReasonCode == (target.HasValue ? CorrectionReason.IncorrectTime : null), id);
                     history = history.Add(entry);
-                    Assert.AreEqual(ExpectedStatus(status), Attendance.Status(history, booking.BookingId, guest, 1), id);
                 }
+                string? effective = (string?)step["effective"] ?? (result.Append is null ? null : status);
+                if (effective is not null)
+                    Assert.AreEqual(ExpectedStatus(effective), Attendance.Status(history, booking.BookingId, guest, episode), id);
                 receipts.Add((result.Body as AttendanceReceipt)?.AttendanceEventId);
             }
         }

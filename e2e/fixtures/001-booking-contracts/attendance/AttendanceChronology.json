@@ -30,6 +30,25 @@
       {"status":"noShow","tick":3,"http":409}
     ]},
     {"caseId":"expected-cannot-check-out","steps":[{"status":"checkedOut","tick":1,"http":409}]},
+    {"caseId":"restored-episode-keeps-guest-chronology","steps":[
+      {"status":"checkedIn","tick":3,"http":201},
+      {"restore":true,"status":"arrived","tick":2,"http":409,"effective":"expected"},
+      {"status":"arrived","tick":3,"http":409,"effective":"expected"},
+      {"status":"checkedIn","tick":3,"http":200,"retryOf":0,"effective":"expected"},
+      {"status":"arrived","tick":4,"http":201,"effective":"arrived"}
+    ]},
+    {"caseId":"restored-episode-uses-corrected-earlier-instant","steps":[
+      {"status":"checkedIn","tick":5,"http":201},
+      {"target":0,"reason":"incorrect_time","status":"checkedIn","tick":2,"http":201},
+      {"restore":true,"status":"arrived","tick":3,"http":201,"effective":"arrived"}
+    ]},
+    {"caseId":"restored-episode-uses-corrected-later-instant","steps":[
+      {"status":"checkedIn","tick":2,"http":201},
+      {"target":0,"reason":"incorrect_time","status":"checkedIn","tick":5,"http":201},
+      {"restore":true,"status":"arrived","tick":3,"http":409,"effective":"expected"},
+      {"status":"arrived","tick":5,"http":409,"effective":"expected"},
+      {"status":"arrived","tick":6,"http":201,"effective":"arrived"}
+    ]},
     {"caseId":"equal-tuple-own-guest","steps":[
       {"status":"arrived","tick":1,"http":201},
       {"status":"arrived","tick":1,"guest":2,"http":201},
