@@ -55,3 +55,16 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Local tooling and generated output
+/graphify-out/
+/.eval-judge/
+/eval/results/
+.vs/
+.idea/
+__pycache__/
+*.pyc
+.env.*
+!.env.example
+*.user
+*.suo

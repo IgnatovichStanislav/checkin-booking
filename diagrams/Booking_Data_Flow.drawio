@@ -1,0 +1,55 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="booking-data-flow" name="Booking data flow">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1800" pageHeight="600">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="hotels" value="Hotels / PMS" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="40" y="240" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="receive" value="Receive booking data" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="260" y="240" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="convert" value="Convert to our format" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="480" y="240" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="queue" value="Queue for processing" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="700" y="240" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="rules" value="Apply booking rules" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="920" y="240" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="save" value="Save booking" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="1140" y="240" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="share" value="Share updates with connected systems" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="1400" y="160" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="view" value="View booking and status" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="1400" y="320" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-0" edge="1" parent="1" source="hotels" target="receive" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#64748b;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-1" edge="1" parent="1" source="receive" target="convert" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#64748b;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-2" edge="1" parent="1" source="convert" target="queue" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#64748b;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-3" edge="1" parent="1" source="queue" target="rules" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#64748b;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-4" edge="1" parent="1" source="rules" target="save" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#64748b;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-5" edge="1" parent="1" source="save" target="share" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#64748b;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-6" edge="1" parent="1" source="save" target="view" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#64748b;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

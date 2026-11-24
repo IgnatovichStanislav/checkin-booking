@@ -1,0 +1,78 @@
+# Checkin Booking: MQ test stand
+
+## Goal and scope
+
+Build a local .NET test stand comparing Kafka, RabbitMQ and Google Cloud Pub/Sub with the same booking rules and synthetic fixtures. Expose each broker's routing, ordering, acknowledgments, retries, dead letters and replay; do not hide differences behind a generic queue abstraction.
+
+Flow: hotel/PMS -> map booking -> broker -> save booking -> register stay/guests with fictional police system DPS -> receive result -> expose status to hotel/API/Blazor.
+
+Stack: .NET, PostgreSQL (durable state/outbox), Redis (disposable cache), webhooks, Blazor monitoring/test UI. Redis/UI are optional for the first broker example. Use Docker Desktop/local services and a Pub/Sub emulator. DPS is a simulator; this is not H10's real architecture or legal guidance.
+
+Current workspace contains guidance/tooling, diagrams and evals, not an implemented booking application. The user removed Kafke_Booking/, Input_Schemas/, Outbox_Schemas/ and RabbitMQ_Booking/. Create projects/contracts only when requested and needed; do not restore old drafts. Roadmap: agree contracts/local ports and setup/teardown -> Kafka -> comparable RabbitMQ/Pub/Sub cases -> monitoring/Redis as needed. Output adapters (PMS POST, webhook, file export, GET) still need contracts.
+
+## Working rules
+
+- Read closer AGENTS.md files and relevant schemas before editing; never silently change contracts/rules to pass tests.
+- Synthetic data only. Keep guest names, DOB and passports in restricted registration storage, outside broker records, logs and screenshots; never expose credentials. DPS receives only required synthetic registration data.
+- Keep changes/dependencies small. Run focused checks and report actual results, failures and unverified behavior. Do not run/change another example's services or delete its volumes. Cloud provisioning/deployment needs explicit authorization.
+- Keep shared guidance, skills and hooks under agents/. Do not create project .codex/.claude configuration or change global hooks during routine work. Hooks are explicitly invoked scripts; custom folders do not guarantee native skill discovery.
+- Use editable draw.io files in diagrams/ for diagrams.
+
+## Intake and identity
+
+| Fictional hotel | Property ID | Intake |
+| --- | --- | --- |
+| H10 Central, Spain | h10-central | Shared H10 PMS webhooks |
+| H10 East, Spain | h10-east | Shared H10 PMS webhooks |
+| Salou VIP, Spain | salou-vip | Separate integration; REST POST to our contract |
+| Cassis West, France | cassis-west | Separate PMS; our application polls |
+
+Salou VIP replaces Salou Central. Resolve provider from authenticated integration/configuration. H10 records require a property ID validated against that integration; single-property integrations resolve it from verified configuration.
+
+Separate provider payloads from internal broker events. All paths map to one full-snapshot BookingDto. Reuse mappers for matching shapes; otherwise use separate mappers. Handle polling pagination/cursors outside the booking mapper; advance cursors only after durable acceptance.
+
+Stable identity/Kafka key: providerId:propertyId:bookingId. Event, notification and registration idempotency keys are separate from freshness and stable across retries. Neither event IDs nor timestamps alone are globally unique business-effect keys.
+
+## Freshness and durability
+
+Use source createdAt/updatedAt in UTC; no numeric SourceVersion or revision ordering. receivedAt is diagnostic, never freshness. Stay dates are hotel-local date-only values. Document source timestamp precision/guarantees; UTC does not ensure uniqueness or monotonicity.
+
+Atomically compare updatedAt per booking in PostgreSQL:
+
+- First/newer snapshot: apply booking and insert outbox row in one transaction.
+- Older: ignore; no booking/outbox effect.
+- Equal, identical normalized business data: duplicate; no effect.
+- Equal, conflicting data: record conflict and reconcile with authoritative source; surface unresolved conflicts. Never break ties arbitrarily or with event IDs.
+
+Exclude eventId/receivedAt from business-data comparisons. Guard concurrent arrivals in the database. Acknowledge intake only after durable acceptance (Kafka broker confirmation for the Kafka path); commit consumer offset/ack only after DB commit. Test redelivery without duplicate effects; do not claim exactly-once delivery. Hand dead letters off durably before acknowledging failed work.
+
+## DPS and status
+
+Reservation status (e.g. confirmed/cancelled), guest check-in (pending/checkedIn after required checks), and DPS status are separate. DPS acceptance does not check a guest in.
+
+Proposed DPS states: pending (queued), awaitingData (missing information), submitted (processing), registered (confirmed), rejected (correct data), retryPending (known temporary failure), unknown (uncertain outcome; reconcile before resubmitting), error (investigate). Names/contracts remain provisional.
+
+Correlate DPS results with a stable registration request ID; retries must not duplicate registrations. Track DPS status independently of PMS timestamps; delayed/duplicate results must not regress completed registration. Resume when missing information arrives. Expose status/safe error reasons through API/UI. Define amendments/cancellation explicitly; deleting a local booking does not cancel DPS registration.
+
+## Required scenarios
+
+- All intake: first/duplicate/stale/conflicting/invalid snapshots and concurrent delivery.
+- H10: same booking ID across hotels, property authorization, webhook retry, missing-event reconciliation.
+- Salou VIP: POST retry after timeout, unauthorized property.
+- Cassis West: pagination, overlapping timestamp boundaries, interrupted polls and durable cursor recovery.
+- Brokers: crash after DB commit/before ack, no duplicate booking/outbox effect, bounded retry and durable dead-letter handoff. Compare Kafka keyed offsets/replay, RabbitMQ routing/manual ack, Pub/Sub subscriptions/ack deadlines/ordering/retry and emulator limits.
+- DPS: success, missing data, rejection/correction, outage, uncertain timeout, duplicates, booking changes while pending.
+
+## Load tools only when relevant
+
+Consult agents/README.md for skill paths only when the task needs them; load the selected SKILL.md and required references, not the whole catalog. Keep imported/generated skills unchanged; use supported customization.
+
+- Graphify: read agents/skills/graphify/SKILL.md for code exploration/source edits. Query the shared graph with a bounded budget; verify source and fall back to targeted searches if stale/incomplete. Graphs do not override specs. After source changes run ./agents/hooks/refresh-graph.ps1; report parser failures. No rebuild for documentation-only changes. Historical graph counts are not current evidence.
+- Spec Kit: use the requested stage only. Keep .specify/ managed layout; its constitution is still an unfilled template, not policy. Establish agreed principles before the first feature spec. Spec Kit replaces OpenSpec; generic integration does not guarantee slash-command discovery.
+- Docker: choose relevant skills via agents/README.md; installation does not configure agents, sandboxes or MCP services.
+- Evals: read eval/README.md and eval/targets.json only for evaluation work. Imported runbooks are not executed/passing results.
+- RTK: already on PATH. Explicitly use supported rtk dotnet, rtk git and rtk docker commands; inspect --help for unfamiliar operations. rtk gain reports savings. Use native commands for unsupported cases; recover hidden diagnostics with raw output/rtk proxy without rerunning mutations just for output. Preserve exit codes. Do not assume automatic rewriting.
+
+## Context budget
+
+Use targeted rg searches and bounded reads; exclude graphify-out, imported skills and .specify from application searches unless relevant. Never load whole graph/cache/generated trees into context. Reuse known findings, expand output only when needed, and summarize verification concisely.
