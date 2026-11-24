@@ -4,7 +4,9 @@ A system that receives bookings from property management systems (PMS), register
 
 Hotel/PMS -> normalize booking -> broker -> save booking -> fictional PDS registration -> status returned to the hotel and monitoring UI.
 
-Planned stack: .NET, PostgreSQL, Redis, webhooks and Blazor. All hotels, guest data and PDS integrations are synthetic. Application implementation has not started.
+Planned stack: .NET, PostgreSQL, Redis, webhooks and a React + TypeScript monitoring/test UI. All hotels, guest data and PDS integrations are synthetic. Application implementation has not started.
+
+The confirmed frontend stack is listed in [AGENTS.md](AGENTS.md#confirmed-frontend-stack).
 
 ## Workspace
 

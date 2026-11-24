@@ -4,11 +4,21 @@
 
 Build a local .NET test stand that receives PMS bookings, registers stays and guests with a Police Department System (PDS), and tracks registration status. Keep booking rules, mappers, freshness, outbox and PDS logic broker-independent; keep Kafka code in its own project that exposes Kafka keys, offsets, acknowledgments, retries, dead letters and replay explicitly. Do not add a generic queue abstraction; forks replace the broker project.
 
-Flow: hotel/PMS -> map booking -> broker -> save booking -> register stay/guests with fictional Police Department System (PDS) -> receive result -> expose status to hotel/API/Blazor.
+Flow: hotel/PMS -> map booking -> broker -> save booking -> register stay/guests with fictional Police Department System (PDS) -> receive result -> expose status to hotel/API/React monitoring UI.
 
-Stack: .NET, PostgreSQL (durable state/outbox), Redis (disposable cache), webhooks, Blazor monitoring/test UI. Redis/UI are optional for the first broker example. Use Docker Desktop/local services. PDS is a simulator; this is not H10's real architecture or legal guidance.
+Stack: .NET, PostgreSQL (durable state/outbox), Redis (disposable cache), webhooks, React + TypeScript monitoring/test UI. Redis/UI are optional for the first broker example. Use Docker Desktop/local services. PDS is a simulator; this is not H10's real architecture or legal guidance.
 
 Current workspace contains guidance/tooling, diagrams and evals, not an implemented booking application. The user removed Kafke_Booking/, Input_Schemas/, Outbox_Schemas/ and RabbitMQ_Booking/. Create projects/contracts only when requested and needed; do not restore old drafts. Roadmap: agree contracts/local ports and setup/teardown -> Kafka -> monitoring/Redis as needed. Other brokers (e.g. RabbitMQ, Pub/Sub) are out of scope here and will be implemented in separate forks reusing the same booking rules, fixtures and scenario IDs. Output adapters (PMS POST, webhook, file export, GET) still need contracts.
+
+## Confirmed frontend stack
+
+The monitoring/test UI uses React + TypeScript, Vite, React Router, Axios and TanStack
+Query. Forms use React Hook Form + Zod. Styling uses Tailwind CSS + shadcn/ui, reusing
+free components and blocks. Tests use Vitest + React Testing Library + Playwright;
+code quality uses ESLint + Prettier.
+
+The stack is confirmed; UI implementation remains optional for the first Kafka example.
+Choose and pin compatible package and Node.js versions in the frontend feature plan.
 
 ## Local secrets
 

@@ -16,7 +16,7 @@ plan; do not scaffold this entire layout in advance.
 | `src/Booking.Kafka/` | Kafka producer/consumer integration, key selection, partition ordering, offsets, retries, dead letters and replay | Uses shared application logic; application/domain/contracts do not reference this project |
 | `src/Booking.Api/` | Authenticated intake and safe status endpoints; host composition | Delegates mapping and business decisions to shared logic; wires concrete adapters |
 | `src/Pds.Simulator/` | Fictional PDS endpoints, synthetic responses and failure controls | Separate runnable boundary; production-side PDS rules remain in shared application/domain logic |
-| `src/Booking.Monitoring/` | Optional Blazor monitoring/test UI | Uses safe status contracts; no direct restricted identity or Kafka access |
+| `src/Booking.Monitoring/` | React + TypeScript monitoring/test UI, built with Vite; separate frontend application | Uses safe HTTP status contracts; no direct restricted identity or Kafka access |
 
 Dependency direction: contracts/domain <- application <- concrete adapters and hosts.
 Persistence and Kafka coordinate at the consumer boundary: finish the database
@@ -43,8 +43,12 @@ in this repository.
 | `secrets/` | Git-ignored runtime-only local secrets; never fixtures or build inputs |
 | `test-results/` | Git-ignored test output, scenario mappings, coverage matrices and failure timelines |
 
-Keep executable tests under tests/ and shared data under e2e/fixtures/. Choose the test
-framework and results adapter in the plan. Infrastructure must use isolated service,
+Keep backend executable tests under tests/ and shared data under e2e/fixtures/. Choose the
+backend test framework and results adapter in the plan. Frontend unit/component tests
+use Vitest + React Testing Library alongside the frontend code; browser tests use
+Playwright under src/Booking.Monitoring/e2e/. Keep their generated reports under the
+ignored root test-results/. The full confirmed frontend stack is in AGENTS.md; select
+compatible package and Node.js versions in the frontend plan. Infrastructure must use isolated service,
 volume and port settings per worktree. No services or volumes are created by this document.
 
 ## Guidance and design records

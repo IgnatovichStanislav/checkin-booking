@@ -9,7 +9,7 @@ Adapted on 2026-11-24 from [Graphify v8 Codex skill](https://github.com/Graphify
 
 ## Workspace contract
 
-Run from `D:\Development\Checkin_Booking`, or the equivalent root in another checkout. Use one `graphify-out/graph.json` across Kafka, shared booking logic, mappers, exports and Blazor.
+Run from `D:\Development\Checkin_Booking`, or the equivalent root in another checkout. Use one `graphify-out/graph.json` across Kafka, shared booking logic, mappers, exports and the React monitoring UI.
 
 The root AGENTS.md routes agents here through agents/README.md. Keep all harness files under agents/. Do not create .codex/ or .claude/, run platform installers, or register background watchers as part of ordinary usage. The refresh script is explicitly invoked, not an automatic lifecycle hook.
 
