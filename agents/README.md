@@ -1,12 +1,35 @@
 # Skill routing
 
-Feature stages, roles, review gates and handoffs: [WORKFLOW.md](WORKFLOW.md). Load it when coordinating feature work; this index remains the skill lookup. Planned folder and dependency boundaries: [LAYOUT.md](LAYOUT.md).
-
-Read only the skill needed for the task. Paths below are relative to agents/; every skill entry resolves to skills/<name>/SKILL.md. Root AGENTS.md governs the shared harness. This index does not register plugins or execute hooks.
+Resolve a task against this table first. Open `skills/<name>/SKILL.md` relative to this file. Pick the closest match, then read references only as the task requires. For an EF Core query review, go directly to `optimizing-ef-core-queries`. Use `csharp-expert` only for general C# questions without a specialist match. Look up any specialist it names here before considering an external install.
 
 | Task | Skill name |
 | --- | --- |
 | Code navigation / graph refresh | graphify |
+| General C# fallback | csharp-expert |
+| C# refactoring | csharp-refactoring |
+| .NET build diagnosis | msbuild |
+| Local .NET SDK setup | setup-local-sdk |
+| ASP.NET Core APIs | dotnet-webapi |
+| EF Core CRUD scaffolding | create-datadriven-aspnetcore |
+| EF Core query optimization | optimizing-ef-core-queries |
+| .NET test execution | run-tests |
+| .NET test project setup | scaffold-dotnet-test-project |
+| Test scenario tagging | test-tagging |
+| Kafka / .NET idempotency review | kafka-idempotency |
+| Kafka local setup, partitions, consumer groups and lag | kafka |
+| PostgreSQL locks, indexes and query plans | postgres-pro |
+| Schema design, constraints and transactional SQL | sql-pro |
+| Redis data structures, expiration and disposable cache | redis-core |
+| React components and TypeScript types | react-expert / typescript-pro |
+| Frontend build and development server | vite |
+| Routes and navigation | react-router |
+| HTTP requests and server state | axios / tanstack-query |
+| Form state and input validation | react-hook-form / zod |
+| Utility CSS and UI components | tailwindcss / shadcn |
+| Component tests and user interactions | vitest / testing-library |
+| Browser end-to-end tests | playwright-expert |
+| Frontend linting and formatting | eslint / prettier |
+| Author or strengthen .NET tests | code-testing |
 | Project principles | speckit-constitution |
 | Feature requirements | speckit-specify |
 | Clarify requirements | speckit-clarify |
@@ -24,10 +47,8 @@ Read only the skill needed for the task. Paths below are relative to agents/; ev
 | Docker Agent config / run / distribution | docker-agent-config / docker-agent-run / docker-agent-deploy |
 | Sandbox lifecycle / network and credentials / kits | docker-sandboxes-lifecycle / docker-sandboxes-network-credentials / docker-sandboxes-kits (kits experimental) |
 
-For combined Docker tasks: foundations -> builds -> Compose; agent-config -> agent-run -> agent-deploy; sandbox lifecycle -> network/credentials -> kits. Load only relevant steps.
+For staged work, see [WORKFLOW.md](WORKFLOW.md). For planned project boundaries, see [LAYOUT.md](LAYOUT.md). Use only the requested Spec Kit stage. For Docker, choose the row for the current operation.
 
-Keep Spec Kit generated skills managed; use supported customization. Verify with specify integration status. Docker source pin/license: sources/docker-skills/SOURCE.md and LICENSE. Manual copies require reviewed updates of complete folders.
+The repository owns the Kafka idempotency review. Imported skill revisions and licenses are under [sources/](sources/). Preserve complete upstream directories when updating. This index supports lookup by file path. Native plugin registration is separate.
 
-Hook: hooks/refresh-graph.ps1 (-Check for prerequisites); run after source changes per root guidance, not documentation edits. No automatic watcher or vendor-specific project configuration.
-
-Evaluation: ../eval/README.md and ../eval/targets.json. These index skill/workflow targets, not configured agent runtimes. Register new skills here without copying their full instructions.
+Graph refresh and evaluation instructions are in the [root guidance](../AGENTS.md) and [evaluation guide](../eval/README.md).

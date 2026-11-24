@@ -1,0 +1,14 @@
+name: Check shared skill index
+on:
+  pull_request:
+    paths: ['agents/README.md', 'agents/skills/**', 'eval/**', '.github/workflows/skill-index.yml']
+  push:
+    paths: ['agents/README.md', 'agents/skills/**', 'eval/**', '.github/workflows/skill-index.yml']
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 eval/check_index.py

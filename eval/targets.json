@@ -4,146 +4,167 @@
     "skill": "../agents/skills/docker-agent-config/SKILL.md",
     "runbook": "../agents/skills/docker-agent-config/evals/docker-agent-config.md",
     "sourceCommit": "5653ef866fc4475f66bb8097043ee4dd19956e76",
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "docker-agent-deploy",
     "skill": "../agents/skills/docker-agent-deploy/SKILL.md",
     "runbook": "../agents/skills/docker-agent-deploy/evals/docker-agent-deploy.md",
     "sourceCommit": "5653ef866fc4475f66bb8097043ee4dd19956e76",
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "docker-agent-run",
     "skill": "../agents/skills/docker-agent-run/SKILL.md",
     "runbook": "../agents/skills/docker-agent-run/evals/docker-agent-run.md",
     "sourceCommit": "5653ef866fc4475f66bb8097043ee4dd19956e76",
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "docker-build-strategies",
     "skill": "../agents/skills/docker-build-strategies/SKILL.md",
     "runbook": "../agents/skills/docker-build-strategies/evals/docker-build-strategies.md",
     "sourceCommit": "5653ef866fc4475f66bb8097043ee4dd19956e76",
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "docker-compose-patterns",
     "skill": "../agents/skills/docker-compose-patterns/SKILL.md",
     "runbook": "../agents/skills/docker-compose-patterns/evals/docker-compose-patterns.md",
     "sourceCommit": "5653ef866fc4475f66bb8097043ee4dd19956e76",
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "docker-destructive-guardrails",
     "skill": "../agents/skills/docker-destructive-guardrails/SKILL.md",
     "runbook": "../agents/skills/docker-destructive-guardrails/evals/docker-destructive-guardrails.md",
     "sourceCommit": "5653ef866fc4475f66bb8097043ee4dd19956e76",
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "docker-docs",
     "skill": "../agents/skills/docker-docs/SKILL.md",
     "runbook": "../agents/skills/docker-docs/evals/docker-docs.md",
     "sourceCommit": "5653ef866fc4475f66bb8097043ee4dd19956e76",
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "docker-project-foundations",
     "skill": "../agents/skills/docker-project-foundations/SKILL.md",
     "runbook": "../agents/skills/docker-project-foundations/evals/docker-project-foundations.md",
     "sourceCommit": "5653ef866fc4475f66bb8097043ee4dd19956e76",
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "docker-sandboxes-kits",
     "skill": "../agents/skills/docker-sandboxes-kits/SKILL.md",
     "runbook": "../agents/skills/docker-sandboxes-kits/evals/docker-sandboxes-kits.md",
     "sourceCommit": "5653ef866fc4475f66bb8097043ee4dd19956e76",
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "docker-sandboxes-lifecycle",
     "skill": "../agents/skills/docker-sandboxes-lifecycle/SKILL.md",
     "runbook": "../agents/skills/docker-sandboxes-lifecycle/evals/docker-sandboxes-lifecycle.md",
     "sourceCommit": "5653ef866fc4475f66bb8097043ee4dd19956e76",
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "docker-sandboxes-network-credentials",
     "skill": "../agents/skills/docker-sandboxes-network-credentials/SKILL.md",
     "runbook": "../agents/skills/docker-sandboxes-network-credentials/evals/docker-sandboxes-network-credentials.md",
     "sourceCommit": "5653ef866fc4475f66bb8097043ee4dd19956e76",
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "graphify",
     "skill": "../agents/skills/graphify/SKILL.md",
     "runbook": null,
     "sourceCommit": null,
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "speckit-analyze",
     "skill": "../agents/skills/speckit-analyze/SKILL.md",
     "runbook": null,
     "sourceCommit": null,
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "speckit-checklist",
     "skill": "../agents/skills/speckit-checklist/SKILL.md",
     "runbook": null,
     "sourceCommit": null,
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "speckit-clarify",
     "skill": "../agents/skills/speckit-clarify/SKILL.md",
     "runbook": null,
     "sourceCommit": null,
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "speckit-constitution",
     "skill": "../agents/skills/speckit-constitution/SKILL.md",
     "runbook": null,
     "sourceCommit": null,
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "speckit-converge",
     "skill": "../agents/skills/speckit-converge/SKILL.md",
     "runbook": null,
     "sourceCommit": null,
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "speckit-implement",
     "skill": "../agents/skills/speckit-implement/SKILL.md",
     "runbook": null,
     "sourceCommit": null,
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "speckit-plan",
     "skill": "../agents/skills/speckit-plan/SKILL.md",
     "runbook": null,
     "sourceCommit": null,
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "speckit-specify",
     "skill": "../agents/skills/speckit-specify/SKILL.md",
     "runbook": null,
     "sourceCommit": null,
-    "status": "not-run"
+    "status": "pass"
   },
   {
     "id": "speckit-tasks",
     "skill": "../agents/skills/speckit-tasks/SKILL.md",
     "runbook": null,
     "sourceCommit": null,
-    "status": "not-run"
+    "status": "pass"
+  },
+  {
+    "id": "route-ef-core",
+    "skill": "../agents/skills/optimizing-ef-core-queries/SKILL.md",
+    "runbook": "cases/route-ef-core.md",
+    "sourceCommit": null,
+    "status": "pass"
+  },
+  {
+    "id": "kafka-redelivery",
+    "skill": "../agents/skills/kafka-idempotency/SKILL.md",
+    "runbook": "cases/kafka-redelivery.md",
+    "sourceCommit": null,
+    "status": "pass"
+  },
+  {
+    "id": "kafka-unrelated-constraint",
+    "skill": "../agents/skills/kafka-idempotency/SKILL.md",
+    "runbook": "cases/kafka-unrelated-constraint.md",
+    "sourceCommit": null,
+    "status": "pass"
   }
 ]
