@@ -1,0 +1,119 @@
+name: checkin-langfuse
+x-app: &app
+  restart: unless-stopped
+  depends_on:
+    postgres: {condition: service_healthy}
+    clickhouse: {condition: service_healthy}
+    minio: {condition: service_healthy}
+    redis: {condition: service_healthy}
+x-env: &env
+  DATABASE_URL: postgresql://postgres:${PG_PASSWORD:?}@postgres:5432/postgres
+  SALT: ${SALT:?}
+  ENCRYPTION_KEY: ${ENCRYPTION_KEY:?}
+  TELEMETRY_ENABLED: "false"
+  CLICKHOUSE_MIGRATION_URL: clickhouse://clickhouse:9000
+  CLICKHOUSE_URL: http://clickhouse:8123
+  CLICKHOUSE_USER: langfuse
+  CLICKHOUSE_PASSWORD: ${CH_PASSWORD:?}
+  CLICKHOUSE_CLUSTER_ENABLED: "false"
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  REDIS_AUTH: ${REDIS_PASSWORD:?}
+  LANGFUSE_S3_EVENT_UPLOAD_BUCKET: langfuse
+  LANGFUSE_S3_EVENT_UPLOAD_REGION: auto
+  LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: langfuse
+  LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: ${S3_PASSWORD:?}
+  LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: http://minio:9000
+  LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_EVENT_UPLOAD_PREFIX: events/
+  LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: langfuse
+  LANGFUSE_S3_MEDIA_UPLOAD_REGION: auto
+  LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: langfuse
+  LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: ${S3_PASSWORD:?}
+  LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://minio:9000
+  LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: media/
+services:
+  web:
+    <<: *app
+    image: docker.langfuse.com/langfuse/langfuse:4.86.0
+    ports: ["127.0.0.1:3300:3000"]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://web:3000/api/public/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+    environment:
+      <<: *env
+      NEXTAUTH_URL: http://localhost:3300
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?}
+      LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://localhost:3390
+      LANGFUSE_S3_MEDIA_UPLOAD_INTERNAL_ENDPOINT: http://minio:9000
+      LANGFUSE_INIT_ORG_ID: checkin
+      LANGFUSE_INIT_ORG_NAME: Checkin
+      LANGFUSE_INIT_PROJECT_ID: checkin-agent-quality
+      LANGFUSE_INIT_PROJECT_NAME: Checkin Agent Quality
+      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${PUBLIC_KEY:?}
+      LANGFUSE_INIT_PROJECT_SECRET_KEY: ${SECRET_KEY:?}
+      LANGFUSE_INIT_USER_EMAIL: owner@checkin.test
+      LANGFUSE_INIT_USER_NAME: Local Owner
+      LANGFUSE_INIT_USER_PASSWORD: ${OWNER_PASSWORD:?}
+  worker:
+    <<: *app
+    image: docker.langfuse.com/langfuse/langfuse-worker:4.86.0
+    environment: *env
+  postgres:
+    image: postgres:17.6
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${PG_PASSWORD:?}
+    volumes: ["${LANGFUSE_DATA_DIR:?}/postgres:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+  clickhouse:
+    image: clickhouse/clickhouse-server:26.3.62.3
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_USER: langfuse
+      CLICKHOUSE_PASSWORD: ${CH_PASSWORD:?}
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - "${LANGFUSE_DATA_DIR:?}/clickhouse-logs:/var/log/clickhouse-server"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8123/ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+  minio:
+    image: cgr.dev/chainguard/minio@sha256:f6243be11aaaa2fe654d260558e2b3fcef50135e78a3abfd0db802b13444f059
+    restart: unless-stopped
+    entrypoint: sh
+    command: -c 'mkdir -p /data/langfuse && exec minio server /data'
+    environment:
+      MINIO_ROOT_USER: langfuse
+      MINIO_ROOT_PASSWORD: ${S3_PASSWORD:?}
+    volumes: ["${LANGFUSE_DATA_DIR:?}/minio:/data"]
+    ports: ["127.0.0.1:3390:9000"]
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+  redis:
+    image: redis:7.4.6
+    restart: unless-stopped
+    environment:
+      REDISCLI_AUTH: ${REDIS_PASSWORD:?}
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:?}", "--maxmemory-policy", "noeviction", "--appendonly", "yes"]
+    volumes: ["${LANGFUSE_DATA_DIR:?}/redis:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  clickhouse-data:

@@ -4,6 +4,8 @@ This folder indexes evaluation targets in the shared agents harness. Skills rema
 
 ## Run manually
 
+For local task scores and traces, see the [Langfuse deployment and persistence check](langfuse/README.md).
+
 1. Pick a target in targets.json and open its skill and runbook, if provided.
 2. Use a disposable test workspace and synthetic fixtures. Load the relevant project guidance and skill into the agent being evaluated.
 3. Run one runbook prompt and inspect its expected behaviors, must-not criteria and verification commands. Review commands for the selected Windows shell before running them.
