@@ -145,3 +145,18 @@ The feature worktree rebased cleanly onto main at a5eeab2. The CI matrix runs th
 The artifact checks compared the exact names, source commits, phase outcomes and receipt bindings. The first returned-failure attempt also failed the regression step because the disposable test used a local name already used by another fixture. Its replacement isolated the local name and passed the regression step on both platforms. Both disposable branches and their worktree were removed after verification. The downloaded artifacts are in the ignored test-results/hosted-group-d/ directory.
 
 The automated worktree eval inventory, manual behavioral cases and final scenario coverage packet remain pending. The graph refresh completed without a parser warning.
+
+## Evaluation inventory and worktree behavior (Group E)
+
+The inventory CLI verified 52 skill routes and 26 targets. The six disposable regression cases passed locally and in [hosted static CI](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45598961148) at 98219f4. The hosted job ran only inventory and regression checks. It did not run or grade the behavioral cases.
+
+Fresh sessions ran both behavioral prompts in disposable repositories. Initial standalone CLI attempts were blocked by host policy during instruction reads. The subsequent Desktop attempts under the original prompts failed isolation or ordering checks. The prompts were then corrected to explicitly load agents/WORKFLOW.md, as specified by the approved plan. The original outcomes were retained.
+
+| Case | Grade at 98219f4 | Observed outcome |
+| --- | --- | --- |
+| New task | Fail | Created the isolated worktree from main and made only the requested correction. Verified the clean task checkout before reading the document, but reported its path, branch and clean baseline only after reading it. |
+| Follow-up | Fail | Reused the matching worktree and left only the requested README edit. Searched main's README in parallel with Git routing before verifying the matching checkout. |
+
+Independent Git and file checks confirmed that both revised sessions preserved main and all unrelated sentinel bytes. The follow-up preserved the worktree list and refs. The ordering checks used the sessions' command records and a clarification on the reporting time. The standalone CLI trace was available only for the blocked attempts. Baselines, prompts, state checks, command records and grades are retained in ignored eval/results/.
+
+T022 and T023 were executed and graded. V07 and SC-005 remain open until both cases pass in fresh sessions. The next behavioral verification must retain the original grades and the existing rubric.

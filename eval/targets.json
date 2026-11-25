@@ -171,14 +171,14 @@
     "id": "worktree-new-task",
     "skill": "../agents/skills/speckit-specify/SKILL.md",
     "runbook": "cases/worktree-new-task.md",
-    "sourceCommit": null,
-    "status": "not-run"
+    "sourceCommit": "98219f4f030a2da90b442ef2aede272158670d56",
+    "status": "fail"
   },
   {
     "id": "worktree-follow-up",
     "skill": "../agents/skills/speckit-specify/SKILL.md",
     "runbook": "cases/worktree-follow-up.md",
-    "sourceCommit": null,
-    "status": "not-run"
+    "sourceCommit": "98219f4f030a2da90b442ef2aede272158670d56",
+    "status": "fail"
   }
 ]
