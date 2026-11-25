@@ -131,3 +131,17 @@ Windows checks against 3a01370 plus the Group C working changes:
 - Review follow-up verified that nested source and recursive intake fixture files cannot evade the digest under directories named test-results. A valid receipt with zero selected tests preserved platform exit 0, failed verification with exit 1 and exported only the manifest and receipt. The full runner regression passed in `test-results/runner-check-71580d98be794fbf960e4bee66b580b4/`, and the real Windows runner passed all 36 tests in `test-results/unit-contracts-82d7ba215915429e9cae08aaf8e70762/`.
 
 Linux and hosted CI remain pending Group D. No booking runtime tests were added in this group.
+
+## Hosted CI verification (Group D)
+
+The feature worktree rebased cleanly onto main at a5eeab2. The CI matrix runs the runner regressions and the full suite on Windows and Linux. The upload step takes the exact export directory emitted by that invocation. Independent review approved the receipt checks at 495ae1e after they were changed to specify receipt presence separately for each case.
+
+| Hosted case | Source | Verified on Windows and Linux |
+| --- | --- | --- |
+| [Successful verification](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45596840719) | 495ae1e6d5fb1923a4e75b2c335270402afcb0bc | Runner regressions passed, 36 test results passed, source and policy verified, and the current run's four JSON records uploaded. |
+| [Early failure](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45597154183) | 5dcd6ba070db6a213e4ae9d2bf5e9496243c6332 | Runner regressions passed. The deliberate preflight failure failed the job, left restore and tests unrun, and uploaded only the run manifest. |
+| [Returned test failure](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45597139982) | 95372f0df432d2c74d4fe27dd10ad757ed366ae0 | Runner regressions passed. One assertion failed out of 36 tests. The receipt preserved platform exit 2, evidence joined successfully, and the four safe JSON records uploaded. The synthetic marker was absent from the downloaded artifacts and hosted logs. |
+
+The artifact checks compared the exact names, source commits, phase outcomes and receipt bindings. The first returned-failure attempt also failed the regression step because the disposable test used a local name already used by another fixture. Its replacement isolated the local name and passed the regression step on both platforms. Both disposable branches and their worktree were removed after verification. The downloaded artifacts are in the ignored test-results/hosted-group-d/ directory.
+
+The automated worktree eval inventory, manual behavioral cases and final scenario coverage packet remain pending. The graph refresh completed without a parser warning.
