@@ -46,7 +46,7 @@
         <mxCell id="kafka" value="Kafka · encoded scoped source key and opaque references only" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="30" y="550" width="260" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="erase" value="[NEEDS CLARIFICATION] C01 · identity-free tombstone after erasure and post-erasure retry response" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+        <mxCell id="erase" value="C01 · identity-free tombstone after erasure and post-erasure retry response" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="340" y="550" width="260" height="100" as="geometry" />
         </mxCell>
         <mxCell id="subs" value="Subscription · subscriptionId, hotel scope, external endpoint and key reference" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
@@ -132,7 +132,7 @@
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram id="retention-after" name="After - C01 proposed exception">
+  <diagram id="retention-after" name="After - C01 approved exception">
     <mxGraphModel page="1" pageWidth="1350" pageHeight="1050" grid="1" gridSize="10">
       <root>
         <mxCell id="0" />
@@ -208,7 +208,7 @@
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram id="stop-after" name="After - C02 proposed callback">
+  <diagram id="stop-after" name="After - C02 approved callback">
     <mxGraphModel page="1" pageWidth="1350" pageHeight="1050" grid="1" gridSize="10">
       <root>
         <mxCell id="0" />

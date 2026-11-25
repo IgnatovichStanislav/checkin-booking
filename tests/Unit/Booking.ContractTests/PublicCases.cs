@@ -270,27 +270,32 @@ public sealed partial class ContractCases
         var guest = WireExpected["Status"]!["guests"]![0]!;
         var schema = Definitions["Status"]!["properties"]!["guests"]!["items"]!;
         foreach (var operation in new[] { false, true })
-        foreach (var status in new[] { false, true })
-        foreach (var reason in new[] { false, true })
-        {
-            var row = guest.DeepClone();
-            row["operationId"] = operation ? Id(20).ToString() : null;
-            row["registrationStatus"] = status ? "processing" : null;
-            row["reasonCode"] = reason ? "correct_data" : null;
-            Assert.AreEqual(operation && status || !operation && !status && !reason, Matches(schema, row), "guest-tuple");
-        }
+            foreach (var status in new[] { false, true })
+                foreach (var reason in new[] { false, true })
+                {
+                    var row = guest.DeepClone();
+                    row["operationId"] = operation ? Id(20).ToString() : null;
+                    row["registrationStatus"] = status ? "processing" : null;
+                    row["reasonCode"] = reason ? "correct_data" : null;
+                    Assert.AreEqual(operation && status || !operation && !status && !reason, Matches(schema, row), "guest-tuple");
+                }
         foreach (var status in new string?[] { null, "processing", "actionRequired", "failed", "completed" })
-        foreach (var reason in new string?[] { null, "registration_stopped", "correct_data" })
+            foreach (var reason in new string?[] { null, "registration_stopped", "correct_data" })
+            {
+                var body = WireExpected["Notification"]!.DeepClone();
+                body["registrationStatus"] = status;
+                body["reasonCode"] = reason;
+                Assert.AreEqual((status == null) == (reason == "registration_stopped"), Matches(Definitions["Notification"]!, body), "callback-tuple");
+                body["operationId"] = null;
+                Assert.IsFalse(Matches(Definitions["Notification"]!, body), "callback-operation");
+            }
+        var cancellation = new JsonObject
         {
-            var body = WireExpected["Notification"]!.DeepClone();
-            body["registrationStatus"] = status;
-            body["reasonCode"] = reason;
-            Assert.AreEqual((status == null) == (reason == "registration_stopped"), Matches(Definitions["Notification"]!, body), "callback-tuple");
-            body["operationId"] = null;
-            Assert.IsFalse(Matches(Definitions["Notification"]!, body), "callback-operation");
-        }
-        var cancellation = new JsonObject { ["guestId"] = Id(2).ToString(), ["operationId"] = Id(20).ToString(),
-            ["registrationStatus"] = "completed", ["reasonCode"] = null };
+            ["guestId"] = Id(2).ToString(),
+            ["operationId"] = Id(20).ToString(),
+            ["registrationStatus"] = "completed",
+            ["reasonCode"] = null
+        };
         Assert.IsFalse(Matches(Definitions["Status"]!["properties"]!["outstandingCancellations"]!["items"]!, cancellation));
         VerifyOperations();
     }
@@ -310,8 +315,13 @@ public sealed partial class ContractCases
         var type = value?.GetValueKind() ?? JsonValueKind.Null;
         if ((string?)schema["type"] is { } expected && expected != (type switch
         {
-            JsonValueKind.Object => "object", JsonValueKind.Array => "array", JsonValueKind.Null => "null",
-            JsonValueKind.String => "string", JsonValueKind.True or JsonValueKind.False => "boolean", JsonValueKind.Number => "integer", _ => ""
+            JsonValueKind.Object => "object",
+            JsonValueKind.Array => "array",
+            JsonValueKind.Null => "null",
+            JsonValueKind.String => "string",
+            JsonValueKind.True or JsonValueKind.False => "boolean",
+            JsonValueKind.Number => "integer",
+            _ => ""
         })) return false;
         if (value is JsonObject obj)
         {
