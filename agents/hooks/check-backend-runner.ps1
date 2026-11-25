@@ -42,9 +42,10 @@ function Invoke-CheckedGit([string[]]$GitArgs) {
 function Invoke-RunnerCase([string]$Name, [int]$ExpectedExit) {
     $reports = Join-Path $workspace 'test-results'
     $before = if (Test-Path -LiteralPath $reports) { @(Get-ChildItem -LiteralPath $reports -Directory).Name }
+    $stepOutput = Join-Path $workspace "step-output-$([guid]::NewGuid().ToString('N')).txt"
     $previousOutput = $env:GITHUB_OUTPUT
     try {
-        $env:GITHUB_OUTPUT = $null
+        $env:GITHUB_OUTPUT = $stepOutput
         $run = Invoke-BackendProcess $shell @('-NoProfile', '-File', $runner) -Capture
     } finally { $env:GITHUB_OUTPUT = $previousOutput }
     $new = @(Get-ChildItem -LiteralPath $reports -Directory | Where-Object Name -NotIn $before)
@@ -54,6 +55,15 @@ function Invoke-RunnerCase([string]$Name, [int]$ExpectedExit) {
     $script:caseManifest = Read-EvidenceJson $caseRoot 'run.json'
     $reexport = Read-EvidenceJson $caseRoot 'export/run.json'
     Assert-Check ($caseManifest.runId -ceq $reexport.runId -and $caseManifest.result -ceq $reexport.result) "$Name export binding"
+    $exportPath = Join-Path $caseRoot 'export'
+    $outputLines = @(Get-Content -LiteralPath $stepOutput)
+    Assert-Check ($outputLines.Count -eq 1 -and $outputLines[0] -ceq "export_path=$exportPath") "$Name current run output"
+    $allowed = @('run.json')
+    if (Test-Path -LiteralPath (Join-Path $exportPath 'execution.json')) { $allowed += 'execution.json' }
+    if ($caseManifest.phases.evidence.status -ceq 'passed') { $allowed += 'scenario-map.json', 'scenario-results.json' }
+    $entries = @(Get-ChildItem -LiteralPath $exportPath -Force)
+    Assert-Check ($entries.Count -eq $allowed.Count -and
+        @($entries | Where-Object { $_.PSIsContainer -or $_.Name -cnotin $allowed }).Count -eq 0) "$Name export allowlist"
     Write-Host "$Name passed"
 }
 

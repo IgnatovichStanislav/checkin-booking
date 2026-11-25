@@ -34,7 +34,10 @@ jobs:
       - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
+      - name: Check runner success and failure paths
+        run: ./agents/hooks/check-backend-runner.ps1
       - name: Restore, build and test backend contracts
+        if: "!cancelled()"
         id: backend
         run: ./agents/hooks/test-backend.ps1
       - name: Upload test evidence
