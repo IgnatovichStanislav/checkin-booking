@@ -233,10 +233,15 @@ public static class AttachmentPolicy
                 ("Microsoft.Testing.Platform.TestHost.ITestHostManager", "AddDataConsumer"), Unsupported);
         }
 
-        if (member.GetKind() == MemberReferenceKind.Field)
+        if (signatures.FindOwnedDefinition(member.Parent) is { } owned)
+        {
+            if (member.GetKind() == MemberReferenceKind.Field)
+                signatures.ValidateOwnedField(member, name, owned.Module, owned.Type);
+            else
+                signatures.ValidateOwnedMethod(member, name, owned.Module, owned.Type);
+        }
+        else if (member.GetKind() == MemberReferenceKind.Field)
             member.DecodeFieldSignature(signatures, null);
-        else if (signatures.FindOwnedDefinition(member.Parent) is { } owned)
-            signatures.ValidateOwnedMethod(member, name, owned.Module, owned.Type);
         else
             member.DecodeMethodSignature(signatures, null);
     }
@@ -448,6 +453,18 @@ public static class AttachmentPolicy
                 .Select(targetReader.GetMethodDefinition)
                 .Count(method => targetReader.StringComparer.Equals(method.Name, name)
                     && Equal(expected, method.DecodeSignature(targetSignatures, null)));
+            Require(matches == 1, Unresolved);
+        }
+
+        internal void ValidateOwnedField(MemberReference reference, string name, Module target, TypeDefinitionHandle owner)
+        {
+            string expected = reference.DecodeFieldSignature(new SignatureTypes(module, modules, forComparison: true), null);
+            var targetReader = target.Reader;
+            var targetSignatures = new SignatureTypes(target, modules, forComparison: true);
+            int matches = targetReader.GetTypeDefinition(owner).GetFields()
+                .Select(targetReader.GetFieldDefinition)
+                .Count(field => targetReader.StringComparer.Equals(field.Name, name)
+                    && field.DecodeSignature(targetSignatures, null) == expected);
             Require(matches == 1, Unresolved);
         }
 

@@ -194,7 +194,7 @@ public sealed class ProbeTests$($fixture.parent)
     }
 }
 
-$referenceRoot = Join-Path $workspace 'owned-method-references'
+$referenceRoot = Join-Path $workspace 'owned-member-references'
 $libraryProject = @'
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
@@ -204,10 +204,12 @@ $libraryProject = @'
 </Project>
 '@
 $method = 'public static T Select<TArgument>(List<string> input, T fallback) => fallback;'
+$field = 'public static readonly List<T> Values = new();'
 $libraryVersions = [ordered]@{
-    MatchingMethod = $method
-    MissingMethod = ''
-    DifferentSignature = $method.Replace('List<string>', 'List<int>')
+    MatchingMembers = @($method, $field)
+    MissingMethod = @('', $field)
+    DifferentMethodSignature = @($method.Replace('List<string>', 'List<int>'), $field)
+    DifferentFieldSignature = @($method, $field.Replace('List<T>', 'List<int>'))
 }
 $libraryPaths = @{}
 foreach ($name in $libraryVersions.Keys) {
@@ -219,7 +221,7 @@ using System.Collections.Generic;
 namespace PolicyFixture;
 public class Api<T>
 {
-    $($libraryVersions[$name])
+    $($libraryVersions[$name] -join "`n    ")
     public static T Select<TArgument>(List<bool> input, T fallback) => fallback;
 }
 "@
@@ -229,7 +231,7 @@ public class Api<T>
 
 $caller = New-Item -ItemType Directory -Path (Join-Path $referenceRoot 'caller')
 $callerPath = Join-Path $caller.FullName 'PolicyFixtureCaller.csproj'
-$libraryXml = [Security.SecurityElement]::Escape($libraryPaths.MatchingMethod)
+$libraryXml = [Security.SecurityElement]::Escape($libraryPaths.MatchingMembers)
 Set-Content -LiteralPath $callerPath -Value @"
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
@@ -250,7 +252,7 @@ public static class Caller
     public static void Main()
     {
         File.WriteAllText("body-reached", "caller executed");
-        Api<string>.Select<int>(new List<string>(), "fallback");
+        Api<string>.Select<int>(Api<string>.Values, "fallback");
     }
 }
 '@
@@ -258,12 +260,13 @@ Build-PolicyFixture 'PolicyFixtureCaller' $callerPath
 $callerDll = Join-Path $caller.FullName 'bin/Debug/net10.0/PolicyFixtureCaller.dll'
 Push-Location $referenceRoot
 try {
-    Assert-PolicyCase -Name 'MatchingOwnedGenericMethod' -InputPaths @($callerDll, $libraryPaths.MatchingMethod) -ExpectedFailure ''
+    Assert-PolicyCase -Name 'MatchingOwnedGenericMembers' -InputPaths @($callerDll, $libraryPaths.MatchingMembers) -ExpectedFailure ''
     Assert-PolicyCase -Name 'MissingOwnedMethod' -InputPaths @($callerDll, $libraryPaths.MissingMethod) -ExpectedFailure 'unresolved-metadata'
-    Assert-PolicyCase -Name 'MismatchedOwnedGenericSignature' -InputPaths @($callerDll, $libraryPaths.DifferentSignature) -ExpectedFailure 'unresolved-metadata'
+    Assert-PolicyCase -Name 'MismatchedOwnedGenericSignature' -InputPaths @($callerDll, $libraryPaths.DifferentMethodSignature) -ExpectedFailure 'unresolved-metadata'
+    Assert-PolicyCase -Name 'MismatchedOwnedGenericField' -InputPaths @($callerDll, $libraryPaths.DifferentFieldSignature) -ExpectedFailure 'unresolved-metadata'
     Assert-FixtureUntouched 'PolicyFixtureCaller' $referenceRoot
     Assert-FixtureUntouched 'PolicyFixtureLibrary' $referenceRoot
-    $casesChecked += 3
+    $casesChecked += 4
 }
 finally {
     Pop-Location
