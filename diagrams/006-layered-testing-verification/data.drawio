@@ -1,61 +1,52 @@
 <mxfile host="app.diagrams.net">
-  <diagram id="data" name="Evidence boundaries">
-    <mxGraphModel dx="1250" dy="900" grid="1" gridSize="10" page="1" pageWidth="1280" pageHeight="900">
+  <diagram id="data" name="ER: verification evidence records (proposal)">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="1280" pageHeight="1000">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="legend" value="Legend: white = existing; green = added; amber = changed.&#10;Red dashed = removed (none); purple = open questions (none). No booking transaction/ack flow changes." style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
-          <mxGeometry x="20" y="15" width="1190" height="55" as="geometry" />
+        <mxCell id="notation" value="Notation: ER record relationships; labels show multiplicities. Proposed file records, not database tables.&#10;Green = added; amber = changed; white = existing. V01–V05 source/evidence boundaries; V07–V08 eval/review boundaries." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="15" width="1220" height="65" as="geometry" />
         </mxCell>
-        <mxCell id="source" value="Task source&#10;Git commit + dirty state + scoped digest&#10;No diff, file contents or secret paths exported" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
-          <mxGeometry x="20" y="110" width="340" height="100" as="geometry" />
+        <mxCell id="run" value="Run manifest (added)&#10;PK runId&#10;sourceCommit / dirty / inputScopeVersion / sourceDigest&#10;phase outcomes / timestamps / safe codes&#10;aggregate result / relative evidence paths" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="400" y="115" width="400" height="145" as="geometry" />
         </mxCell>
-        <mxCell id="run" value="Run manifest: run.json&#10;Added per-invocation lifecycle/source record&#10;phase states; fixed codes; relative paths" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
-          <mxGeometry x="450" y="105" width="330" height="110" as="geometry" />
+        <mxCell id="build" value="Build attestation (added)&#10;PK/FK runId&#10;sourceDigest / artifactDigest&#10;successful rebuild; declared copied outputs" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="340" width="330" height="115" as="geometry" />
         </mxCell>
-        <mxCell id="required" value="Tracked required identities&#10;Added independent expectations&#10;assembly/class/method only" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
-          <mxGeometry x="870" y="110" width="330" height="100" as="geometry" />
+        <mxCell id="receipt" value="Execution receipt (added)&#10;PK/FK runId&#10;platformExitCode / testOutcome / evidenceOutcome&#10;sourceVerified / verificationEligible&#10;safe failureCode / joinedRunId" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="440" y="340" width="390" height="135" as="geometry" />
         </mxCell>
-        <mxCell id="compiled" value="Existing compiled map / joined results&#10;Scenario IDs + proof levels + fixture references&#10;business versus harness verdicts" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
-          <mxGeometry x="870" y="290" width="330" height="110" as="geometry" />
+        <mxCell id="inventory" value="Required identity inventory (added)&#10;PK expected assembly/class/method&#10;Reviewed exact required method set&#10;No scenario/fixture duplication" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="900" y="115" width="340" height="125" as="geometry" />
         </mxCell>
-        <mxCell id="suite" value="Local suite boundary (changed)&#10;TRX intermediate; safe execution receipt&#10;No raw test stdout/stderr retained&#10;Raw diagnostics never uploaded" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
-          <mxGeometry x="450" y="285" width="330" height="125" as="geometry" />
+        <mxCell id="results" value="Safe method outcomes (changed)&#10;FK runId; known method identity&#10;scenario/path IDs / proof level / fixture refs&#10;terminal state / counts&#10;No ErrorInfo, stdout or attachments" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="880" y="550" width="360" height="145" as="geometry" />
         </mxCell>
-        <mxCell id="safe" value="Public export boundary&#10;Added field-by-field allowlist&#10;runId/source binding, IDs, states, counts&#10;No values, ErrorInfo, output or attachments" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
-          <mxGeometry x="20" y="285" width="340" height="125" as="geometry" />
+        <mxCell id="export" value="Allowlisted export (added)&#10;PK/FK runId&#10;safe manifest/receipt and valid safe results&#10;Exact current-run location; no raw reporter files" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="700" width="380" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="eval" value="Ignored eval/results/&#10;Private disposable traces + known model metadata&#10;Public summary: findings/grades/limitations only" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
-          <mxGeometry x="450" y="485" width="330" height="110" as="geometry" />
+        <mxCell id="eval" value="Existing behavioral eval record&#10;case/source baseline/prompt/trace/grade/limits&#10;Private ignored trace; no model/session&#10;attribution in public summary" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="440" y="700" width="390" height="130" as="geometry" />
         </mxCell>
-        <mxCell id="packet" value="Reviewer/Owner packet (changed)&#10;Full catalog/path matrix; proof levels&#10;Contract passes leave runtime pending&#10;Separate behavioral grades and live limits" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
-          <mxGeometry x="20" y="675" width="760" height="120" as="geometry" />
+        <mxCell id="privacy" value="Privacy/source boundary&#10;Stock/raw TRX disabled. Message consumer ignores unsafe data.&#10;Only safe XML/JSON retained; stdout/stderr discarded in memory.&#10;Standalone legacy mode = source-unverified, not full verification." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="870" width="1220" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="scope" value="No booking storage, event or API changes&#10;No database, broker or new secret store&#10;No automated judge/dashboard" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
-          <mxGeometry x="870" y="490" width="330" height="110" as="geometry" />
-        </mxCell>
-        <mxCell id="source-manifest" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="source" target="run">
+        <mxCell id="run-build" value="1 run : 0..1 attestation" style="edgeStyle=orthogonalEdgeStyle;endArrow=none;html=0;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="run" target="build">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="identity-map" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="required" target="compiled">
+        <mxCell id="run-receipt" value="1 run : 0..1 receipt" style="edgeStyle=orthogonalEdgeStyle;endArrow=none;html=0;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="run" target="receipt">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="map-suite" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="compiled" target="suite">
+        <mxCell id="receipt-outcomes" value="1 receipt : 0..n method outcomes" style="edgeStyle=orthogonalEdgeStyle;endArrow=none;html=0;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="receipt" target="results">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="manifest-suite" value="run context" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="run" target="suite">
+        <mxCell id="inventory-outcomes" value="1 required identity : 0..n outcomes across runs" style="edgeStyle=orthogonalEdgeStyle;endArrow=none;html=0;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="inventory" target="results">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="suite-export" value="allowlist only" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="suite" target="safe">
+        <mxCell id="run-export" value="1 run : 0..1 export" style="edgeStyle=orthogonalEdgeStyle;endArrow=none;html=0;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="run" target="export">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="manifest-export" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="run" target="safe">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="export-packet" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="safe" target="packet">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="eval-summary-packet" value="safe summary only" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="eval" target="packet">
+        <mxCell id="outcomes-export" value="0..n valid outcomes : 0..1 run export" style="edgeStyle=orthogonalEdgeStyle;endArrow=none;html=0;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="results" target="export">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>

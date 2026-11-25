@@ -128,7 +128,7 @@ The Owner can see passed checks, pending proof and remaining review gates withou
 
 **Out of scope**: Booking contract/state changes; implementing hosts/persistence/Kafka/PDS/UI; placeholder runtime tests; broad refactoring; new test framework; automated judge service; deployment; global hook changes; and the automated coverage dashboard/timelines assigned to feature 005.
 
-**Booking scenario boundary**: Existing INT-01–05 and SAL-01–02 contract assertions and PDS-01–07 decision assertions may run as current evidence; their runtime proof remains pending. INT-06, H10-01–04, CAS-01–04, BRK-01–04 and KFK-01–03 require absent runtime components. All intake paths remain visible. No booking scenario is implemented/retired here. The full matrix is a verification deliverable, not a catalog replacement or a claim that every scenario passed.
+**Booking scenario boundary**: Existing INT-01–05 and SAL-01–02 contract assertions and PDS-01–07 decision assertions may run as current evidence; their runtime proof remains pending. INT-06, H01-01–04, CAS-01–04, BRK-01–04 and KFK-01–03 require absent runtime components. H01 follows the Owner's rename on main (a594070); this feature introduces no rename itself. All intake paths remain visible. No booking scenario is implemented/retired here. The full matrix is a verification deliverable, not a catalog replacement or a claim that every scenario passed.
 
 **Dependencies**: Feature 001 supplies contracts/decision tests; 002 supplies isolated infrastructure; later intake/persistence work supplies transactions/HTTP; 003 supplies Kafka proof; 004 supplies PDS proof; UI work supplies component/browser proof. This feature establishes verification without waiting for those services.
 

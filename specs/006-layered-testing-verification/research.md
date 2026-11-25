@@ -2,7 +2,7 @@
 
 ## Baseline and scope
 
-Source inspected at approved-spec commit be70aed. No tests, evals, Docker services or hosted workflows were executed during this research. The feature worktree has no Graphify graph, so navigation fell back to targeted source reads. No graph rebuild is required for these documentation changes.
+Source inspected at the approved-spec baseline, now bf47a41 after rebasing onto a594070. The rebase brings in the Owner's H10-to-H01 rename and UML guidance. No tests, evals, Docker services or hosted workflows were executed during this research. The feature worktree has no Graphify graph, so navigation fell back to targeted source reads. No graph rebuild is required for these documentation changes.
 
 ## Decisions
 
@@ -13,7 +13,7 @@ Source inspected at approved-spec commit be70aed. No tests, evals, Docker servic
 | Add parent run.json before execution | Existing fresh suite directory only begins after restore/build; earlier failures leave no durable report | Inferring phase success from absent TRX or final exit alone |
 | Add safe execution.json inside suite | Platform failure and evidence rejection must retain separate outcomes | Treating the wrapper's nonzero code as proof the application tests failed |
 | Keep independent required method identities | Reflection sees only remaining methods, so a deletion can shrink expectations | Generating the required list from the current assembly at run time |
-| Export safe JSON only | Raw TRX failure details/attachments may contain arbitrary asserted values | Uploading wildcard raw TRX/stdout and assuming synthetic means safe |
+| Collect safe test events at source; export safe JSON | Raw TRX failure details/attachments may contain arbitrary asserted values. Installed MTP supports a data consumer without new packages | Generating then deleting raw TRX cannot guarantee privacy if interrupted; wildcard uploads and console-detail flags alone are insufficient |
 | Add plain PowerShell and unittest checks | Existing runtimes provide the necessary process/tempfile features | Adding Pester/pytest just for a small orchestration checker |
 | Keep worktree evals manual | Existing eval protocol already requires isolated fresh sessions and trace grading | Configuring a new live judge or model-provider execution in CI |
 | Keep matrix in verifier packet | Workflow already requires complete scenario/path reporting | Pulling feature 005 dashboard implementation into this feature |
@@ -33,6 +33,10 @@ Source inspected at approved-spec commit be70aed. No tests, evals, Docker servic
 - e2e/fixtures/scenarios.md: baseline 30 IDs across three intake paths. Runtime requirements remain outside the implemented libraries.
 
 ## Resolved uncertainties
+
+The pinned Microsoft.Testing.Platform 2.5.3 package supports TestingPlatformBuilderHook and TestHost.AddDataConsumer. An IDataConsumer can subscribe to TestNodeUpdateMessage and use terminal-state types plus known TestMethodIdentifierProperty metadata. The adapter's AssemblyFullName may be empty: resolve namespace/type/method against the selected compiled assembly and reject ambiguity, never use display names. Source feasibility is verified; actual local/hosted collector behavior still requires V04/V05 execution evidence.
+
+Primary references at the locked Microsoft source revision: [managed test identity conversion](https://github.com/microsoft/testfx/blob/0b1d8b5f7b2186835e2cf26292f3478f7cca087e/src/Adapter/MSTest.TestAdapter/TestingPlatformAdapter/MSTestTestNodeConverter.cs), [builder hook](https://github.com/microsoft/testfx/blob/0b1d8b5f7b2186835e2cf26292f3478f7cca087e/src/Platform/Microsoft.Testing.Extensions.TrxReport/TestingPlatformBuilderHook.cs), [stock reporter options](https://github.com/microsoft/testfx/blob/0b1d8b5f7b2186835e2cf26292f3478f7cca087e/src/Platform/Microsoft.Testing.Extensions.TrxReport/TrxCommandLine.cs). No external judge/model calls were made.
 
 All design choices above use existing repository capabilities. No unresolved dependency, port or service choice remains. Actual hosted results and behavioral traces are implementation-stage evidence, not assumptions of success.
 

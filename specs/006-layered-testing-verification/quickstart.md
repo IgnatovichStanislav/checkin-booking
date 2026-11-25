@@ -4,7 +4,7 @@ This is the proposed validation procedure, not a record of passing feature check
 
 ## Prerequisites
 
-Use the dedicated feature worktree with Git, PowerShell 7, SDK 10.0.404 and the existing platform prerequisites including ICU/IANA time-zone support. No Docker, database, Kafka, PDS, credentials or model-provider provisioning is required for automated checks. Hosted checks need repository access; manual behavioral cases need an available writing-capable agent session.
+Use the dedicated feature worktree with Git, PowerShell 7, Python 3, SDK 10.0.404 and the existing platform prerequisites including ICU/IANA time-zone support. No Docker, database, Kafka, PDS, credentials or model-provider provisioning is required for automated checks. Hosted checks need repository access; manual behavioral cases need an available writing-capable agent session.
 
 ## Local checks after implementation
 
