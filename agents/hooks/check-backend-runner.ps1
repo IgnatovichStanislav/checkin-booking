@@ -68,6 +68,32 @@ $probe = Join-Path $workspace 'src/Booking.Domain/RunnerSample.cs'
 Assert-Check ((Get-SourceSnapshot).Source.digest -cne $baseline) 'untracked source changes digest'
 [IO.File]::Delete($probe)
 Assert-Check ((Get-SourceSnapshot).Source.digest -ceq $baseline) 'untracked source restoration'
+$nestedPath = Join-Path $workspace 'src/Booking.Domain/test-results'
+$null = [IO.Directory]::CreateDirectory($nestedPath)
+$nestedSource = Join-Path $nestedPath 'NestedSource.cs'
+try {
+    [IO.File]::WriteAllText($nestedSource, 'namespace NestedSource;')
+    $rejected = $false
+    try { $nestedDigest = (Get-SourceSnapshot).Source.digest }
+    catch {
+        if ($_.Exception.Message -cne 'ignored-build-input') { throw }
+        $rejected = $true
+    }
+    Assert-Check ($rejected -or $nestedDigest -cne $baseline) 'nested build inputs cannot escape source binding'
+} finally { [IO.File]::Delete($nestedSource) }
+$nestedFixtureDirectory = Join-Path $workspace 'e2e/fixtures/001-booking-contracts/intake/test-results'
+$null = [IO.Directory]::CreateDirectory($nestedFixtureDirectory)
+$nestedFixture = Join-Path $nestedFixtureDirectory 'NestedFixture.json'
+try {
+    [IO.File]::WriteAllText($nestedFixture, '{}')
+    $rejected = $false
+    try { $nestedDigest = (Get-SourceSnapshot).Source.digest }
+    catch {
+        if ($_.Exception.Message -cne 'ignored-build-input') { throw }
+        $rejected = $true
+    }
+    Assert-Check ($rejected -or $nestedDigest -cne $baseline) 'recursive intake fixtures cannot escape source binding'
+} finally { [IO.File]::Delete($nestedFixture) }
 $contract = Get-ChildItem -LiteralPath (Join-Path $workspace 'specs/archive/001-booking-contracts/contracts') -Filter '*.json' | Select-Object -First 1
 $bytes = [IO.File]::ReadAllBytes($contract.FullName)
 try {
@@ -207,13 +233,37 @@ try {
 $originalBackendProcess = ${function:Invoke-BackendProcess}
 function Invoke-BackendProcess {
     param([string]$Command, [string[]]$Arguments, [switch]$Capture, [switch]$TestProcess)
-    if ($TestProcess) { return @{ ExitCode = 0; Output = $null } }
+    if ($TestProcess) {
+        if ($env:BOOKING_FIXTURE_ZERO_SELECTION -ceq 'yes') {
+            $suiteDirectory = Join-Path $runDirectory 'suite'
+            $null = [IO.Directory]::CreateDirectory($suiteDirectory)
+            Write-EvidenceJson (Join-Path $suiteDirectory 'execution.json') @{
+                schemaVersion = 1; platformExitCode = 0; testOutcome = 'passed'
+                evidenceOutcome = 'incomplete'; failureCode = 'missing-test-results'
+                runId = $manifest.runId; sourceDigest = $manifest.source.digest; joinedRunId = $null
+                sourceVerified = $true; policyVerified = $true; verificationEligible = $false
+            }
+            return @{ ExitCode = 1; Output = $null }
+        }
+        return @{ ExitCode = 0; Output = $null }
+    }
     & $originalBackendProcess $Command $Arguments -Capture:$Capture
 }
 '@)
     Invoke-RunnerCase 'Missing receipt cannot pass' 1
     Assert-Check ($caseManifest.phases.evidence.status -ceq 'failed' -and $caseManifest.phases.test.status -ceq 'failed' -and
         !(Test-Path -LiteralPath (Join-Path $caseRoot 'export/scenario-results.json'))) 'interrupted evidence export'
+    $priorSelection = $env:BOOKING_FIXTURE_ZERO_SELECTION
+    try {
+        $env:BOOKING_FIXTURE_ZERO_SELECTION = 'yes'
+        Invoke-RunnerCase 'Zero selected tests cannot pass' 1
+        $zeroReceipt = Read-EvidenceJson $caseRoot 'export/execution.json'
+        $exported = @(Get-ChildItem -LiteralPath (Join-Path $caseRoot 'export') -File).Name | Sort-Object
+        Assert-Check ($caseManifest.phases.test.status -ceq 'passed' -and $caseManifest.phases.test.exitCode -eq 0 -and
+            $caseManifest.phases.evidence.status -ceq 'failed' -and $zeroReceipt.platformExitCode -eq 0 -and
+            $zeroReceipt.evidenceOutcome -ceq 'incomplete' -and !$zeroReceipt.verificationEligible -and
+            ($exported -join ',') -ceq 'execution.json,run.json') 'zero selection preserves platform outcome and exports only safe metadata'
+    } finally { $env:BOOKING_FIXTURE_ZERO_SELECTION = $priorSelection }
 } finally { [IO.File]::WriteAllText($buildHelper, $buildHelperSource) }
 
 $envOutput = Join-Path $workspace 'missing-output-parent/github-output.txt'

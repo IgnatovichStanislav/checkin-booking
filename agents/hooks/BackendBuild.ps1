@@ -2,7 +2,7 @@ $testProject = 'tests/Unit/Booking.ContractTests/Booking.ContractTests.csproj'
 $ownedAssemblies = @('Booking.ContractTests.dll', 'Booking.Application.dll', 'Booking.Contracts.dll', 'Booking.Domain.dll')
 $rootInputs = @('global.json', 'Directory.Build.props', 'Directory.Build.targets', 'Directory.Packages.props', 'NuGet.Config', 'nuget.config')
 $gitScope = @('src', 'tests', 'e2e/fixtures', 'agents/hooks', '.github/workflows', ':(glob)specs/archive/001-booking-contracts/contracts/*.json') + $rootInputs
-$generatedPath = '(?i)(^|/)(bin|obj|test-results|TestResults|secrets)(/|$)'
+$generatedPath = '(?i)^(?:(?:test-results|TestResults|secrets)(/|$)|(?:src/Booking\.(?:Application|Contracts|Domain)|tests/Unit/Booking\.ContractTests)/(?:bin|obj)(/|$))'
 
 function Invoke-BackendProcess {
     param([string]$Command, [string[]]$Arguments, [switch]$Capture, [switch]$TestProcess)

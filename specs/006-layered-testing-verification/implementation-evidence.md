@@ -128,5 +128,6 @@ Windows checks against 3a01370 plus the Group C working changes:
 - Output evidence: `test-results/unit-contracts-af92c201140943c0a2117c42ad4d237b/export/` and `test-results/unit-contracts-a2fb6224e82a47d9acc335f8d3450805/export/`. Disposable runner checks used `test-results/runner-check-f58dfc8751f0477cba14706070bb6a4d/`. These directories are local and ignored.
 
 - The attachment policy self-check passed 23 cases against the Group C build. Worktree graph refresh completed with 1,431 nodes and 2,926 edges. No parser warning was reported.
+- Review follow-up verified that nested source and recursive intake fixture files cannot evade the digest under directories named test-results. A valid receipt with zero selected tests preserved platform exit 0, failed verification with exit 1 and exported only the manifest and receipt. The full runner regression passed in `test-results/runner-check-71580d98be794fbf960e4bee66b580b4/`, and the real Windows runner passed all 36 tests in `test-results/unit-contracts-82d7ba215915429e9cae08aaf8e70762/`.
 
 Linux and hosted CI remain pending Group D. No booking runtime tests were added in this group.
