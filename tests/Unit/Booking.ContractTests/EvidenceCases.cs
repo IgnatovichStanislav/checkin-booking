@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using System.Xml.Linq;
 
@@ -53,6 +54,60 @@ public sealed class EvidenceCases
         var differentMethod = (FirstIdentity.Assembly, FirstIdentity.Class, "first");
         Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.ValidateRequiredIdentities([FirstIdentity], [differentClass]));
         Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.ValidateRequiredIdentities([FirstIdentity], [differentMethod]));
+    }
+
+    [TestMethod, TestCategory("Evidence:harness")]
+    public async Task RejectsInvalidInventoryBeforeReadingMissingFixtures()
+    {
+        var temp = Directory.CreateTempSubdirectory("booking-inventory-");
+        try
+        {
+            string assemblyName = typeof(EvidenceCases).Assembly.GetName().Name!;
+            foreach (string path in Directory.EnumerateFiles(AppContext.BaseDirectory, "*.dll"))
+                File.Copy(path, Path.Combine(temp.FullName, Path.GetFileName(path)));
+            foreach (string name in new[] { assemblyName + ".deps.json", assemblyName + ".runtimeconfig.json", "scenario-catalog.md" })
+                File.Copy(Path.Combine(AppContext.BaseDirectory, name), Path.Combine(temp.FullName, name));
+            File.WriteAllText(Path.Combine(temp.FullName, "required-tests.json"), "[]");
+
+            string runDirectory = Path.Combine(temp.FullName, "run");
+            var start = new ProcessStartInfo(Environment.GetEnvironmentVariable("DOTNET_HOST_PATH") ?? "dotnet")
+            {
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false
+            };
+            start.ArgumentList.Add(Path.Combine(temp.FullName, assemblyName + ".dll"));
+            start.ArgumentList.Add("--scenario-evidence");
+            start.ArgumentList.Add(runDirectory);
+
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+            using var child = Process.Start(start)!;
+            try
+            {
+                var error = child.StandardError.ReadToEndAsync(timeout.Token);
+                var output = child.StandardOutput.ReadToEndAsync(timeout.Token);
+                await child.WaitForExitAsync(timeout.Token);
+
+                Assert.AreEqual(1, child.ExitCode);
+                Assert.IsTrue((await error).Trim() == "Required test inventory is empty.", "Expected the inventory error first.");
+                Assert.IsTrue(string.IsNullOrWhiteSpace(await output), "The test platform must not start.");
+                Assert.IsFalse(File.Exists(Path.Combine(runDirectory, ScenarioEvidence.MapFileName)));
+                Assert.IsFalse(File.Exists(Path.Combine(runDirectory, ScenarioEvidence.TrxFileName)));
+                Assert.IsFalse(File.Exists(Path.Combine(runDirectory, ScenarioEvidence.ReportFileName)));
+            }
+            finally
+            {
+                if (!child.HasExited)
+                {
+                    child.Kill(entireProcessTree: true);
+                    child.WaitForExit();
+                }
+            }
+        }
+        finally
+        {
+            temp.Delete(recursive: true);
+        }
     }
 
     [TestMethod, TestCategory("Evidence:harness")]

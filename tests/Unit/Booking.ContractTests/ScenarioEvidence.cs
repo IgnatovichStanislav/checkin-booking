@@ -94,20 +94,26 @@ internal static class ScenarioEvidence
     internal static MethodEvidence[] CompiledMap()
     {
         var assembly = typeof(ScenarioEvidence).Assembly;
-        var methods = assembly.GetTypes()
+        var testMethods = assembly.GetTypes()
             .Where(type => type.IsDefined(typeof(TestClassAttribute), false))
             .SelectMany(type => type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             .Where(method => method.IsDefined(typeof(TestMethodAttribute), false))
+            .ToArray();
+        var required = ReadRequiredIdentities();
+        Require(required.All(identity => identity is not null), "Invalid required test inventory.");
+        ValidateRequiredIdentities(required.Select(identity => (identity.Assembly, identity.Class, identity.Method)),
+            testMethods.Select(ReflectedIdentity));
+
+        var methods = testMethods
             .Select(ReadMetadata)
             .OrderBy(method => method.Class, StringComparer.Ordinal).ThenBy(method => method.Method, StringComparer.Ordinal)
             .ToArray();
         Index(methods);
-        var required = ReadRequiredIdentities();
-        Require(required.All(identity => identity is not null), "Invalid required test inventory.");
-        ValidateRequiredIdentities(required.Select(identity => (identity.Assembly, identity.Class, identity.Method)),
-            methods.Select(method => method.Identity));
         return methods;
     }
+
+    private static (string Assembly, string Class, string Method) ReflectedIdentity(MethodInfo method) =>
+        (method.DeclaringType!.Assembly.GetName().Name!, method.DeclaringType.FullName!, method.Name);
 
     private static MethodEvidence ReadMetadata(MethodInfo method)
     {
@@ -131,8 +137,9 @@ internal static class ScenarioEvidence
 
         var fixtures = metadata?.Fixtures.Select(ReadFixture).ToArray() ?? [];
         Require(fixtures.Length == fixtures.Select(fixture => fixture.Path).Distinct().Count(), "Duplicate fixture path.");
-        return new(method.DeclaringType!.Assembly.GetName().Name!, method.DeclaringType.FullName!, method.Name,
-            metadata?.IntakePath, level, scenarios, featureCases, requirements, fixtures);
+        var identity = ReflectedIdentity(method);
+        return new(identity.Assembly, identity.Class, identity.Method, metadata?.IntakePath, level,
+            scenarios, featureCases, requirements, fixtures);
     }
 
     internal static FixtureReference ReadFixture(string reference)

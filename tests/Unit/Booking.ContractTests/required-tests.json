@@ -24,6 +24,7 @@
   { "assembly": "Booking.ContractTests", "class": "Booking.ContractTests.EvidenceCases", "method": "RejectsDuplicateTestAndMapIdentities" },
   { "assembly": "Booking.ContractTests", "class": "Booking.ContractTests.EvidenceCases", "method": "RejectsEmptyOrDuplicateDiscoveredIdentities" },
   { "assembly": "Booking.ContractTests", "class": "Booking.ContractTests.EvidenceCases", "method": "RejectsEmptyOrDuplicateRequiredIdentities" },
+  { "assembly": "Booking.ContractTests", "class": "Booking.ContractTests.EvidenceCases", "method": "RejectsInvalidInventoryBeforeReadingMissingFixtures" },
   { "assembly": "Booking.ContractTests", "class": "Booking.ContractTests.EvidenceCases", "method": "RejectsMissingOrUnexpectedDiscoveredIdentities" },
   { "assembly": "Booking.ContractTests", "class": "Booking.ContractTests.EvidenceCases", "method": "RejectsUnmappedAndMalformedTrx" },
   { "assembly": "Booking.ContractTests", "class": "Booking.ContractTests.EvidenceCases", "method": "UsesOnlyFreshRunFiles" }

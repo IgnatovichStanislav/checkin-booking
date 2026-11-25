@@ -23,7 +23,7 @@ The assembly was `Booking.ContractTests`. The methods are listed under their ful
 
 These results establish the current contract and harness suite baseline for V01 and V03. Booking runtime scenarios remain pending.
 
-## Group A checks
+## Group A checks at `6f22d1b`
 
 The [required identity inventory](data-model.md#required-identity-inventory) records the 24 baseline identities and four new harness methods. The built copy matched the tracked file byte for byte. The validator requires both inventories to be nonempty and unique, with exact membership after normalizing assembly case. Class and method comparisons are case-sensitive. Existing scenario and fixture checks still run.
 
@@ -45,3 +45,17 @@ The Debug build used `rtk dotnet build tests/Unit/Booking.ContractTests/Booking.
 `./agents/hooks/refresh-graph.ps1` exited 0 and produced a parseable `graphify-out/graph.json` with 1,116 nodes and 2,272 edges. A bounded query found `CompiledMap` and `ValidateRequiredIdentities`. The code-only extractor reported six files with no symbols, including the refresh hook and Spec Kit PowerShell scripts.
 
 The passing intake assertions are contract evidence. Runtime and hosted verification remain pending, as do the later full-check receipt, reporter and source-binding checks.
+
+## Group A review fix
+
+The evidence entry point now compares the required inventory with reflected assembly, class and method identities before reading categories, fixtures or scenario metadata. Those checks still run once the identities match.
+
+`RejectsInvalidInventoryBeforeReadingMissingFixtures` starts the evidence entry point from a disposable copy of the executable dependencies and catalog with an empty inventory and missing fixtures. It checks for the fixed inventory diagnostic, exit 1, empty standard output and absence of the map, TRX and joined report.
+
+| Check | Observed result |
+| --- | --- |
+| `rtk dotnet build tests/Unit/Booking.ContractTests/Booking.ContractTests.csproj --no-restore` | Exit 0. Zero errors and warnings. |
+| Direct executable filtered to `RejectsInvalidInventoryBeforeReadingMissingFixtures` before the ordering fix | Platform exit 2. Passed 0, failed 1, skipped 0. The assertion expecting the inventory error failed. |
+| Direct executable with `--filter 'FullyQualifiedName~Booking.ContractTests.EvidenceCases'` after the fix | Platform exit 0. Passed 12, failed 0, skipped 0. |
+| Direct executable unfiltered after the fix | Platform exit 0. Passed 29, failed 0, skipped 0. The suite includes 17 contract and 12 harness methods. |
+| `./agents/hooks/refresh-graph.ps1` | Exit 0. The graph parsed with 1,119 nodes and 2,280 edges. The bounded query found `ReflectedIdentity`. The incremental extraction reported no parser errors for the changed files. |
