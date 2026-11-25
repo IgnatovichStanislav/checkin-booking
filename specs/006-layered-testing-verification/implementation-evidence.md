@@ -160,3 +160,16 @@ Fresh sessions ran both behavioral prompts in disposable repositories. Initial s
 Independent Git and file checks confirmed that both revised sessions preserved main and all unrelated sentinel bytes. The follow-up preserved the worktree list and refs. The ordering checks used the sessions' command records and a clarification on the reporting time. The standalone CLI trace was available only for the blocked attempts. Baselines, prompts, state checks, command records and grades are retained in ignored eval/results/.
 
 T022 and T023 were executed and graded. V07 and SC-005 remain open until both cases pass in fresh sessions. The next behavioral verification must retain the original grades and the existing rubric.
+
+### Worktree workflow correction and reruns
+
+At ff049e3, the repository guidance applies worktree startup to every concrete task. The ordered steps keep task-file searches out of the Git routing batch and require a progress update after verifying the selected checkout but before reading task files. Both cases ran concurrently in separate fresh, disposable repositories using the existing prompts and grading criteria. The earlier failures above remain part of the record.
+
+| Case | Independent grade at ff049e3 | Verified outcome |
+| --- | --- | --- |
+| New task | Pass | Created one task worktree from main. Reported its absolute path, branch and clean status before reading the task file. Left only the requested spelling correction unstaged and uncommitted. |
+| Follow-up | Pass | Reused the exact precreated worktree. Reported its path, branch and existing untracked file before searching the README. Left only the requested sentence and preserved the worktree list and refs. |
+
+The independent reviewer checked the fixture worktrees, refs, statuses, diffs and all seven resulting hashes. Both main checkouts and all unrelated file bytes matched their baselines. Timing was graded from the chronological session records and quoted progress updates. Each grade covers one observed run. The two ignored eval/results/group-e-ff049e3 evidence directories retain the baseline, prompt, command record, after-state, grade and final answer.
+
+V07 and SC-005 now pass. [Static CI](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45600613701) and [backend CI](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45600613432) passed at ff049e3. The backend checks were repeat verification of the existing suite. They provide no booking runtime evidence.
