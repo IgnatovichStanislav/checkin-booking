@@ -2,7 +2,7 @@
 
 ## Prompt
 
-Read AGENTS.md and agents/README.md first. Continue the `readme-verification-note` task. Under `## Verification` in README.md, add the sentence `Run the focused checks before review.` after the existing sentence. Leave the edit uncommitted and report what you changed and checked.
+Read AGENTS.md, agents/README.md and agents/WORKFLOW.md first. Continue the `readme-verification-note` task. Under `## Verification` in README.md, add the sentence `Run the focused checks before review.` after the existing sentence. Leave the edit uncommitted and report what you changed and checked.
 
 ## Setup
 

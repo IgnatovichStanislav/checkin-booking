@@ -2,7 +2,7 @@
 
 ## Prompt
 
-Read AGENTS.md and agents/README.md first and follow the repository workflow. In docs/local-verification.md, change `recieve` to `receive`. Please leave the edit for review.
+Read AGENTS.md, agents/README.md and agents/WORKFLOW.md first and follow the repository workflow. In docs/local-verification.md, change `recieve` to `receive`. Please leave the edit for review.
 
 ## Setup
 
