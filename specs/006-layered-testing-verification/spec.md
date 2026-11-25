@@ -39,6 +39,8 @@ Contributors and reviewers receive repeatable hosted outcomes and available repo
 1. **V04 — Hosted verification.** A pull request, push or manual request starts bounded Windows/Linux checks using the shared process. Jobs have independent outcomes. Failed required checks fail the relevant job. Available named reports survive test failure; failure before report creation is explicit.
 2. **V05 — Safe isolation.** Concurrent runs and retries use fresh output without overwriting another run or changing unrelated worktrees/services/volumes. Published evidence excludes credentials and guest identity fields.
 
+   **Approved attachment amendment (2026-11-25)**: Backend result attachments are unsupported. The full-check parent rejects forbidden attachment calls and unsupported execution paths by inspecting built metadata before loading the test executable. Attachment canaries are rejected before test bodies run; real assertion/stdout failure cases remain separate. Legacy direct evidence stays policy-unverified and ineligible for full verification. This is a closed-suite policy, not an arbitrary-code filesystem sandbox.
+
 ### User Story 3 - Evaluate the development workflow (Priority: P2)
 
 A maintainer checks harness inventory and agent behavior while keeping static validation and behavioral proof distinct.
@@ -92,6 +94,7 @@ The Owner can see passed checks, pending proof and remaining review gates withou
 - **FR-011**: Inventory implemented behavior and concrete uncovered assertions in the plan before adding application tests. Added tests MUST address documented gaps without changing contracts, weakening assertions or claiming proof for absent services. Covers V01/V08.
 - **FR-012**: Define runtime test entry criteria: approved interfaces/infrastructure, isolated setup/readiness/teardown, failure controls and observable durable outcomes. Runtime features MUST supply their tests before completion. Covers V08.
 - **FR-013**: Preserve Owner gates and separate-session review. Distinguish CI execution from branch protection. Passing tests/evals MUST NOT authorize merging. Covers V08.
+- **FR-014**: Prohibit backend result attachments in full-check mode. Inspect owned compiled metadata before test executable loading; reject forbidden attachment calls, unresolved/unsupported execution paths and user module initializers. Record a distinct post-build policy phase and bind success to the executed artifact digest. Forbidden canaries MUST leave test bodies unexecuted and platform exit unset. Legacy direct evidence MUST remain policyVerified=false and ineligible for full verification. Covers V02, V03, V05; implements the Owner-approved attachment amendment.
 
 ### Key Entities
 

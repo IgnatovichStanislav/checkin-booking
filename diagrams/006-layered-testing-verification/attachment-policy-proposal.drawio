@@ -2,9 +2,9 @@
   <diagram id="before" name="Before: UML sequence — attachment staging">
     <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="1220" pageHeight="1000">
       <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-        <mxCell id="scope" value="Proposal only. V05 attachment privacy. UML sequence; no booking flow changes.&#10;White = existing; green = added; amber = changed; red dashed = removed. Owner decision pending." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+        <mxCell id="0" value="" />
+        <mxCell id="1" parent="0" value="" />
+        <mxCell id="scope" value="Approved amendment; implementation proof pending. V05 attachment privacy. UML sequence; no booking flow changes.&#10;White = existing; green = added; amber = changed; red dashed = removed. Owner approved 2026-11-25." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
           <mxGeometry x="20" y="15" width="1180" height="70" as="geometry" />
         </mxCell>
         <mxCell id="actor0" value="Owned test" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
@@ -13,7 +13,7 @@
         <mxCell id="tail0" value="" style="opacity=0;" vertex="1" parent="1">
           <mxGeometry x="110" y="925" width="1" height="1" as="geometry" />
         </mxCell>
-        <mxCell id="lifeline0" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor0" target="tail0">
+        <mxCell id="lifeline0" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor0" target="tail0" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="actor1" value="Test executor" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
@@ -22,7 +22,7 @@
         <mxCell id="tail1" value="" style="opacity=0;" vertex="1" parent="1">
           <mxGeometry x="350" y="925" width="1" height="1" as="geometry" />
         </mxCell>
-        <mxCell id="lifeline1" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor1" target="tail1">
+        <mxCell id="lifeline1" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor1" target="tail1" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="actor2" value="MSTest recorder" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
@@ -31,7 +31,7 @@
         <mxCell id="tail2" value="" style="opacity=0;" vertex="1" parent="1">
           <mxGeometry x="590" y="925" width="1" height="1" as="geometry" />
         </mxCell>
-        <mxCell id="lifeline2" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor2" target="tail2">
+        <mxCell id="lifeline2" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor2" target="tail2" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="actor3" value="Results directory" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
@@ -40,7 +40,7 @@
         <mxCell id="tail3" value="" style="opacity=0;" vertex="1" parent="1">
           <mxGeometry x="830" y="925" width="1" height="1" as="geometry" />
         </mxCell>
-        <mxCell id="lifeline3" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor3" target="tail3">
+        <mxCell id="lifeline3" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor3" target="tail3" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="actor4" value="Safe consumer" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
@@ -49,7 +49,7 @@
         <mxCell id="tail4" value="" style="opacity=0;" vertex="1" parent="1">
           <mxGeometry x="1070" y="925" width="1" height="1" as="geometry" />
         </mxCell>
-        <mxCell id="lifeline4" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor4" target="tail4">
+        <mxCell id="lifeline4" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor4" target="tail4" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="register-from" value="" style="opacity=0;" vertex="1" parent="1">
@@ -102,12 +102,12 @@
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram id="after" name="After proposal: UML sequence — attachment ban">
+  <diagram id="after" name="After approved amendment: UML sequence">
     <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="1220" pageHeight="1000">
       <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-        <mxCell id="scope" value="Proposal only. V05 attachment privacy. UML sequence; no booking flow changes.&#10;White = existing; green = added; amber = changed; red dashed = removed. Owner decision pending." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+        <mxCell id="0" value="" />
+        <mxCell id="1" parent="0" value="" />
+        <mxCell id="scope" value="Approved amendment; implementation proof pending. V05 attachment privacy. UML sequence; no booking flow changes.&#10;White = existing; green = added; amber = changed; red dashed = removed. Owner approved 2026-11-25." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
           <mxGeometry x="20" y="15" width="1180" height="70" as="geometry" />
         </mxCell>
         <mxCell id="actor0" value="Runner" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
@@ -116,7 +116,7 @@
         <mxCell id="tail0" value="" style="opacity=0;" vertex="1" parent="1">
           <mxGeometry x="110" y="925" width="1" height="1" as="geometry" />
         </mxCell>
-        <mxCell id="lifeline0" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor0" target="tail0">
+        <mxCell id="lifeline0" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor0" target="tail0" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="actor1" value="Policy guard (added)" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
@@ -125,7 +125,7 @@
         <mxCell id="tail1" value="" style="opacity=0;" vertex="1" parent="1">
           <mxGeometry x="350" y="925" width="1" height="1" as="geometry" />
         </mxCell>
-        <mxCell id="lifeline1" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor1" target="tail1">
+        <mxCell id="lifeline1" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor1" target="tail1" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="actor2" value="Owned tests" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
@@ -134,7 +134,7 @@
         <mxCell id="tail2" value="" style="opacity=0;" vertex="1" parent="1">
           <mxGeometry x="590" y="925" width="1" height="1" as="geometry" />
         </mxCell>
-        <mxCell id="lifeline2" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor2" target="tail2">
+        <mxCell id="lifeline2" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor2" target="tail2" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="actor3" value="MSTest recorder" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
@@ -143,7 +143,7 @@
         <mxCell id="tail3" value="" style="opacity=0;" vertex="1" parent="1">
           <mxGeometry x="830" y="925" width="1" height="1" as="geometry" />
         </mxCell>
-        <mxCell id="lifeline3" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor3" target="tail3">
+        <mxCell id="lifeline3" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor3" target="tail3" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="actor4" value="Safe consumer" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
@@ -152,7 +152,7 @@
         <mxCell id="tail4" value="" style="opacity=0;" vertex="1" parent="1">
           <mxGeometry x="1070" y="925" width="1" height="1" as="geometry" />
         </mxCell>
-        <mxCell id="lifeline4" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor4" target="tail4">
+        <mxCell id="lifeline4" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor4" target="tail4" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="inspect-from" value="" style="opacity=0;" vertex="1" parent="1">
@@ -222,7 +222,7 @@
             <mxPoint x="0" y="-10" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="limit" value="Guard design still needs review. This is not an arbitrary-code filesystem sandbox.&#10;No guest identity/credentials are permitted in diagnostics; stdout discard remains group C." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+        <mxCell id="limit" value="Guard design approved; actual execution checks pending. This is not an arbitrary-code filesystem sandbox.&#10;No guest identity/credentials are permitted in diagnostics; stdout discard remains group C." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
           <mxGeometry x="140" y="850" width="940" height="65" as="geometry" />
         </mxCell>
       </root>

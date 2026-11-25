@@ -29,6 +29,8 @@ A focused pass is not the full feature verification result. Re-run the required 
 
 Inspect the current run.json and allowlisted export, verifying source, phases and invocation binding. Confirm that removed required methods, missing/corrupt reports, failed phases and a zero-test selection cannot pass. Exercise the native fallback without changing global PATH or host installations.
 
+The approved attachment amendment adds a post-build policy phase before test executable loading. Backend result attachments and unsupported execution routes are rejected. Forbidden-call canaries are separate disposable compiled inputs, not methods in the normal scanned suite: confirm they leave test bodies unexecuted, platform exit unset and no staged file. Legacy direct evidence is policy-unverified and cannot satisfy the full-check gate. Real assertion/stdout failures without attachments still execute and must preserve their actual failure outcome safely.
+
 ## Hosted checks
 
 Use a disposable scoped branch/change to exercise the real workflow's passing and controlled failing paths on both operating systems. Record actual run URLs and source SHAs. The failing test must use a safe fixed diagnostic and return failure without publishing raw assertion data. Verify run-specific exports exist, older run directories are excluded and available phase metadata uploads even when tests never start.

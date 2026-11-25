@@ -1,6 +1,6 @@
 # Proposed plan amendment: prohibit backend test attachments
 
-**Status**: Proposal only; Owner decision required. The approved plan remains authoritative until amended.
+**Status**: Amendment approved by the Owner on 2026-11-25. The linked plan, model, contracts and tasks incorporate this decision; implementation and cross-platform proof remain required.
 **Baseline**: Group A approved; group B partial implementation committed as 0cf8605. T007 remains incomplete.
 
 ## Observed problem
@@ -50,8 +50,7 @@ After: the full-check guard rejects forbidden attachment paths before tests star
 
 ## Owner decision
 
-- Approve this attachment-ban/metadata-guard amendment, then update the affected plan/tasks/diagrams and implement its negative and cross-platform checks.
-- Keep the current genuine-attachment expectation and choose a broader runner/isolation redesign through a revised plan.
+The Owner approved the attachment-ban/metadata-guard amendment. Continue with pre-execution rejection of forbidden attachments and separate real assertion/stdout failure checks. No runner/framework replacement, dependency or service is approved.
 
 Neither choice permits logging guest identity or credentials. Group B is not complete; later source attestation and hosted privacy evidence remain pending.
 

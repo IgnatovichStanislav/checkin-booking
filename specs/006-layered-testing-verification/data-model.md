@@ -8,7 +8,7 @@ These are development records, not booking entities, broker messages or database
 - runId: fresh UUID; timestamps in UTC.
 - source: Git commit, dirty boolean and SHA-256 source digest under the exact input policy below. Record the scope version and digest, not file contents or diff text.
 - environment: operating system, PowerShell version, selected .NET SDK, configuration and helper/native selection.
-- phases: preflight, restore, build, test, evidence and export; each has pending/running/passed/failed/notRun, timestamps, numeric exit if observed and fixed safe failureCode.
+- phases: preflight, restore, build, policy, test, evidence and export; each has pending/running/passed/failed/notRun, timestamps, numeric exit if observed and fixed safe failureCode. Policy occurs after build but before loading the test executable; rejection leaves test notRun and platform exit unset.
 - result: running/passed/failed/incomplete. Passed requires all required phases and a valid child receipt/results.
 - evidence: relative suite/export paths. No absolute user paths, environment dump, exception message, credential or payload.
 
@@ -20,6 +20,8 @@ Backend source scope v1 includes Git-tracked files and Git-unignored untracked f
 
 The parent records source digest before build, forces a rebuild using the restored lock and checks the source digest again. A build attestation binds that digest to an aggregate digest of the executed test assembly, referenced application/contract/domain assemblies, runtime/dependency manifests and copied inventory/fixtures/contracts/catalog in its output. The child recomputes the artifact digest for its own loaded assembly/output and compares the parent context. Recheck source before final success. Any mismatch fails evidence; source changed while running cannot be passed off as the original build.
 
+The parent additionally inspects owned PE metadata before executable load and records a versioned policy verdict bound to the same artifact digest. No forbidden attachment case is executed: fixture canary assemblies are disposable inputs outside the normal suite. Reject unsupported routes/module initializers rather than running unknown code during inspection. Actual assertion/stdout failures without attachments remain valid execution tests.
+
 Standalone --scenario-evidence without a verified parent attestation may report actual test outcomes but is explicitly source-unverified and verificationEligible=false. It cannot satisfy the full backend check, hosted V04 or G3 source-bound proof. This avoids labeling a stale binary with the current checkout's digest. Test this with a built binary after changing one source/fixture input, plus tracked deletion and an allowed untracked source file. Independently mutate an archived contract JSON copied by Booking.ContractTests.csproj and assert that source binding changes and stale output is rejected.
 
 ## Child execution receipt: suite/execution.json
@@ -30,6 +32,7 @@ Standalone --scenario-evidence without a verified parent attestation may report 
 - Failed platform execution remains failed even if a valid joined report is available.
 - Missing/malformed/mismatched receipt means parent evidence failure, never success.
 - Receipt carries no ErrorInfo, assertion values, stack trace or stdout.
+- policyVerified is false for direct legacy/no-verified-parent runs. True requires the parent's passed before-load policy verdict and matching artifact binding; sourceVerified and verificationEligible still require complete source/build verification. Partial group B output cannot claim eligibility.
 
 ## Required identity inventory
 
