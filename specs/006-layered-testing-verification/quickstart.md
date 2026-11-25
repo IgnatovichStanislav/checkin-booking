@@ -1,6 +1,6 @@
 # Validating feature 006
 
-This is the proposed validation procedure, not a record of passing feature checks. Implementation, independent review and G2 approval are still required.
+This is the approved validation procedure, not a record of passing feature checks. Independent plan review and Owner G2 approval are complete; implementation and actual verification remain required.
 
 ## Prerequisites
 

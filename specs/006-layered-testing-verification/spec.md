@@ -115,7 +115,7 @@ The Owner can see passed checks, pending proof and remaining review gates withou
 
 ## Assumptions
 
-- The Owner approved G0 intent, confirmed number 006 and approved the specification/flow at G1 on 2026-11-25. G2 plan approval remains outstanding.
+- The Owner approved G0 intent, confirmed number 006 and approved G1/G2 on 2026-11-25. Implementation and actual verification remain outstanding.
 - Existing libraries, suite, result mapper, shared check and CI are starting capabilities. The plan confirms reuse and necessary changes rather than scaffolding replacements.
 - Existing .NET/MSTest remains the default. New dependencies/services/ports require plan approval; none are selected here.
 - Hosted execution requires repository access/runner availability. The Owner controls branch protection/merge. Missing hosted execution remains a completion blocker.
