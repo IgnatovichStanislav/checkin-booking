@@ -12,13 +12,13 @@ A task may be checked only after its named evidence exists. Application runtime 
 
 ## Phase 1: Setup
 
-- [ ] T001 Record the source/worktree/toolchain baseline and existing required method identities in specs/006-layered-testing-verification/implementation-evidence.md; inspect global.json and tests/Unit/Booking.ContractTests/Booking.ContractTests.csproj, run the existing selected suite, and record actual counts without persisting raw failure details. Scenarios: V01, V03; current contract suite, not runtime proof.
+- [X] T001 Record the source/worktree/toolchain baseline and existing required method identities in specs/006-layered-testing-verification/implementation-evidence.md; inspect global.json and tests/Unit/Booking.ContractTests/Booking.ContractTests.csproj, run the existing selected suite, and record actual counts without persisting raw failure details. Scenarios: V01, V03; current contract suite, not runtime proof.
 
 ## Phase 2: Foundation — independently required tests
 
-- [ ] T002 Add failing required-identity tests to tests/Unit/Booking.ContractTests/EvidenceCases.cs for empty/duplicate expected inventories and removed/unexpected discovered methods, independently of reflection. Scenarios: V03; no booking scenario change.
-- [ ] T003 Add reviewed tests/Unit/Booking.ContractTests/required-tests.json, copy it through Booking.ContractTests.csproj and enforce exact expected/discovered identities in ScenarioEvidence.cs; cite [data-model.md §Required identity inventory](data-model.md#required-identity-inventory), Required identity inventory.assembly/class/method and its unique/nonempty/normalization constraints. Scenarios: V03.
-- [ ] T004 Strengthen tests/Unit/Booking.ContractTests/IntakeCases.cs create/newer-update event BookingId linkage and exact conflict/erased-comparison reconciliation scope, BookingId, source UpdatedAt, Open and reason using existing fixtures; run these assertions and the full current suite. Scenarios: V01, INT-01, INT-03, INT-04, SAL-01 at contract level only.
+- [X] T002 Add failing required-identity tests to tests/Unit/Booking.ContractTests/EvidenceCases.cs for empty/duplicate expected inventories and removed/unexpected discovered methods, independently of reflection. Scenarios: V03; no booking scenario change.
+- [X] T003 Add reviewed tests/Unit/Booking.ContractTests/required-tests.json, copy it through Booking.ContractTests.csproj and enforce exact expected/discovered identities in ScenarioEvidence.cs; cite [data-model.md §Required identity inventory](data-model.md#required-identity-inventory), Required identity inventory.assembly/class/method and its unique/nonempty/normalization constraints. Scenarios: V03.
+- [X] T004 Strengthen tests/Unit/Booking.ContractTests/IntakeCases.cs create/newer-update event BookingId linkage and exact conflict/erased-comparison reconciliation scope, BookingId, source UpdatedAt, Open and reason using existing fixtures; run these assertions and the full current suite. Scenarios: V01, INT-01, INT-03, INT-04, SAL-01 at contract level only.
 
 **Checkpoint / group A**: T001–T004 pass focused checks and receive a separate read-only code review before any further source group. No receipt/reporter/runner/CI implementation in this group.
 

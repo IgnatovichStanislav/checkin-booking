@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
@@ -20,7 +21,10 @@ internal sealed record MethodEvidence(
     string Assembly, string Class, string Method, string? IntakePath, string EvidenceLevel,
     string[] ScenarioIds, string[] FeatureCaseIds, string[] RequirementIds, FixtureReference[] Fixtures)
 {
-    internal (string Assembly, string Class, string Method) Identity => (Assembly.ToLowerInvariant(), Class, Method);
+    internal (string Assembly, string Class, string Method) Identity => NormalizeIdentity(Assembly, Class, Method);
+
+    internal static (string Assembly, string Class, string Method) NormalizeIdentity(string assembly, string className, string method) =>
+        (assembly.ToLowerInvariant(), className, method);
 }
 
 internal sealed record MethodOutcome(MethodEvidence Method, string? TrxOutcome, string Status);
@@ -31,10 +35,52 @@ internal static class ScenarioEvidence
     internal const string MapFileName = "scenario-map.json";
     internal const string TrxFileName = "booking-contracts.trx";
     internal const string ReportFileName = "scenario-results.json";
+    private const string RequiredTestsFileName = "required-tests.json";
     private const string FixtureRoot = "e2e/fixtures/001-booking-contracts/";
     private static readonly XNamespace Trx = "http://microsoft.com/schemas/VisualStudio/TeamTest/2010";
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web) { WriteIndented = true };
     private static readonly Lazy<HashSet<string>> Catalog = new(ReadCatalog);
+
+    [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+    private sealed record RequiredTestIdentity(string Assembly, string Class, string Method);
+
+    internal static void ValidateRequiredIdentities(
+        IEnumerable<(string Assembly, string Class, string Method)> required,
+        IEnumerable<(string Assembly, string Class, string Method)> discovered)
+    {
+        var requiredSet = UniqueIdentities(required, "Required test inventory is empty.", "Duplicate required test identity.");
+        var discoveredSet = UniqueIdentities(discovered, "Discovered test inventory is empty.", "Duplicate discovered test identity.");
+        Require(requiredSet.IsSubsetOf(discoveredSet), "A required test identity was not discovered.");
+        Require(discoveredSet.IsSubsetOf(requiredSet), "An unexpected test identity was discovered.");
+    }
+
+    private static HashSet<(string Assembly, string Class, string Method)> UniqueIdentities(
+        IEnumerable<(string Assembly, string Class, string Method)> identities, string empty, string duplicate)
+    {
+        var unique = new HashSet<(string Assembly, string Class, string Method)>();
+        foreach (var (assembly, className, method) in identities)
+        {
+            Require(!string.IsNullOrWhiteSpace(assembly) && !string.IsNullOrWhiteSpace(className)
+                && !string.IsNullOrWhiteSpace(method), "Invalid test identity.");
+            Require(unique.Add(MethodEvidence.NormalizeIdentity(assembly, className, method)), duplicate);
+        }
+        Require(unique.Count > 0, empty);
+        return unique;
+    }
+
+    private static RequiredTestIdentity[] ReadRequiredIdentities()
+    {
+        using var file = File.OpenRead(Path.Combine(AppContext.BaseDirectory, RequiredTestsFileName));
+        try
+        {
+            return JsonSerializer.Deserialize<RequiredTestIdentity[]>(file, Json)
+                ?? throw new InvalidDataException("Invalid required test inventory.");
+        }
+        catch (JsonException)
+        {
+            throw new InvalidDataException("Invalid required test inventory.");
+        }
+    }
 
     private static HashSet<string> ReadCatalog()
     {
@@ -56,6 +102,10 @@ internal static class ScenarioEvidence
             .OrderBy(method => method.Class, StringComparer.Ordinal).ThenBy(method => method.Method, StringComparer.Ordinal)
             .ToArray();
         Index(methods);
+        var required = ReadRequiredIdentities();
+        Require(required.All(identity => identity is not null), "Invalid required test inventory.");
+        ValidateRequiredIdentities(required.Select(identity => (identity.Assembly, identity.Class, identity.Method)),
+            methods.Select(method => method.Identity));
         return methods;
     }
 

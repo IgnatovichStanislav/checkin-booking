@@ -11,6 +11,49 @@ public sealed class EvidenceCases
     private static readonly Guid FirstId = Guid.Parse("00000000-0000-0000-0000-000000000001");
     private static readonly Guid SecondId = Guid.Parse("00000000-0000-0000-0000-000000000002");
     private static readonly Guid ThirdId = Guid.Parse("00000000-0000-0000-0000-000000000003");
+    private static readonly (string Assembly, string Class, string Method) FirstIdentity = ("Suite", "Suite.Cases", "First");
+    private static readonly (string Assembly, string Class, string Method) SecondIdentity = ("Suite", "Suite.Cases", "Second");
+
+    [TestMethod, TestCategory("Evidence:harness")]
+    public void RejectsEmptyOrDuplicateRequiredIdentities()
+    {
+        Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.ValidateRequiredIdentities([], [FirstIdentity]));
+        var duplicate = ("suite", FirstIdentity.Class, FirstIdentity.Method);
+        Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.ValidateRequiredIdentities(
+            [FirstIdentity, duplicate], [FirstIdentity]));
+    }
+
+    [TestMethod, TestCategory("Evidence:harness")]
+    public void RejectsEmptyOrDuplicateDiscoveredIdentities()
+    {
+        Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.ValidateRequiredIdentities([FirstIdentity], []));
+        var duplicate = ("suite", FirstIdentity.Class, FirstIdentity.Method);
+        Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.ValidateRequiredIdentities(
+            [FirstIdentity], [FirstIdentity, duplicate]));
+    }
+
+    [TestMethod, TestCategory("Evidence:harness")]
+    public void RejectsMissingOrUnexpectedDiscoveredIdentities()
+    {
+        Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.ValidateRequiredIdentities(
+            [FirstIdentity, SecondIdentity], [FirstIdentity]));
+        Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.ValidateRequiredIdentities(
+            [FirstIdentity], [FirstIdentity, SecondIdentity]));
+        Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.ValidateRequiredIdentities(
+            [FirstIdentity], [SecondIdentity]));
+    }
+
+    [TestMethod, TestCategory("Evidence:harness")]
+    public void MatchesNormalizedAssemblyAndExactClassAndMethod()
+    {
+        var normalizedFirst = ("suite", FirstIdentity.Class, FirstIdentity.Method);
+        ScenarioEvidence.ValidateRequiredIdentities([FirstIdentity, SecondIdentity], [SecondIdentity, normalizedFirst]);
+
+        var differentClass = (FirstIdentity.Assembly, "Suite.cases", FirstIdentity.Method);
+        var differentMethod = (FirstIdentity.Assembly, FirstIdentity.Class, "first");
+        Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.ValidateRequiredIdentities([FirstIdentity], [differentClass]));
+        Assert.ThrowsExactly<InvalidDataException>(() => ScenarioEvidence.ValidateRequiredIdentities([FirstIdentity], [differentMethod]));
+    }
 
     [TestMethod, TestCategory("Evidence:harness")]
     public void FirstImportJoinsCompiledMetadata()

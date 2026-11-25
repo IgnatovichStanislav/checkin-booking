@@ -21,5 +21,6 @@
     <None Include="../../../e2e/fixtures/001-booking-contracts/wire/*.json" Link="fixtures/wire/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../specs/archive/001-booking-contracts/contracts/*.json" Link="contracts/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../../e2e/fixtures/scenarios.md" Link="scenario-catalog.md" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="required-tests.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
