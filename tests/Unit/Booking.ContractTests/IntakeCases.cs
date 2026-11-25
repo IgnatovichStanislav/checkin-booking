@@ -75,6 +75,8 @@ public sealed partial class ContractCases
             var now = id switch { "first-at" => Deadline, "first-after" => Deadline.AddTicks(1), "first-before" => Deadline.AddTicks(-1), _ => Now };
             var result = Decide(Snapshot(), now: now);
             Verify(id, effect, status, result, id != "first-failed");
+            if (effect == "create")
+                Assert.AreEqual(result.Accepted!.BookingId, result.Event!.BookingId, id);
             if (status != 201) return;
             var throughAdapter = SalouIntake.Evaluate(Hotel, null, null, Bytes(Wire()), now, Ids());
             Assert.IsNull(throughAdapter.Rejection, id);
@@ -132,6 +134,8 @@ public sealed partial class ContractCases
                 id == "erased-stale" ? Deadline : Now);
             Verify(id, effect, status, result);
             Assert.AreEqual(original.UpdatedAt.AddTicks(newer ? 1 : 0), result.Accepted!.UpdatedAt, id);
+            if (newer)
+                Assert.AreEqual(result.Accepted.BookingId, result.Event!.BookingId, id);
             Assert.IsTrue(JsonNode.DeepEquals(JsonNode.Parse(File.ReadAllText(Path.Combine(IntakeFixtures, "expected-mappings.json"))),
                 JsonSerializer.SerializeToNode(IntakeResponse.From(result, true).Body)), id);
         });
@@ -150,10 +154,17 @@ public sealed partial class ContractCases
             var intent = new ReconciliationIntent(id == "other-scope" ? Scope with { PropertyId = "other" } : Scope,
                 Id(1), id == "other-instant" ? input.UpdatedAt.AddTicks(-1) : input.UpdatedAt, id != "closed-intent",
                 ReconciliationReason.ComparisonUnavailable);
-            var result = Decide(input, Prior(), id != "collision-post", live ? Now : Deadline.AddTicks(1), live || id == "failed-handoff" ? null : intent);
+            var prior = Prior();
+            var result = Decide(input, prior, id != "collision-post", live ? Now : Deadline.AddTicks(1), live || id == "failed-handoff" ? null : intent);
             Verify(id, effect, status, result, id != "failed-handoff");
             Assert.AreEqual(live, result.RestrictedConflict != null, id);
             Assert.IsNotNull(result.Intent, id);
+            Assert.IsTrue(result.Intent.Scope == Scope, id);
+            Assert.AreEqual(prior.BookingId, result.Intent.BookingId, id);
+            Assert.AreEqual(input.UpdatedAt, result.Intent.SourceInstant, id);
+            Assert.IsTrue(result.Intent.Open, id);
+            Assert.AreEqual(live ? ReconciliationReason.SnapshotConflict : ReconciliationReason.ComparisonUnavailable,
+                result.Intent.Reason, id);
             Assert.AreEqual(503, IntakeResponse.From(result, false).Status, id);
         });
     }

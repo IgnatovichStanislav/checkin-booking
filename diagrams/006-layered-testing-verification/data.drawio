@@ -1,0 +1,55 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="data" name="ER: verification evidence records (proposal)">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="1280" pageHeight="1000">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="notation" value="Notation: ER record relationships; labels show multiplicities. Proposed file records, not database tables.&#10;Green = added; amber = changed; white = existing. V01–V05 source/evidence boundaries; V07–V08 eval/review boundaries." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="15" width="1220" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="run" value="Run manifest (added)&#10;PK runId&#10;sourceCommit / dirty / inputScopeVersion / sourceDigest&#10;phase outcomes / timestamps / safe codes&#10;aggregate result / relative evidence paths" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="400" y="115" width="400" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="build" value="Build / policy attestation (added)&#10;PK/FK runId&#10;sourceDigest / artifactDigest&#10;rebuild + passed before-load policy" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="340" width="330" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="receipt" value="Execution receipt (added)&#10;PK/FK runId&#10;platformExitCode / testOutcome / evidenceOutcome&#10;sourceVerified / policyVerified / verificationEligible&#10;safe failureCode / joinedRunId" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="440" y="340" width="390" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="inventory" value="Required identity inventory (added)&#10;PK expected assembly/class/method&#10;Reviewed exact required method set&#10;No scenario/fixture duplication" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="900" y="115" width="340" height="125" as="geometry" />
+        </mxCell>
+        <mxCell id="results" value="Safe method outcomes (changed)&#10;FK runId; known method identity&#10;scenario/path IDs / proof level / fixture refs&#10;terminal state / counts&#10;No ErrorInfo, stdout or attachments" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="880" y="550" width="360" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="export" value="Allowlisted export (added)&#10;PK/FK runId&#10;safe manifest/receipt and valid safe results&#10;Exact current-run location; no raw reporter files" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="700" width="380" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="eval" value="Existing behavioral eval record&#10;case/source baseline/prompt/trace/grade/limits&#10;Private ignored trace; no model/session&#10;attribution in public summary" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="440" y="700" width="390" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="privacy" value="Privacy/source boundary&#10;Post-build policy inspects PE metadata before executable load; attachments unsupported.&#10;Only safe XML/JSON retained; stdout/stderr discarded in memory.&#10;Standalone legacy = source/policy-unverified, not full verification." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="870" width="1220" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="run-build" value="1 run : 0..1 attestation" style="edgeStyle=orthogonalEdgeStyle;endArrow=none;html=0;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="run" target="build">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="run-receipt" value="1 run : 0..1 receipt" style="edgeStyle=orthogonalEdgeStyle;endArrow=none;html=0;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="run" target="receipt">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="receipt-outcomes" value="1 receipt : 0..n method outcomes" style="edgeStyle=orthogonalEdgeStyle;endArrow=none;html=0;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="receipt" target="results">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="inventory-outcomes" value="1 required identity : 0..n outcomes across runs" style="edgeStyle=orthogonalEdgeStyle;endArrow=none;html=0;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="inventory" target="results">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="run-export" value="1 run : 0..1 export" style="edgeStyle=orthogonalEdgeStyle;endArrow=none;html=0;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="run" target="export">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="outcomes-export" value="0..n valid outcomes : 0..1 run export" style="edgeStyle=orthogonalEdgeStyle;endArrow=none;html=0;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="results" target="export">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

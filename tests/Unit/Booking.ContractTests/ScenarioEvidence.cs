@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
@@ -20,21 +21,72 @@ internal sealed record MethodEvidence(
     string Assembly, string Class, string Method, string? IntakePath, string EvidenceLevel,
     string[] ScenarioIds, string[] FeatureCaseIds, string[] RequirementIds, FixtureReference[] Fixtures)
 {
-    internal (string Assembly, string Class, string Method) Identity => (Assembly.ToLowerInvariant(), Class, Method);
+    internal (string Assembly, string Class, string Method) Identity => NormalizeIdentity(Assembly, Class, Method);
+
+    internal static (string Assembly, string Class, string Method) NormalizeIdentity(string assembly, string className, string method) =>
+        (assembly.ToLowerInvariant(), className, method);
 }
 
 internal sealed record MethodOutcome(MethodEvidence Method, string? TrxOutcome, string Status);
 internal sealed record EvidenceReport(Guid TestRunId, MethodOutcome[] BusinessEvidence, MethodOutcome[] HarnessChecks);
+internal sealed record ExecutionReceipt(int SchemaVersion, int? PlatformExitCode, string TestOutcome,
+    string EvidenceOutcome, string? FailureCode, Guid? RunId, string? SourceDigest, Guid? JoinedRunId,
+    bool SourceVerified, bool PolicyVerified, bool VerificationEligible);
 
 internal static class ScenarioEvidence
 {
     internal const string MapFileName = "scenario-map.json";
     internal const string TrxFileName = "booking-contracts.trx";
     internal const string ReportFileName = "scenario-results.json";
+    internal const string ReceiptFileName = "execution.json";
+    private const string RequiredTestsFileName = "required-tests.json";
     private const string FixtureRoot = "e2e/fixtures/001-booking-contracts/";
-    private static readonly XNamespace Trx = "http://microsoft.com/schemas/VisualStudio/TeamTest/2010";
+    internal static readonly XNamespace Trx = "http://microsoft.com/schemas/VisualStudio/TeamTest/2010";
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web) { WriteIndented = true };
     private static readonly Lazy<HashSet<string>> Catalog = new(ReadCatalog);
+
+    [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
+    private sealed record RequiredTestIdentity(string Assembly, string Class, string Method);
+
+    private sealed record RunContext(Guid RunId, string SourceDigest, bool Attested);
+
+    internal static void ValidateRequiredIdentities(
+        IEnumerable<(string Assembly, string Class, string Method)> required,
+        IEnumerable<(string Assembly, string Class, string Method)> discovered)
+    {
+        var requiredSet = UniqueIdentities(required, "Required test inventory is empty.", "Duplicate required test identity.");
+        var discoveredSet = UniqueIdentities(discovered, "Discovered test inventory is empty.", "Duplicate discovered test identity.");
+        Require(requiredSet.IsSubsetOf(discoveredSet), "A required test identity was not discovered.");
+        Require(discoveredSet.IsSubsetOf(requiredSet), "An unexpected test identity was discovered.");
+    }
+
+    private static HashSet<(string Assembly, string Class, string Method)> UniqueIdentities(
+        IEnumerable<(string Assembly, string Class, string Method)> identities, string empty, string duplicate)
+    {
+        var unique = new HashSet<(string Assembly, string Class, string Method)>();
+        foreach (var (assembly, className, method) in identities)
+        {
+            Require(!string.IsNullOrWhiteSpace(assembly) && !string.IsNullOrWhiteSpace(className)
+                && !string.IsNullOrWhiteSpace(method), "Invalid test identity.");
+            Require(unique.Add(MethodEvidence.NormalizeIdentity(assembly, className, method)), duplicate);
+        }
+        Require(unique.Count > 0, empty);
+        return unique;
+    }
+
+    private static RequiredTestIdentity[] ReadRequiredIdentities()
+    {
+        using var file = File.OpenRead(Path.Combine(AppContext.BaseDirectory, RequiredTestsFileName));
+        try
+        {
+            return JsonSerializer.Deserialize<RequiredTestIdentity[]>(file, Json)
+                ?? throw new InvalidDataException("Invalid required test inventory.");
+        }
+        catch (JsonException)
+        {
+            throw new InvalidDataException("Invalid required test inventory.");
+        }
+    }
 
     private static HashSet<string> ReadCatalog()
     {
@@ -48,16 +100,26 @@ internal static class ScenarioEvidence
     internal static MethodEvidence[] CompiledMap()
     {
         var assembly = typeof(ScenarioEvidence).Assembly;
-        var methods = assembly.GetTypes()
+        var testMethods = assembly.GetTypes()
             .Where(type => type.IsDefined(typeof(TestClassAttribute), false))
             .SelectMany(type => type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             .Where(method => method.IsDefined(typeof(TestMethodAttribute), false))
+            .ToArray();
+        var required = ReadRequiredIdentities();
+        Require(required.All(identity => identity is not null), "Invalid required test inventory.");
+        ValidateRequiredIdentities(required.Select(identity => (identity.Assembly, identity.Class, identity.Method)),
+            testMethods.Select(ReflectedIdentity));
+
+        var methods = testMethods
             .Select(ReadMetadata)
             .OrderBy(method => method.Class, StringComparer.Ordinal).ThenBy(method => method.Method, StringComparer.Ordinal)
             .ToArray();
         Index(methods);
         return methods;
     }
+
+    private static (string Assembly, string Class, string Method) ReflectedIdentity(MethodInfo method) =>
+        (method.DeclaringType!.Assembly.GetName().Name!, method.DeclaringType.FullName!, method.Name);
 
     private static MethodEvidence ReadMetadata(MethodInfo method)
     {
@@ -81,8 +143,9 @@ internal static class ScenarioEvidence
 
         var fixtures = metadata?.Fixtures.Select(ReadFixture).ToArray() ?? [];
         Require(fixtures.Length == fixtures.Select(fixture => fixture.Path).Distinct().Count(), "Duplicate fixture path.");
-        return new(method.DeclaringType!.Assembly.GetName().Name!, method.DeclaringType.FullName!, method.Name,
-            metadata?.IntakePath, level, scenarios, featureCases, requirements, fixtures);
+        var identity = ReflectedIdentity(method);
+        return new(identity.Assembly, identity.Class, identity.Method, metadata?.IntakePath, level,
+            scenarios, featureCases, requirements, fixtures);
     }
 
     internal static FixtureReference ReadFixture(string reference)
@@ -122,33 +185,180 @@ internal static class ScenarioEvidence
         return new(FixtureRoot + path, ids);
     }
 
-    internal static async Task<int> RunAsync(string directory, Func<string[], Task<int>> execute)
+    internal static async Task<int> RunAsync(EvidenceInvocation invocation, Func<SafeTestEvidence, string[], Task<int>> execute)
     {
-        string runDirectory = Path.GetFullPath(directory);
-        Require(!Directory.Exists(runDirectory), "Evidence requires a fresh run directory.");
+        string runDirectory = Path.TrimEndingDirectorySeparator(Path.GetFullPath(invocation.Directory));
+        Require(!Path.Exists(runDirectory), "Evidence requires a fresh run directory.");
         Directory.CreateDirectory(runDirectory);
 
-        string mapPath = Path.Combine(runDirectory, MapFileName);
-        WriteNew(mapPath, CompiledMap());
+        var receipt = new ExecutionReceipt(1, null, "pending", "pending", null, null, null, null,
+            SourceVerified: false, PolicyVerified: false, VerificationEligible: false);
+        if (invocation.ContextPath is { } contextPath)
+        {
+            try
+            {
+                var context = ReadRunContext(contextPath, runDirectory);
+                receipt = receipt with
+                {
+                    RunId = context.RunId, SourceDigest = context.SourceDigest,
+                    SourceVerified = context.Attested, PolicyVerified = context.Attested
+                };
+            }
+            catch (Exception error) when (error is IOException or UnauthorizedAccessException or InvalidDataException
+                or JsonException or ArgumentException or NotSupportedException or InvalidOperationException or FormatException)
+            {
+                return Complete(runDirectory, receipt with { EvidenceOutcome = "failed", FailureCode = "invalid-run-context" });
+            }
+        }
+
+        var methods = CompiledMap();
+        WriteNew(Path.Combine(runDirectory, MapFileName), methods);
+        var collector = new SafeTestEvidence(methods);
         var started = DateTimeOffset.UtcNow;
-        int exitCode = await execute(["--report-trx", "--report-trx-filename", TrxFileName, "--results-directory", runDirectory]);
+        int exitCode;
+        try
+        {
+            exitCode = await execute(collector, ["--results-directory", runDirectory]);
+        }
+        catch (Exception)
+        {
+            return Complete(runDirectory, receipt with
+            {
+                TestOutcome = "incomplete", EvidenceOutcome = "incomplete", FailureCode = "platform-execution-incomplete"
+            });
+        }
+
+        receipt = receipt with { PlatformExitCode = exitCode, TestOutcome = exitCode == 0 ? "passed" : "failed" };
+        return Complete(runDirectory, JoinObservedResults(runDirectory, methods, collector, started, receipt));
+    }
+
+    private static ExecutionReceipt JoinObservedResults(string runDirectory, MethodEvidence[] methods, SafeTestEvidence collector,
+        DateTimeOffset started, ExecutionReceipt receipt)
+    {
+        XDocument trx;
+        try
+        {
+            trx = collector.CreateReport(started, DateTimeOffset.UtcNow);
+        }
+        catch (InvalidDataException)
+        {
+            return receipt with { EvidenceOutcome = "failed", FailureCode = "invalid-test-event" };
+        }
 
         try
         {
-            var methods = JsonSerializer.Deserialize<MethodEvidence[]>(File.ReadAllText(mapPath), Json);
-            Require(methods is not null, "Missing scenario map.");
-            string trxPath = Path.Combine(runDirectory, TrxFileName);
-            using var reader = XmlReader.Create(trxPath, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit });
-            var report = Join(methods!, XDocument.Load(reader), started);
+            var report = Join(methods, trx, started);
+            var rows = report.BusinessEvidence.Concat(report.HarnessChecks).ToArray();
+            bool incomplete = rows.Any(row => row.Status == "pending");
+            bool failed = rows.Any(row => row.Status == "failed");
+            if ((receipt.PlatformExitCode == 0 && failed) || (receipt.PlatformExitCode != 0 && !incomplete && !failed))
+                return receipt with { EvidenceOutcome = "failed", FailureCode = "platform-result-mismatch" };
+
+            if (rows.All(row => row.TrxOutcome is null))
+                return receipt with { EvidenceOutcome = "incomplete", FailureCode = "missing-test-results" };
+
+            using (var file = new FileStream(Path.Combine(runDirectory, TrxFileName), FileMode.CreateNew, FileAccess.Write))
+                trx.Save(file);
             WriteNew(Path.Combine(runDirectory, ReportFileName), report);
-            bool incomplete = report.BusinessEvidence.Concat(report.HarnessChecks).Any(row => row.Status != "passed");
-            return exitCode == 0 && incomplete ? 1 : exitCode;
+            return receipt with
+            {
+                JoinedRunId = report.TestRunId,
+                EvidenceOutcome = incomplete ? "incomplete" : "passed",
+                VerificationEligible = !incomplete && receipt.SourceVerified && receipt.PolicyVerified,
+                FailureCode = incomplete ? "missing-test-results" : failed ? "platform-tests-failed" : null
+            };
         }
-        catch (Exception error) when (exitCode != 0 && error is IOException or InvalidDataException or XmlException or JsonException)
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException or InvalidDataException or XmlException)
         {
-            Console.Error.WriteLine("The test run did not produce valid scenario evidence.");
-            return exitCode;
+            return receipt with { EvidenceOutcome = "failed", FailureCode = "invalid-scenario-evidence" };
         }
+    }
+
+    private static RunContext ReadRunContext(string contextPath, string runDirectory)
+    {
+        string path = Path.GetFullPath(contextPath);
+        Require(Path.GetFileName(path) == "run.json"
+            && string.Equals(Path.Combine(Path.GetDirectoryName(path)!, "suite"), runDirectory,
+                OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal),
+            "Invalid run context.");
+        using var file = File.OpenRead(path);
+        using var context = JsonDocument.Parse(file);
+        var root = context.RootElement;
+        var version = ContextProperty(root, "schemaVersion");
+        var run = ContextProperty(root, "runId");
+        var source = ContextProperty(root, "source");
+        var evidence = ContextProperty(root, "evidence");
+        var digest = ContextProperty(source, "digest");
+        var suite = ContextProperty(evidence, "suite");
+        Require(version.ValueKind == JsonValueKind.Number && version.TryGetInt32(out int schemaVersion) && schemaVersion == 1
+            && run.ValueKind == JsonValueKind.String && run.TryGetGuid(out var runId) && runId != Guid.Empty
+            && digest.ValueKind == JsonValueKind.String && Regex.IsMatch(digest.GetString()!, @"\A[0-9a-f]{64}\z")
+            && suite.ValueKind == JsonValueKind.String && suite.GetString() == "suite", "Invalid run context.");
+        var sourceDigest = digest.GetString()!;
+        bool attested = root.TryGetProperty("buildAttestation", out _) || root.TryGetProperty("attachmentPolicy", out _)
+            || root.TryGetProperty("phases", out _);
+        if (attested)
+            VerifyAttestation(root, sourceDigest);
+        return new(run.GetGuid(), sourceDigest, attested);
+    }
+
+    private static void VerifyAttestation(JsonElement root, string sourceDigest)
+    {
+        var build = ContextProperty(root, "buildAttestation");
+        var policy = ContextProperty(root, "attachmentPolicy");
+        var phases = ContextProperty(root, "phases");
+        string artifactDigest = ContextProperty(build, "artifactDigest").GetString()!;
+        Require(Regex.IsMatch(artifactDigest ?? "", @"\A[0-9a-f]{64}\z")
+            && ContextProperty(build, "sourceDigest").GetString() == sourceDigest
+            && ContextProperty(policy, "artifactDigest").GetString() == artifactDigest
+            && ContextProperty(policy, "policyVersion").GetInt32() == 1
+            && ContextProperty(policy, "outcome").GetString() == "passed"
+            && ContextProperty(policy, "failureCode").ValueKind == JsonValueKind.Null
+            && ContextProperty(ContextProperty(phases, "build"), "status").GetString() == "passed"
+            && ContextProperty(ContextProperty(phases, "policy"), "status").GetString() == "passed"
+            && ContextProperty(ContextProperty(phases, "test"), "status").GetString() == "running",
+            "Invalid build or policy attestation.");
+
+        string directory = Path.GetDirectoryName(typeof(ScenarioEvidence).Assembly.Location)!;
+        var assemblyDigests = ContextProperty(policy, "assemblySha256");
+        Require(assemblyDigests.ValueKind == JsonValueKind.Array
+            && assemblyDigests.GetArrayLength() == BuildAttestation.OwnedAssemblies.Length
+            && ContextProperty(policy, "assembliesChecked").GetInt32() == BuildAttestation.OwnedAssemblies.Length
+            && ContextProperty(policy, "methodsChecked").GetInt32() > 0,
+            "Invalid policy assembly list.");
+        for (int index = 0; index < BuildAttestation.OwnedAssemblies.Length; index++)
+        {
+            string name = BuildAttestation.OwnedAssemblies[index];
+            Require(assemblyDigests[index].GetString() == BuildAttestation.AssemblyDigest(directory, name),
+                "Policy assembly digest mismatch.");
+        }
+        Require(artifactDigest == BuildAttestation.ArtifactDigest(directory), "Build artifact digest mismatch.");
+    }
+
+    private static JsonElement ContextProperty(JsonElement element, string name)
+    {
+        Require(element.ValueKind == JsonValueKind.Object, "Invalid run context.");
+        var fields = element.EnumerateObject().Where(property => property.NameEquals(name)).Take(2).ToArray();
+        Require(fields.Length == 1, "Invalid run context.");
+        return fields[0].Value;
+    }
+
+    private static int Complete(string runDirectory, ExecutionReceipt receipt)
+    {
+        int platformExit = receipt.PlatformExitCode.GetValueOrDefault();
+        try
+        {
+            WriteNew(Path.Combine(runDirectory, ReceiptFileName), receipt);
+        }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+        {
+            Console.Error.WriteLine("invalid-execution-receipt");
+            return platformExit != 0 ? platformExit : 1;
+        }
+
+        if (receipt.FailureCode is { } code)
+            Console.Error.WriteLine(code);
+        return platformExit != 0 ? platformExit : receipt.EvidenceOutcome == "passed" ? 0 : 1;
     }
 
     private static void WriteNew<T>(string path, T value)

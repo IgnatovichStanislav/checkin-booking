@@ -1,0 +1,310 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="sequence" name="UML sequence: verification (proposal)">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="1280" pageHeight="2000">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="scope" value="Notation: UML sequence. Proposed tooling interactions for V01–V05; no booking transaction/ack changes.&#10;Legend: amber = changed; green = added; white = existing. Dashed open arrow = return; solid filled arrow = synchronous call." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="15" width="1220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="requester" value="Developer / CI" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="25" y="105" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="requester-tail" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="110" y="1890" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="requester-lifeline" value="" style="dashed=1;endArrow=none;strokeColor=#666666;exitX=0.5;exitY=1;entryX=0.5;entryY=0;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="requester" target="requester-tail">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="runner" value="Parent runner&#10;(changed)" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="235" y="105" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="runner-tail" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="1890" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="runner-lifeline" value="" style="dashed=1;endArrow=none;strokeColor=#666666;exitX=0.5;exitY=1;entryX=0.5;entryY=0;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="runner" target="runner-tail">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="tools" value="Git / SDK / PE metadata&#10;(changed: policy guard)" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="445" y="105" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="tools-tail" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="530" y="1890" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tools-lifeline" value="" style="dashed=1;endArrow=none;strokeColor=#666666;exitX=0.5;exitY=1;entryX=0.5;entryY=0;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="tools" target="tools-tail">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="platform" value="MSTest platform&#10;(existing)" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="655" y="105" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="platform-tail" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="740" y="1890" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="platform-lifeline" value="" style="dashed=1;endArrow=none;strokeColor=#666666;exitX=0.5;exitY=1;entryX=0.5;entryY=0;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="platform" target="platform-tail">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="collector" value="Safe consumer / joiner&#10;(added / changed)" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="865" y="105" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="collector-tail" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="950" y="1890" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="collector-lifeline" value="" style="dashed=1;endArrow=none;strokeColor=#666666;exitX=0.5;exitY=1;entryX=0.5;entryY=0;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="collector" target="collector-tail">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="artifacts" value="Safe output&#10;(changed)" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1075" y="105" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="artifacts-tail" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="1890" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="artifacts-lifeline" value="" style="dashed=1;endArrow=none;strokeColor=#666666;exitX=0.5;exitY=1;entryX=0.5;entryY=0;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="artifacts" target="artifacts-tail">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="start-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="110" y="215" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="start-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="215" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="start" value="1: verify [V01]" style="endArrow=block;endFill=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="start-from" target="start-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="preflight-build-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="280" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="preflight-build-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="530" y="280" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="preflight-build" value="2: bind source; locked restore; rebuild" style="endArrow=block;endFill=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="preflight-build-from" target="preflight-build-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="execution-result-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="530" y="330" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="execution-result-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="330" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="execution-result" value="3: phase exits + output hashes" style="endArrow=open;dashed=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="execution-result-from" target="execution-result-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="outer-alt" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=0;fillColor=none;strokeColor=#000000;fontSize=12;verticalAlign=top;align=left;" vertex="1" parent="1">
+          <mxGeometry x="195" y="490" width="1045" height="1160" as="geometry" />
+        </mxCell>
+        <mxCell id="early-guard" value="[preflight / restore / build / policy failed] [V02/V04/V05]" style="text;whiteSpace=wrap;html=0;fontSize=12;align=left;" vertex="1" parent="1">
+          <mxGeometry x="210" y="520" width="470" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="early-safe-export-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="570" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="early-safe-export-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="570" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="early-safe-export" value="4a: safe phase manifest; test/evidence notRun" style="endArrow=block;endFill=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="early-safe-export-from" target="early-safe-export-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="early-return-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="630" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="early-return-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="110" y="630" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="early-return" value="5a: original failure exit" style="endArrow=open;dashed=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="early-return-from" target="early-return-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="outer-divider-a" value="" style="shape=line;dashed=1;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="196" y="675" width="1040" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="success-build-guard" value="[build/policy passed; source and artifacts match] [V01/V03/V05]" style="text;whiteSpace=wrap;html=0;fontSize=12;align=left;" vertex="1" parent="1">
+          <mxGeometry x="210" y="690" width="650" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="invoke-suite-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="760" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="invoke-suite-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="740" y="760" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="invoke-suite" value="4b: required inventory + verified build/policy context" style="endArrow=block;endFill=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="invoke-suite-from" target="invoke-suite-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="register-consumer-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="740" y="820" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="register-consumer-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="950" y="820" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="register-consumer" value="5b: register installed IDataConsumer hook" style="endArrow=block;endFill=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="register-consumer-from" target="register-consumer-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="terminal-event-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="740" y="885" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="terminal-event-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="950" y="885" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="terminal-event" value="6b: consume terminal identity/state only" style="endArrow=block;endFill=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="terminal-event-from" target="terminal-event-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="consume-return-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="950" y="935" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="consume-return-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="740" y="935" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="consume-return" value="7b: validated event; unsafe data ignored" style="endArrow=open;dashed=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="consume-return-from" target="consume-return-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="platform-return-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="740" y="1010" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="platform-return-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="1010" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="platform-return" value="8b: actual platform exit; raw stdout/stderr discarded" style="endArrow=open;dashed=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="platform-return-from" target="platform-return-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="evidence-alt" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=0;fillColor=none;strokeColor=#000000;fontSize=12;verticalAlign=top;align=left;" vertex="1" parent="1">
+          <mxGeometry x="240" y="1065" width="985" height="545" as="geometry" />
+        </mxCell>
+        <mxCell id="valid-evidence-guard" value="[returned tests, valid safe events and context; exit may be nonzero] [V02/V03/V05]" style="text;whiteSpace=wrap;html=0;fontSize=12;align=left;" vertex="1" parent="1">
+          <mxGeometry x="250" y="1100" width="900" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="join-safe-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="1170" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="join-safe-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="950" y="1170" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="join-safe" value="9b: join minimal safe XML to compiled metadata" style="endArrow=block;endFill=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="join-safe-from" target="join-safe-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="safe-verdict-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="950" y="1235" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="safe-verdict-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="1235" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="safe-verdict" value="10b: receipt + actual verdicts, including failures" style="endArrow=open;dashed=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="safe-verdict-from" target="safe-verdict-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="safe-result-export-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="1300" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="safe-result-export-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="1300" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="safe-result-export" value="11b: allowlisted run/receipt/map/results" style="endArrow=block;endFill=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="safe-result-export-from" target="safe-result-export-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="return-verdict-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="1370" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="return-verdict-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="110" y="1370" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="return-verdict" value="12b: failure if tests/evidence failed; evidence preserved" style="endArrow=open;dashed=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="return-verdict-from" target="return-verdict-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="inner-divider" value="" style="shape=line;dashed=1;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="241" y="1425" width="982" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="invalid-guard" value="[missing/ambiguous events, invalid receipt or source/build mismatch] [V02/V03]" style="text;whiteSpace=wrap;html=0;fontSize=12;align=left;" vertex="1" parent="1">
+          <mxGeometry x="250" y="1440" width="900" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="invalid-safe-export-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="1510" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="invalid-safe-export-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="1510" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="invalid-safe-export" value="9c: safe failure manifest/receipt only; no joined-result export" style="endArrow=block;endFill=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="invalid-safe-export-from" target="invalid-safe-export-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="invalid-return-from" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="1575" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="invalid-return-to" value="" style="opacity=0;strokeOpacity=0;fillOpacity=0;" vertex="1" parent="1">
+          <mxGeometry x="110" y="1575" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="invalid-return" value="10c: evidence failure exit" style="endArrow=open;dashed=1;strokeColor=#000000;html=0;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="invalid-return-from" target="invalid-return-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cancel-note" value="opt [cancelled / hard-terminated] [V03/V05]&#10;Missing completion/receipt = incomplete. Never infer a pass.&#10;No raw diagnostics or attachments are created, even before cancellation." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="230" y="1700" width="980" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="owner-note" value="Inventory checks and manual evals are separate (V06–V08). Owner review/merge gates remain in the approved overview.&#10;No database, broker, PDS or guest-state sequence is modeled by this tooling feature." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="230" y="1820" width="980" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="terminal-event-loop" value="loop [each terminal event]" style="shape=umlFrame;whiteSpace=wrap;html=0;fillColor=none;strokeColor=#000000;fontSize=11;verticalAlign=top;align=left;" vertex="1" parent="1">
+          <mxGeometry x="690" y="855" width="350" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="policy-inspect-from" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="380" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="policy-inspect-to" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="530" y="380" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="policy-inspect" value="3a: inspect owned PE metadata before executable load" style="html=0;fontSize=11;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;" edge="1" parent="1" source="policy-inspect-from" target="policy-inspect-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="policy-return-from" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="530" y="435" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="policy-return-to" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="435" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="policy-return" value="3b: policy verdict bound to artifact digest" style="html=0;fontSize=11;labelBackgroundColor=#ffffff;endArrow=open;dashed=1;" edge="1" parent="1" source="policy-return-from" target="policy-return-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -3,22 +3,33 @@ using System.Xml;
 
 namespace Booking.ContractTests;
 
+internal sealed record EvidenceInvocation(string Directory, string? ContextPath);
+
 internal static class EvidenceEntryPoint
 {
+    private const string EvidenceFlag = "--scenario-evidence";
+    private const string ContextFlag = "--run-context";
+    private const string Usage = "Usage: --scenario-evidence <fresh-run-directory> [--run-context <parent-run-json-path>]";
+
     public static async Task<int> Main(string[] args)
     {
-        if (args.Length == 0 || args[0] != "--scenario-evidence")
-            return await MicrosoftTestingPlatformApplication.RunAsync(args);
-
-        if (args.Length != 2)
+        EvidenceInvocation? invocation;
+        try
         {
-            Console.Error.WriteLine("Usage: --scenario-evidence <fresh-run-directory>");
+            invocation = ParseArguments(args);
+        }
+        catch (InvalidDataException)
+        {
+            Console.Error.WriteLine(Usage);
             return 1;
         }
 
+        if (invocation is null)
+            return await MicrosoftTestingPlatformApplication.RunAsync(args);
+
         try
         {
-            return await ScenarioEvidence.RunAsync(args[1], MicrosoftTestingPlatformApplication.RunAsync);
+            return await ScenarioEvidence.RunAsync(invocation, RunPlatformQuietlyAsync);
         }
         catch (InvalidDataException error)
         {
@@ -29,6 +40,38 @@ internal static class EvidenceEntryPoint
         {
             Console.Error.WriteLine("Could not produce or read scenario evidence.");
             return 1;
+        }
+    }
+
+    internal static EvidenceInvocation? ParseArguments(string[] args)
+    {
+        if (!args.Contains(EvidenceFlag, StringComparer.Ordinal) && !args.Contains(ContextFlag, StringComparer.Ordinal))
+            return null;
+
+        return args switch
+        {
+            [EvidenceFlag, var directory] when IsValue(directory) => new(directory, null),
+            [EvidenceFlag, var directory, ContextFlag, var context] when IsValue(directory) && IsValue(context) => new(directory, context),
+            _ => throw new InvalidDataException(Usage)
+        };
+    }
+
+    private static bool IsValue(string value) => !string.IsNullOrWhiteSpace(value) && !value.StartsWith('-');
+
+    private static async Task<int> RunPlatformQuietlyAsync(SafeTestEvidence collector, string[] args)
+    {
+        TextWriter stdout = Console.Out;
+        TextWriter stderr = Console.Error;
+        Console.SetOut(TextWriter.Null);
+        Console.SetError(TextWriter.Null);
+        try
+        {
+            return await SafeEvidenceBuilderHook.RunAsync(collector, args);
+        }
+        finally
+        {
+            Console.SetOut(stdout);
+            Console.SetError(stderr);
         }
     }
 }

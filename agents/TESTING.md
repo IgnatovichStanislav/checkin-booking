@@ -1,4 +1,4 @@
-# Backend testing and CI
+# Development testing, verification and CI
 
 Run the current backend checks from the repository root with PowerShell 7:
 
@@ -31,7 +31,11 @@ Preserve contracts and assertions when fixing failures.
 | Unit and contract, tests/Unit/ | Pure rules, wire representations, validation, mappers and application decisions without running services | Executable Booking.ContractTests suite | Focused checks during development; full suite on every PR and push |
 | Integration, tests/Integration/ | Real PostgreSQL transactions, atomic booking/outbox changes, concurrent freshness decisions, Kafka and PDS boundaries | Pending implementation of the relevant adapters | Add alongside each adapter; run on every PR and push once available |
 | Backend E2E, tests/EndToEnd/ | Running API and workers with PostgreSQL, Kafka and the PDS simulator, driven through external interfaces | Pending hosts, adapters and simulator | Add alongside runtime features; require before merge once available |
+| Frontend unit/component, alongside src/Booking.Monitoring/ code | UI logic, rendering, forms and user interactions | Pending UI implementation | Add with the UI using Vitest and React Testing Library |
 | Browser E2E, src/Booking.Monitoring/e2e/ | Important user flows through the monitoring UI | Pending UI implementation | Add with the UI using Playwright |
+| Eval: static harness checks, eval/check_index.py | Skill routing and registered skill/runbook paths remain consistent | Executable check with a dedicated CI workflow | Run after index, skill or eval changes; CI uses those path filters |
+| Eval: agent/skill behavior, eval/cases/ and registered runbooks | The agent selects relevant skills, respects task scope and produces the expected answer or artifact | Recorded manual cases; no automated live judge runner configured | Run relevant cases in disposable workspaces after changing the guidance or skill behavior they exercise |
+| Eval: tooling smoke checks, eval/Workflow_smoke_2026-11-24.md | Tool availability, workflow/template resolution and graph-query behavior | Historical manual smoke-check record | Repeat affected checks after tool or workflow changes; report unavailable capabilities |
 
 Unit decisions cannot prove database atomicity, authorization through running HTTP
 endpoints, Kafka offset order or recovery after process failure. Stable scenario
@@ -39,6 +43,57 @@ IDs from e2e/fixtures/scenarios.md must map to executable tests and actual resul
 at the layer that proves each requirement. Contract passes leave runtime proof
 pending. Until feature 005 exists, include the full catalog/path coverage matrix
 and pending reasons in the verifier handoff per WORKFLOW.md section 12.
+
+## Evals and their evidence
+
+Application tests exercise booking software. Behavioral evals exercise the agents
+and skills used to develop and review it. Static harness checks validate their
+inventory and references. Tooling smoke checks verify individual tool operations.
+Each result supports only the behavior or operation actually exercised.
+
+Use [eval/README.md](../eval/README.md) for the procedure and
+[eval/targets.json](../eval/targets.json) for registered targets. The historical
+[original-target results](../eval/Original_targets_2026-11-24.md) and
+[skill-review results](../eval/Skill_review_2026-11-24.md) record behavioral cases
+and their limitations. A target marked pass is evidence for its recorded case
+and source baseline; it does not prove every runbook case, current agent behavior
+or a live Docker integration. Imported runbooks alone are not executed results.
+
+For a behavioral eval, use a fresh session and a disposable synthetic workspace.
+Record the source commit, target, prompt, harness/model when known, transcript or
+file-read trace, actual verification checks and pass/fail/blocked outcome. Keep
+unexecuted cases pending and retain live verification limits separately from the
+behavioral grade. Generated traces belong under ignored eval/results/; never
+include credentials or real guest data. No external-model execution or judge
+service is configured by this guide.
+
+The static eval check can run locally:
+
+```powershell
+python eval/check_index.py
+```
+
+This command does not run behavioral cases, application tests or live integration
+checks. The backend test script also does not run behavioral evals.
+
+## Verification across development
+
+| Stage/check | Evidence | Current support |
+| --- | --- | --- |
+| Specification and plan review | Contracts, acceptance scenarios, dependency boundaries and diagrams checked against project rules | Review gates in WORKFLOW.md; separate reviewer session required |
+| Task consistency analysis | In-scope scenario IDs mapped to implementation tasks and executable tests | Analyze stage in WORKFLOW.md |
+| Restore and build | Pinned SDK, locked dependency restore and successful Release compilation | Shared backend script and backend CI |
+| Static code checks | Configured analyzers, formatting, lint and architecture rules | Backend build diagnostics available; no separate comprehensive static-analysis gate configured; frontend ESLint/Prettier pending |
+| Application tests | Assertions and actual results at the appropriate test layer | Unit/contract suite available; runtime and UI suites pending |
+| Development-tool evals | Static inventory results, scoped behavioral grades and tooling smoke results | Static CI available; behavioral and smoke checks manual |
+| Code review | Findings on correctness, data boundaries, durability and maintainability | Separate reviewer session required by WORKFLOW.md |
+| Final feature verification | Full in-scope results, scenario/path coverage matrix, pending reasons and diagram/code consistency | Verifier handoff required; automated coverage visualization pending feature 005 |
+| Graph maintenance | Refreshed navigation graph and reported parser/coverage limitations | Explicit refresh hook after source changes; graph relationships are not correctness evidence |
+| Merge decision | Review findings resolved and required test/verification evidence assessed | Owner gate; branch protection must be configured separately |
+
+Use the smallest relevant test or eval during iteration, then complete the
+feature's required broader checks. A passing build, static inventory check or
+behavioral eval cannot substitute for missing application runtime evidence.
 
 ## Current CI
 
