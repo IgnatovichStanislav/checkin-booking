@@ -1,0 +1,76 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="sequence" name="Verification sequence">
+    <mxGraphModel dx="1250" dy="900" grid="1" gridSize="10" page="1" pageWidth="1280" pageHeight="900">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="legend" value="Legend: white = existing; green = added; amber = changed.&#10;Red dashed = removed (none); purple = open questions (none). No booking transaction/ack flow changes." style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="15" width="1190" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="request" value="Developer / CI&#10;isolated task worktree" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="115" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="parent" value="Runner (changed)&#10;run.json created first&#10;source digest + pending phases" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="250" y="105" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="commands" value="Preflight → locked restore → build&#10;(changed: phase records)&#10;failed phase stops later commands" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="570" y="105" width="270" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="identity" value="Required identities&#10;Added reviewed inventory&#10;compare to compiled tests" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="900" y="105" width="300" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="platform" value="Existing MSTest executable&#10;fresh suite/; tests and TRX&#10;stdout not streamed to CI" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="900" y="280" width="300" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="join" value="Join results (changed)&#10;existing identity/time/counter checks&#10;write safe execution receipt" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="570" y="280" width="270" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="export" value="Allowlisted export&#10;run + receipt + safe map/results&#10;no raw TRX/output/attachments" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="250" y="280" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="artifact" value="CI artifact (changed)&#10;exact current export path&#10;available failure metadata too" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="280" width="180" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="failure" value="Every reachable failure:&#10;parent records phase/exit/fixed code;&#10;missing receipt or cancellation = incomplete;&#10;never fabricate success" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="330" y="485" width="550" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="review" value="Separate inventory checks + manual eval grades&#10;Full scenario/path packet → review → Owner gate&#10;Hosted passing/failing runs still required" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="330" y="675" width="550" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="request-runner" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="request" target="parent">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="record-then-commands" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="parent" target="commands">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="build-before-inventory" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="commands" target="identity">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="inventory-before-tests" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="identity" target="platform">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="test-before-join" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="platform" target="join">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="join-before-export" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="join" target="export">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="export-before-upload" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="export" target="artifact">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="command-failure" value="failure" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="commands" target="failure">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="join-failure" value="failure" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="join" target="failure">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="failure-metadata" value="safe metadata" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="failure" target="export">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="artifact-review" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="artifact" target="review">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

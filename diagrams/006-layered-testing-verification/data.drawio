@@ -1,0 +1,64 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="data" name="Evidence boundaries">
+    <mxGraphModel dx="1250" dy="900" grid="1" gridSize="10" page="1" pageWidth="1280" pageHeight="900">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="legend" value="Legend: white = existing; green = added; amber = changed.&#10;Red dashed = removed (none); purple = open questions (none). No booking transaction/ack flow changes." style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="15" width="1190" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="source" value="Task source&#10;Git commit + dirty state + scoped digest&#10;No diff, file contents or secret paths exported" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="110" width="340" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="run" value="Run manifest: run.json&#10;Added per-invocation lifecycle/source record&#10;phase states; fixed codes; relative paths" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="450" y="105" width="330" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="required" value="Tracked required identities&#10;Added independent expectations&#10;assembly/class/method only" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="870" y="110" width="330" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="compiled" value="Existing compiled map / joined results&#10;Scenario IDs + proof levels + fixture references&#10;business versus harness verdicts" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="870" y="290" width="330" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="suite" value="Local suite boundary (changed)&#10;TRX intermediate; safe execution receipt&#10;No raw test stdout/stderr retained&#10;Raw diagnostics never uploaded" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="450" y="285" width="330" height="125" as="geometry" />
+        </mxCell>
+        <mxCell id="safe" value="Public export boundary&#10;Added field-by-field allowlist&#10;runId/source binding, IDs, states, counts&#10;No values, ErrorInfo, output or attachments" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="285" width="340" height="125" as="geometry" />
+        </mxCell>
+        <mxCell id="eval" value="Ignored eval/results/&#10;Private disposable traces + known model metadata&#10;Public summary: findings/grades/limitations only" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="450" y="485" width="330" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="packet" value="Reviewer/Owner packet (changed)&#10;Full catalog/path matrix; proof levels&#10;Contract passes leave runtime pending&#10;Separate behavioral grades and live limits" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="675" width="760" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="scope" value="No booking storage, event or API changes&#10;No database, broker or new secret store&#10;No automated judge/dashboard" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="870" y="490" width="330" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="source-manifest" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="source" target="run">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="identity-map" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="required" target="compiled">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="map-suite" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="compiled" target="suite">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="manifest-suite" value="run context" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="run" target="suite">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="suite-export" value="allowlist only" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="suite" target="safe">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="manifest-export" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="run" target="safe">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="export-packet" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="safe" target="packet">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eval-summary-packet" value="safe summary only" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;" edge="1" parent="1" source="eval" target="packet">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
