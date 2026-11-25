@@ -1,0 +1,231 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="before" name="Before: UML sequence — attachment staging">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="1220" pageHeight="1000">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="scope" value="Proposal only. V05 attachment privacy. UML sequence; no booking flow changes.&#10;White = existing; green = added; amber = changed; red dashed = removed. Owner decision pending." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="15" width="1180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="actor0" value="Owned test" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="15" y="115" width="190" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="tail0" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="110" y="925" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lifeline0" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor0" target="tail0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="actor1" value="Test executor" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="255" y="115" width="190" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="tail1" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="350" y="925" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lifeline1" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor1" target="tail1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="actor2" value="MSTest recorder" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="495" y="115" width="190" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="tail2" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="590" y="925" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lifeline2" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor2" target="tail2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="actor3" value="Results directory" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="735" y="115" width="190" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="tail3" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="830" y="925" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lifeline3" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor3" target="tail3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="actor4" value="Safe consumer" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="975" y="115" width="190" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="tail4" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="925" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lifeline4" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor4" target="tail4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="register-from" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="110" y="260" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="register-to" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="350" y="260" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="register" value="1: register attachment" style="html=0;fontSize=12;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;" edge="1" parent="1" source="register-from" target="register-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="result-from" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="350" y="370" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="result-to" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="590" y="370" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="result" value="2: returned result contains ResultFiles" style="html=0;fontSize=12;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;" edge="1" parent="1" source="result-from" target="result-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="copy-from" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="590" y="480" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="copy-to" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="830" y="480" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="copy" value="3: stage/copy raw attachment" style="html=0;fontSize=12;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;" edge="1" parent="1" source="copy-from" target="copy-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="publish-from" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="590" y="590" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="publish-to" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="590" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="publish" value="4: publish event after file exists" style="html=0;fontSize=12;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;" edge="1" parent="1" source="publish-from" target="publish-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="too-late" value="Consumer filtering is too late to prevent staging.&#10;No supported staging-disable switch in the pinned normal runner." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="250" y="720" width="720" height="85" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="after" name="After proposal: UML sequence — attachment ban">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="1220" pageHeight="1000">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="scope" value="Proposal only. V05 attachment privacy. UML sequence; no booking flow changes.&#10;White = existing; green = added; amber = changed; red dashed = removed. Owner decision pending." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="15" width="1180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="actor0" value="Runner" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="15" y="115" width="190" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="tail0" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="110" y="925" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lifeline0" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor0" target="tail0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="actor1" value="Policy guard (added)" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="255" y="115" width="190" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="tail1" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="350" y="925" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lifeline1" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor1" target="tail1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="actor2" value="Owned tests" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="495" y="115" width="190" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="tail2" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="590" y="925" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lifeline2" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor2" target="tail2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="actor3" value="MSTest recorder" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="735" y="115" width="190" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="tail3" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="830" y="925" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lifeline3" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor3" target="tail3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="actor4" value="Safe consumer" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="975" y="115" width="190" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="tail4" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="925" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="lifeline4" style="dashed=1;endArrow=none;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="actor4" target="tail4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="inspect-from" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="110" y="250" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="inspect-to" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="350" y="250" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="inspect" value="1: inspect supported owned test shape [before execution]" style="html=0;fontSize=12;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;" edge="1" parent="1" source="inspect-from" target="inspect-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="alt" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=0;fillColor=none;strokeColor=#000000;fontSize=13;verticalAlign=top;align=left;" vertex="1" parent="1">
+          <mxGeometry x="20" y="310" width="1180" height="505" as="geometry" />
+        </mxCell>
+        <mxCell id="deny" value="[forbidden attachment call or unsupported indirect path] [V05]" style="text;whiteSpace=wrap;html=0;align=left;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="35" y="345" width="1100" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="reject-from" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="350" y="420" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="reject-to" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="110" y="420" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="reject" value="2a: fixed policy failure; test body not executed" style="html=0;fontSize=12;labelBackgroundColor=#ffffff;endArrow=open;dashed=1;" edge="1" parent="1" source="reject-from" target="reject-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="separator" value="" style="shape=line;dashed=1;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="21" y="490" width="1175" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="allow" value="[supported test shape; attachment policy satisfied]" style="text;whiteSpace=wrap;html=0;align=left;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="35" y="515" width="1100" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="execute-from" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="110" y="590" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="execute-to" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="590" y="590" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="execute" value="2b: execute ordinary tests" style="html=0;fontSize=12;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;" edge="1" parent="1" source="execute-from" target="execute-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="return-result-from" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="590" y="675" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="return-result-to" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="830" y="675" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="return-result" value="3b: actual outcomes; no registered attachments" style="html=0;fontSize=12;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;" edge="1" parent="1" source="return-result-from" target="return-result-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="safe-event-from" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="830" y="750" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="safe-event-to" value="" style="opacity=0;" vertex="1" parent="1">
+          <mxGeometry x="1070" y="750" width="1" height="1" as="geometry" />
+        </mxCell>
+        <mxCell id="safe-event" value="4b: safe event consumer / real exit preserved" style="html=0;fontSize=12;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;" edge="1" parent="1" source="safe-event-from" target="safe-event-to">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="limit" value="Guard design still needs review. This is not an arbitrary-code filesystem sandbox.&#10;No guest identity/credentials are permitted in diagnostics; stdout discard remains group C." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="140" y="850" width="940" height="65" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
