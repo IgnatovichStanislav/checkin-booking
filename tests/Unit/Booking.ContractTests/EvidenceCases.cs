@@ -270,7 +270,7 @@ public sealed class EvidenceCases
                 .GetProperty("status").GetString());
             Assert.IsTrue(rows.Any(row => row.GetProperty("status").GetString() == "pending"));
             Assert.AreEqual(new ExecutionReceipt(1, 2, "failed", "incomplete", "missing-test-results", null, null,
-                json.RootElement.GetProperty("testRunId").GetGuid(), false, false), ReadReceipt(current));
+                json.RootElement.GetProperty("testRunId").GetGuid(), false, false, false), ReadReceipt(current));
         }
         finally
         {
@@ -436,7 +436,7 @@ public sealed class EvidenceCases
                     (_, _) => throw new AssertFailedException("Invalid context must prevent platform execution."));
                 Assert.AreEqual(1, exit);
                 Assert.AreEqual(new ExecutionReceipt(1, null, "pending", "failed", "invalid-run-context", null, null,
-                    null, false, false), ReadReceipt(suite));
+                    null, false, false, false), ReadReceipt(suite));
                 Assert.IsFalse(File.Exists(Path.Combine(suite, ScenarioEvidence.MapFileName)));
             }
 
@@ -474,7 +474,7 @@ public sealed class EvidenceCases
             Assert.AreEqual(2, exit);
             using var result = JsonDocument.Parse(File.ReadAllText(Path.Combine(suite, ScenarioEvidence.ReportFileName)));
             Assert.AreEqual(new ExecutionReceipt(1, 2, "failed", "passed", "platform-tests-failed", FirstId, digest,
-                result.RootElement.GetProperty("testRunId").GetGuid(), false, false), ReadReceipt(suite));
+                result.RootElement.GetProperty("testRunId").GetGuid(), false, false, false), ReadReceipt(suite));
         }
         finally
         {
@@ -500,7 +500,7 @@ public sealed class EvidenceCases
             Assert.AreEqual(0, await ScenarioEvidence.RunAsync(new(standalone, null), (collector, _) => AllPassed(collector, 0)));
             var receipt = ReadReceipt(standalone);
             Assert.AreEqual(new ExecutionReceipt(1, 0, "passed", "passed", null, null, null,
-                receipt.JoinedRunId, false, false), receipt);
+                receipt.JoinedRunId, false, false, false), receipt);
             Assert.IsNotNull(receipt.JoinedRunId);
 
             string mismatch = Path.Combine(temp.FullName, "mismatch");
@@ -537,7 +537,7 @@ public sealed class EvidenceCases
             Assert.AreEqual(1, await ScenarioEvidence.RunAsync(new(interrupted, null),
                 (_, _) => throw new OperationCanceledException("synthetic-evidence-privacy-sentinel")));
             Assert.AreEqual(new ExecutionReceipt(1, null, "incomplete", "incomplete", "platform-execution-incomplete",
-                null, null, null, false, false), ReadReceipt(interrupted));
+                null, null, null, false, false, false), ReadReceipt(interrupted));
             Assert.IsFalse(File.Exists(Path.Combine(interrupted, ScenarioEvidence.TrxFileName)));
         }
         finally
@@ -562,9 +562,13 @@ public sealed class EvidenceCases
             Properties = new PropertyBag(properties)
         }), CancellationToken.None);
 
-    private static ExecutionReceipt ReadReceipt(string directory) =>
-        JsonSerializer.Deserialize<ExecutionReceipt>(File.ReadAllText(Path.Combine(directory, ScenarioEvidence.ReceiptFileName)),
-            new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
+    private static ExecutionReceipt ReadReceipt(string directory)
+    {
+        string text = File.ReadAllText(Path.Combine(directory, ScenarioEvidence.ReceiptFileName));
+        using var json = JsonDocument.Parse(text);
+        Assert.AreEqual(JsonValueKind.False, json.RootElement.GetProperty("policyVerified").ValueKind);
+        return JsonSerializer.Deserialize<ExecutionReceipt>(text, new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
+    }
 
     private static string ContextJson(string digest) =>
         $$$"""{"schemaVersion":1,"runId":"{{{FirstId}}}","source":{"digest":"{{{digest}}}"},"evidence":{"suite":"suite"}}""";

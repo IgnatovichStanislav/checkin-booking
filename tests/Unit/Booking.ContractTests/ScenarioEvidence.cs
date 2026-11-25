@@ -31,7 +31,7 @@ internal sealed record MethodOutcome(MethodEvidence Method, string? TrxOutcome, 
 internal sealed record EvidenceReport(Guid TestRunId, MethodOutcome[] BusinessEvidence, MethodOutcome[] HarnessChecks);
 internal sealed record ExecutionReceipt(int SchemaVersion, int? PlatformExitCode, string TestOutcome,
     string EvidenceOutcome, string? FailureCode, Guid? RunId, string? SourceDigest, Guid? JoinedRunId,
-    bool SourceVerified, bool VerificationEligible);
+    bool SourceVerified, bool PolicyVerified, bool VerificationEligible);
 
 internal static class ScenarioEvidence
 {
@@ -191,7 +191,8 @@ internal static class ScenarioEvidence
         Require(!Path.Exists(runDirectory), "Evidence requires a fresh run directory.");
         Directory.CreateDirectory(runDirectory);
 
-        var receipt = new ExecutionReceipt(1, null, "pending", "pending", null, null, null, null, false, false);
+        var receipt = new ExecutionReceipt(1, null, "pending", "pending", null, null, null, null,
+            SourceVerified: false, PolicyVerified: false, VerificationEligible: false);
         if (invocation.ContextPath is { } contextPath)
         {
             try
