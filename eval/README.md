@@ -25,6 +25,11 @@ Start a fresh session per case in its disposable setup. Give the agent only the 
 
 The [new-task](cases/worktree-new-task.md) and [follow-up](cases/worktree-follow-up.md) cases grade worktree behavior independently of skill routing. Compare worktree paths, refs, Git status and file hashes before and after each session. Static CI validates registration and inventory only. Retain the behavioral trace and private run metadata under ignored eval/results/.
 
+Record the observed baseline and verdict even when a later rerun passes. A
+behavioral pass applies to its recorded fixture and guidance revision. The
+[testing guide](../agents/TESTING.md#verification-across-development) explains how
+these results fit into verification and the Owner's review gates.
+
 [Skill review results](Skill_review_2026-11-24.md) record the first three behavioral runs. The [original target results](Original_targets_2026-11-24.md) record one behavioral case per original target, with live verification limits.
 
 Latest tooling smoke check: [2026-11-24](Workflow_smoke_2026-11-24.md).

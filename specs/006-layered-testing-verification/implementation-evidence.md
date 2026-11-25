@@ -173,3 +173,38 @@ At ff049e3, the repository guidance applies worktree startup to every concrete t
 The independent reviewer checked the fixture worktrees, refs, statuses, diffs and all seven resulting hashes. Both main checkouts and all unrelated file bytes matched their baselines. Timing was graded from the chronological session records and quoted progress updates. Each grade covers one observed run. The two ignored eval/results/group-e-ff049e3 evidence directories retain the baseline, prompt, command record, after-state, grade and final answer.
 
 V07 and SC-005 now pass. [Static CI](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45600613701) and [backend CI](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45600613432) passed at ff049e3. The backend checks were repeat verification of the existing suite. They provide no booking runtime evidence.
+
+## Final verification and G3 handoff
+
+### Requirements review
+
+| Requirement | Result | Evidence |
+| --- | --- | --- |
+| FR-006 and SC-007 | Pass | The [testing guide](../../agents/TESTING.md) states purpose, current availability and execution policy for unit/contract, integration, backend E2E, frontend component/browser, static inventory, manual behavioral and tooling smoke checks. It identifies development and review gates. |
+| FR-010 and SC-006 | Pass | [Scenario coverage](scenario-coverage.md) represents all 90 catalog/path cells. It names passed contract methods for 28 applicable cells and gives a reason for every pending or inapplicable cell. No runtime cells are marked passed. |
+| FR-012 | Pass for entry criteria | The guide covers approved interfaces/infrastructure, unique per-run setup, bounded readiness, owned teardown, explicit failure controls, and observable durable outcomes. It assigns future proof to the local stand, intake/provider, Kafka, PDS and UI owners. |
+| FR-013 | Pass | The guide distinguishes job execution from branch protection. Separate-session review and the Owner's merge decision remain defined in WORKFLOW.md. |
+
+### Observed acceptance evidence
+
+| Scope | Final evidence |
+| --- | --- |
+| V01–V03 / SC-001–002 | [Hosted Windows and Linux checks](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45601115572) at de6e85b passed runner regressions and 36 tests per platform. Downloaded manifests, receipts and compiled maps were checked for source/run binding, policy verification, complete results and matching mappings. Group C recorded local native and RTK runs, isolated output roots, 23 policy checks and failures for invalid or missing evidence. |
+| V04–V05 / SC-003 | Hosted success and both controlled failure runs were checked in Group D. Early failure stopped before restore or test and exported the manifest only. The deliberate assertion failure preserved platform exit 2, joined the failure and exported safe JSON. The synthetic marker was absent from artifacts and hosted logs. No runtime services were started. |
+| V06 / SC-004 | The real inventory reports 52 skill routes and 26 eval targets. All six local fixture checks passed, including independent negative cases. [Hosted index check](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45601115709) passed at de6e85b. |
+| V07 / SC-005 | Two fresh, independently graded runs passed at ff049e3. Each preserved main and unrelated hashes. The follow-up reused the matching worktree. Earlier failures remain recorded. |
+| V08 / SC-006–007 | The matrix and guide checks above passed. Missing application proof is explicit for every applicable pending cell. |
+
+### Failure timelines
+
+- [Early hosted failure](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45597154183): preflight failed with the controlled SDK reason → restore through evidence did not run → exported the run manifest.
+- [Hosted assertion failure](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45597139982): preflight, restore, build and policy passed → 35 methods passed, one failed with platform exit 2 → evidence joined and safe reports uploaded.
+- Earlier worktree eval failures exposed routing and progress-report ordering gaps. The revised startup rules were checked in the two fresh reruns recorded above.
+
+### Verification boundaries
+
+The tested backend scope has no changes after de6e85b. The final changes are guide, matrix and diagram updates, with no changes to runner, test, catalog, fixture or workflow inputs. The existing hosted results still apply to those inputs. The local inventory and six regression checks were rerun for this handoff.
+
+The latest source graph refresh was recorded in Group E. It completed without a parser warning. The final group changed documentation and design diagrams. A fresh source graph was unnecessary. Actual OS-signal cancellation remains unverified; the missing-receipt regression covers interrupted evidence. The booking runtime scenarios in the matrix remain assigned to future implementation work.
+
+[Flow](../../diagrams/006-layered-testing-verification/flow.drawio), [sequence](../../diagrams/006-layered-testing-verification/sequence.drawio), [data](../../diagrams/006-layered-testing-verification/data.drawio) and [attachment policy](../../diagrams/006-layered-testing-verification/attachment-policy-proposal.drawio) were compared with the implemented hooks, receipts, CI and worktree guidance. All five pages passed XML, unique-ID and edge endpoint checks and were exported and visually inspected using installed draw.io 32.7.4. Stale phase order, status, labels and connector overlaps were corrected. No renderer dependency was added.
