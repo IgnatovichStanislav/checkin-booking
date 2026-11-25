@@ -36,3 +36,12 @@ The first command submits one tagged synthetic task trace and a numeric score, t
 For reviewed feature work, attach the feature, task group, scenario IDs, revision and first-handoff or verified checkpoint to task evidence. Keep credentials, restricted registration fields and private transcripts outside evaluation payloads. This deployment provides the storage and API for explicit evaluations. Enabling full-session capture is a separate configuration decision.
 
 [Upstream Compose for Langfuse 4.86.0](https://github.com/langfuse/langfuse/blob/v4.86.0/docker-compose.yml)
+
+## Trace a Checkin session
+
+The opt-in Codex Stop hook sends completed session turns, including prompts and tool output, to the local project. Use synthetic sessions suitable for capture. The tested exporter is `tracing@codex-observability-plugin` version 0.4.3 with Node.js 22 or newer.
+
+1. Install the marketplace with `codex plugin marketplace add langfuse/codex-observability-plugin`, then run `codex plugin add tracing@codex-observability-plugin`. Confirm the installed version matches the wrapper.
+2. From the main checkout, copy [the wrapper](../../agents/hooks/langfuse-checkin-hook.cjs) to `secrets/langfuse-checkin-hook.cjs` beside `langfuse.env`. All opted-in worktrees can reference this same private copy.
+3. For each opted-in worktree, add a command to its local `.codex/hooks.json` under `hooks.Stop[].hooks[]`. Use `type` of `command`, a timeout of 30 seconds, and the command `node "<absolute path to main checkout>/secrets/langfuse-checkin-hook.cjs"`. Preserve existing hook entries. Keep the machine-specific hook file local using the repository's private Git exclude file.
+4. Open Codex in that worktree, run `/hooks`, and trust the project Stop hook after reviewing the command. Start a fresh session, complete a short turn and check [Checkin traces](http://localhost:3300/project/checkin-agent-quality/traces) for the matching session ID. A trace records activity. Quality scores require separate evaluations.
