@@ -28,7 +28,7 @@ Deliver the Salou VIP wire contracts, a mapper to the shared full-snapshot Booki
 | e2e/fixtures/001-booking-contracts | JSON input and expected decisions grouped by scenario and case. Shared synthetic IDs and deterministic times. Restricted synthetic fields only in designated input fixtures. Failure messages use paths and codes. |
 | test-results/ | Per-run TRX and identity-free scenario evidence. Ignored by Git. |
 
-Review [research](research.md), the [data model](data-model.md), [HTTP contract](contracts/openapi.json), [types](contracts/types.schema.json), [test and evidence guide](quickstart.md), [sequence](../../diagrams/001-booking-contracts/sequence.drawio) and [data boundaries](../../diagrams/001-booking-contracts/data.drawio).
+Review [research](research.md), the [data model](data-model.md), [HTTP contract](contracts/openapi.json), [types](contracts/types.schema.json), [test and evidence guide](quickstart.md), [sequence](../../../diagrams/001-booking-contracts/sequence.drawio) and [data boundaries](../../../diagrams/001-booking-contracts/data.drawio).
 
 ## Delivery boundaries
 
@@ -47,4 +47,4 @@ Review [research](research.md), the [data model](data-model.md), [HTTP contract]
 | V · Coverage | Catalog IDs and feature-local cases retained | Quickstart maps each case to a named test and distinguishes contract evidence from outstanding runtime proofs. All results pending. |
 | VI · Small changes and secrets | Libraries and tests only | One direct test SDK. Provisioned secrets are runtime file references. No service or real data required. |
 
-The G1 decision record reconciles the older broker-first example and provisional state names with constitution v1.0.0. The pre-research check passed. At G2 on 2026-11-24 the Owner approved the plan and contract changes C01 and C02. See the [approved decisions](approved-decisions.md#g2-contract-changes), [decision tables](data-model.md) and [before/after diagrams](../../diagrams/001-booking-contracts/data.drawio). Implementation follows task design and analysis.
+The G1 decision record reconciles the older broker-first example and provisional state names with constitution v1.0.0. The pre-research check passed. At G2 on 2026-11-24 the Owner approved the plan and contract changes C01 and C02. See the [approved decisions](approved-decisions.md#g2-contract-changes), [decision tables](data-model.md) and [before/after diagrams](../../../diagrams/001-booking-contracts/data.drawio). Implementation follows task design and analysis.
