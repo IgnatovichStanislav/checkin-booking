@@ -1,0 +1,249 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="identity" name="Ownership, restricted snapshots and effects">
+    <mxGraphModel page="1" pageWidth="1350" pageHeight="1050" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="legend-same" value="Unchanged" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="30" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-added" value="Added" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="174" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-changed" value="(changed)" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="318" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-removed" value="(removed)" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="462" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-open" value="Open question" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="606" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="scope" value="Provisioned integration / hotel scope · providerId, propertyId, timeZoneId" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="30" y="110" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="booking" value="Booking · scoped srcBookingId → internal bookingId" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="340" y="110" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="guest" value="Participation episodes · (bookingId, srcGuestId) → guestId" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="650" y="110" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="attendance" value="Attendance · attendanceEventId, actor, occurredAt, correction target" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="960" y="110" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="restricted" value="RESTRICTED · accepted versions and conflict detail · snapshotId + scoped guest IDs · erase by deadline (changed)" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="340" y="330" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="outbox" value="Booking outbox · immutable eventId → accepted snapshotId" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="30" y="330" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="operation" value="Registration · operationId, registrationRequestId, pinned destination and content reference" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="650" y="330" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="callback" value="Notification outbox · stable notificationId, operationId and safe status" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="960" y="330" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="kafka" value="Kafka · encoded scoped source key and opaque references only" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="30" y="550" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="erase" value="C01 · identity-free tombstone after erasure and post-erasure retry response" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="340" y="550" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="subs" value="Subscription · subscriptionId, hotel scope, external endpoint and key reference" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="650" y="550" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="delivery" value="Delivery · deliveryId, subscriptionId + notificationId, attempt history" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="960" y="550" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="scope-booking" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="scope" target="booking">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="booking-guest" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="booking" target="guest">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="guest-attendance" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="guest" target="attendance">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="booking-restricted" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="booking" target="restricted">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="restricted-outbox" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="restricted" target="outbox">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="outbox-kafka" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="outbox" target="kafka">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="guest-operation" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="guest" target="operation">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="operation-callback" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="operation" target="callback">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="callback-delivery" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="callback" target="delivery">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="subs-delivery" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="subs" target="delivery">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="restricted-erase" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;fontSize=12;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="restricted" target="erase">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="boundary" value="Workers read identity only within hotel scope and the retention window. Public status, logs, broker records and deliveries carry safe IDs and states." style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="30" y="820" width="1190" height="55" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="retention-before" name="Before - G1 content comparison">
+    <mxGraphModel page="1" pageWidth="1350" pageHeight="1050" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="legend-same" value="Unchanged" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="30" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-added" value="Added" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="174" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-changed" value="(changed)" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="318" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-removed" value="(removed)" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="462" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-open" value="Open question" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="606" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="request" value="Existing POST or equal-time PUT" style="rounded=1;whiteSpace=wrap;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="50" y="140" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="compare" value="Compare all normalized inputs, including restricted fields" style="rounded=1;whiteSpace=wrap;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="380" y="140" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ack" value="Identical returns 200. Different returns 409." style="rounded=1;whiteSpace=wrap;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="710" y="140" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="request-compare" edge="1" parent="1" source="request" target="compare" style="endArrow=block;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="compare-ack" edge="1" parent="1" source="compare" target="ack" style="endArrow=block;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="retention-after" name="After - C01 approved exception">
+    <mxGraphModel page="1" pageWidth="1350" pageHeight="1050" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="legend-same" value="Unchanged" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="30" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-added" value="Added" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="174" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-changed" value="(changed)" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="318" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-removed" value="(removed)" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="462" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-open" value="Open question" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="606" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="request" value="Existing POST with different source time → 409 + owned updatePath. Stale PUT → 200." style="rounded=1;whiteSpace=wrap;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="50" y="140" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="compare" value="Erased, equal-time POST/PUT → durably open/join active identity-free reconciliation case, then 410. No guest writes." style="rounded=1;whiteSpace=wrap;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="380" y="140" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ack" value="First expired import or newly expired update → 410 at/after deadline. Newer with future deadline → accept (changed)" style="rounded=1;whiteSpace=wrap;fontSize=15;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="710" y="140" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="request-compare" edge="1" parent="1" source="request" target="compare" style="endArrow=block;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="compare-ack" edge="1" parent="1" source="compare" target="ack" style="endArrow=block;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="stop-before" name="Before - stopped operation">
+    <mxGraphModel page="1" pageWidth="1350" pageHeight="1050" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="legend-same" value="Unchanged" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="30" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-added" value="Added" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="174" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-changed" value="(changed)" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="318" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-removed" value="(removed)" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="462" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-open" value="Open question" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="606" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="request" value="Visible pending operation" style="rounded=1;whiteSpace=wrap;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="50" y="140" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="compare" value="Cancellation stops unsent work" style="rounded=1;whiteSpace=wrap;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="380" y="140" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ack" value="G1 reserves stopped representation for planning" style="rounded=1;whiteSpace=wrap;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="710" y="140" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="request-compare" edge="1" parent="1" source="request" target="compare" style="endArrow=block;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="compare-ack" edge="1" parent="1" source="compare" target="ack" style="endArrow=block;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="stop-after" name="After - C02 approved callback">
+    <mxGraphModel page="1" pageWidth="1350" pageHeight="1050" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="legend-same" value="Unchanged" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="30" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-added" value="Added" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="174" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-changed" value="(changed)" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="318" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-removed" value="(removed)" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#f8cecc;strokeColor=#b85450;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="462" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-open" value="Open question" style="rounded=1;whiteSpace=wrap;html=0;fontSize=14;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="606" y="18" width="132" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="request" value="Stop previously visible unsent operation" style="rounded=1;whiteSpace=wrap;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="50" y="140" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="compare" value="Commit transition + notification. GET now has null operation/status/reason." style="rounded=1;whiteSpace=wrap;fontSize=15;" vertex="1" parent="1">
+          <mxGeometry x="380" y="140" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ack" value="Callback: historical operationId, null status, registration_stopped. Filter includes null (changed)" style="rounded=1;whiteSpace=wrap;fontSize=15;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="710" y="140" width="270" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="request-compare" edge="1" parent="1" source="request" target="compare" style="endArrow=block;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="compare-ack" edge="1" parent="1" source="compare" target="ack" style="endArrow=block;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

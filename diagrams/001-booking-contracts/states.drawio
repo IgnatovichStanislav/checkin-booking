@@ -1,0 +1,220 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="membership" name="Reservation and participation">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1330" pageHeight="820">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="legend-unchanged" value="Unchanged" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;">
+          <mxGeometry x="40" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-added" value="Added" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="208" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-changed" value="(changed)" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;">
+          <mxGeometry x="376" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-removed" value="(removed)" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#ffffff;strokeColor=#b85450;dashed=1;">
+          <mxGeometry x="544" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-open" value="Open question" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#e1d5e7;strokeColor=#9673a6;">
+          <mxGeometry x="712" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="confirmed" value="Reservation · confirmed" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="80" y="155" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="cancelled" value="Reservation · cancelled" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="715" y="155" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="active" value="Guest participation · active" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="80" y="445" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="inactive" value="Guest participation · cancelled" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="715" y="445" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="history" value="Restoration preserves the guest ID and history. Reassess registration separately. Old check-in stays in history." vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="230" y="610" width="590" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="confirmed-to-cancelled" source="confirmed" target="cancelled" value="cancelled snapshot + cancelledAt" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.25;entryX=0;entryY=0.25;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="cancelled-to-confirmed" source="cancelled" target="confirmed" value="newer confirmed snapshot" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;exitX=0;exitY=0.8;entryX=1;entryY=0.8;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="active-to-inactive" source="active" target="inactive" value="omitted guest or cancelled booking" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.25;entryX=0;entryY=0.25;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="inactive-to-active" source="inactive" target="active" value="restored in a confirmed snapshot" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;exitX=0;exitY=0.8;entryX=1;entryY=0.8;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="cancelled-to-inactive" source="cancelled" target="inactive" value="cancel all current participation" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="attendance" name="Attendance">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1330" pageHeight="820">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="legend-unchanged" value="Unchanged" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;">
+          <mxGeometry x="40" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-added" value="Added" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="208" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-changed" value="(changed)" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;">
+          <mxGeometry x="376" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-removed" value="(removed)" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#ffffff;strokeColor=#b85450;dashed=1;">
+          <mxGeometry x="544" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-open" value="Open question" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#e1d5e7;strokeColor=#9673a6;">
+          <mxGeometry x="712" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="expected" value="expected" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="55" y="270" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="arrived" value="arrived" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="370" y="155" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="checkedin" value="checkedIn" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="690" y="270" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="checkedout" value="checkedOut" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="995" y="270" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="noshow" value="noShow" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="370" y="430" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="correction" value="Authorized correction · append target, actor, time and reason. Preserve the original event. Ordinary reports require active participation." vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="200" y="625" width="780" height="65" as="geometry"/>
+        </mxCell>
+        <mxCell id="expected-to-arrived" source="expected" target="arrived" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="arrived-to-checkedin" source="arrived" target="checkedin" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="expected-to-checkedin" source="expected" target="checkedin" value="hotel reports check-in" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="checkedin-to-checkedout" source="checkedin" target="checkedout" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="expected-to-noshow" source="expected" target="noshow" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="noshow-to-checkedin" source="noshow" target="checkedin" value="late arrival" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="noshow-to-arrived" source="noshow" target="arrived" value="late arrival" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.5;entryX=1;entryY=0.5;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="operations" name="Internal registration operations">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1330" pageHeight="820">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="legend-unchanged" value="Unchanged" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;">
+          <mxGeometry x="40" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-added" value="Added" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="208" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-changed" value="(changed)" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;">
+          <mxGeometry x="376" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-removed" value="(removed)" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#ffffff;strokeColor=#b85450;dashed=1;">
+          <mxGeometry x="544" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-open" value="Open question" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#e1d5e7;strokeColor=#9673a6;">
+          <mxGeometry x="712" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="pending" value="pending · stable operation ID and pinned destination" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="85" y="240" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="confirmed" value="confirmed · definitive result" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="570" y="145" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="failed" value="failed · permanent failure or attempts exhausted" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="570" y="360" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="next" value="New pending operation · relevant amendment or cancellation" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="960" y="145" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="reasons" value="Pending reasons include missing data, temporary failure and uncertain outcome. Reconcile uncertainty before resubmission. Cancellation stops unsent work." vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="120" y="550" width="650" height="85" as="geometry"/>
+        </mxCell>
+        <mxCell id="pending-to-confirmed" source="pending" target="confirmed" value="confirmation" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="pending-to-failed" source="pending" target="failed" value="cannot finish" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;exitX=1;exitY=0.65;entryX=0;entryY=0.25;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="failed-to-pending" source="failed" target="pending" value="manual retry · same identity" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;exitX=0;exitY=0.75;entryX=0.8;entryY=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="confirmed-to-next" source="confirmed" target="next" value="new identity" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="projection" name="Public CHECKIN registration">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1330" pageHeight="820">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="legend-unchanged" value="Unchanged" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;">
+          <mxGeometry x="40" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-added" value="Added" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="208" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-changed" value="(changed)" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;">
+          <mxGeometry x="376" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-removed" value="(removed)" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#ffffff;strokeColor=#b85450;dashed=1;">
+          <mxGeometry x="544" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-open" value="Open question" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#e1d5e7;strokeColor=#9673a6;">
+          <mxGeometry x="712" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="operation" value="Current guest operation and safe reason" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="460" y="130" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="processing" value="processing · automatic work" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="35" y="340" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="action" value="actionRequired · hotel must act" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="350" y="340" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="completed" value="completed · definitive confirmation" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="665" y="340" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="failed" value="failed · intervention needed" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="980" y="340" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="summary" value="Active-guest summary priority · actionRequired &gt; failed &gt; processing &gt; completed. Zero active guests returns null. Outstanding cancellation work remains visible separately." vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="175" y="545" width="820" height="88" as="geometry"/>
+        </mxCell>
+        <mxCell id="operation-to-processing" source="operation" target="processing" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="operation-to-action" source="operation" target="action" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="operation-to-completed" source="operation" target="completed" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="operation-to-failed" source="operation" target="failed" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,13 @@
+{
+  "scenarioIds": ["A02", "A03"],
+  "path": "SAL",
+  "cases": [
+    {"caseId":"omit-no-show","snapshot":"omit-first","active":[false,true],"episodes":[1,1],"changes":["AssessCancellation:1"],"attendance":"noShow"},
+    {"caseId":"omission-repeat","snapshot":"omit-first","active":[false,true],"episodes":[1,1],"changes":[],"attendance":"noShow"},
+    {"caseId":"restore-same-id","snapshot":"both","active":[true,true],"episodes":[2,1],"changes":["ReassessRegistration:1"],"attendance":"expected"},
+    {"caseId":"stale-omission","snapshot":"omit-first","freshness":"stale","active":[true,true],"episodes":[2,1],"changes":[],"attendance":"expected"},
+    {"caseId":"different-source-id","snapshot":"add-third","active":[true,true,true],"episodes":[2,1,1],"changes":["ReassessRegistration:3"],"attendance":"expected"},
+    {"caseId":"cancel-all","snapshot":"cancelled","active":[false,false,false,false],"episodes":[2,1,1,0],"changes":["AssessCancellation:1","AssessCancellation:2","AssessCancellation:3"],"attendance":"checkedIn"},
+    {"caseId":"confirm-listed","snapshot":"confirm-first-and-fourth","active":[true,false,false,true],"episodes":[3,1,1,1],"changes":["ReassessRegistration:1","ReassessRegistration:4"],"attendance":"expected"}
+  ]
+}

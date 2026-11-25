@@ -1,0 +1,138 @@
+{
+  "method": "InvalidSnapshot",
+  "scenarioIds": [
+    "INT-05"
+  ],
+  "path": "SAL",
+  "input": "restricted/snapshot.json",
+  "sourceInstant": "2026-09-01T00:00:00.1234567Z",
+  "receiptInstant": "2026-10-25T00:30:00Z",
+  "cases": [
+    {
+      "caseId": "malformed",
+      "fieldPath": "$",
+      "fieldCode": "invalid_json",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "oversized",
+      "fieldPath": "$",
+      "fieldCode": "size_limit",
+      "effect": "large",
+      "status": 413
+    },
+    {
+      "caseId": "missing-passport",
+      "fieldPath": "$.guests[0].passport",
+      "fieldCode": "required",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "bad-country",
+      "fieldPath": "$.guests[0].passport.issuingCountry",
+      "fieldCode": "invalid_country",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "duplicate-guest",
+      "fieldPath": "$.guests[1].srcGuestId",
+      "fieldCode": "duplicate_guest",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "tomorrow",
+      "fieldPath": "$.guests[0].dateOfBirth",
+      "fieldCode": "future_date",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "unknown-member",
+      "fieldPath": "$.guests[0]",
+      "fieldCode": "unexpected_member",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "invalid-date",
+      "fieldPath": "$.departureDate",
+      "fieldCode": "invalid_date",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "missing-status",
+      "fieldPath": "$.reservationStatus",
+      "fieldCode": "required",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "null-id",
+      "fieldPath": "$.srcBookingId",
+      "fieldCode": "string_required",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "eight-digits",
+      "fieldPath": "$.updatedAt",
+      "fieldCode": "invalid_length",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "offset",
+      "fieldPath": "$.createdAt",
+      "fieldCode": "invalid_utc_instant",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "too-many-scalars",
+      "fieldPath": "$.guests[0].firstName",
+      "fieldCode": "invalid_length",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "too-many-guests",
+      "fieldPath": "$.guests",
+      "fieldCode": "invalid_guest_list",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "bad-range",
+      "fieldPath": "$.departureDate",
+      "fieldCode": "invalid_stay",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "created-later",
+      "fieldPath": "$.updatedAt",
+      "fieldCode": "before_creation",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "cancel-missing",
+      "fieldPath": "$.cancelledAt",
+      "fieldCode": "required",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "confirmed-instant",
+      "fieldPath": "$.cancelledAt",
+      "fieldCode": "unexpected_instant",
+      "effect": "invalid",
+      "status": 400
+    }
+  ]
+}

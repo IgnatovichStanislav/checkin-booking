@@ -1,0 +1,71 @@
+{
+  "scenarioIds": ["A04"],
+  "path": "SAL",
+  "baseInstant": "2026-10-25T00:29:00Z",
+  "cases": [
+    {"caseId":"all-check-in-and-check-out","steps":[
+      {"status":"arrived","tick":1,"http":201},
+      {"status":"checkedIn","tick":2,"http":201},
+      {"status":"checkedOut","tick":3,"http":201},
+      {"status":"checkedIn","tick":4,"http":409},
+      {"status":"arrived","tick":1,"http":200,"retryOf":0},
+      {"status":"arrived","tick":1,"actor":"other-actor","http":409}
+    ]},
+    {"caseId":"direct-check-in","steps":[
+      {"status":"checkedIn","tick":1,"http":201},
+      {"status":"checkedOut","tick":2,"http":201}
+    ]},
+    {"caseId":"late-arrival","steps":[
+      {"status":"noShow","tick":2,"http":201},
+      {"status":"arrived","tick":3,"http":201},
+      {"status":"checkedOut","tick":4,"http":409},
+      {"status":"checkedIn","tick":1,"http":409},
+      {"status":"checkedIn","tick":3,"http":409},
+      {"status":"checkedIn","tick":4,"http":201},
+      {"status":"noShow","tick":2,"http":200,"retryOf":0}
+    ]},
+    {"caseId":"late-direct-check-in","steps":[
+      {"status":"noShow","tick":1,"http":201},
+      {"status":"checkedIn","tick":2,"http":201},
+      {"status":"noShow","tick":3,"http":409}
+    ]},
+    {"caseId":"expected-cannot-check-out","steps":[{"status":"checkedOut","tick":1,"http":409}]},
+    {"caseId":"restored-episode-keeps-guest-chronology","steps":[
+      {"status":"checkedIn","tick":3,"http":201},
+      {"restore":true,"status":"arrived","tick":2,"http":409,"effective":"expected"},
+      {"status":"arrived","tick":3,"http":409,"effective":"expected"},
+      {"status":"checkedIn","tick":3,"http":200,"retryOf":0,"effective":"expected"},
+      {"status":"arrived","tick":4,"http":201,"effective":"arrived"}
+    ]},
+    {"caseId":"restored-episode-uses-corrected-earlier-instant","steps":[
+      {"status":"checkedIn","tick":5,"http":201},
+      {"target":0,"reason":"incorrect_time","status":"checkedIn","tick":2,"http":201},
+      {"restore":true,"status":"arrived","tick":3,"http":201,"effective":"arrived"}
+    ]},
+    {"caseId":"restored-episode-uses-corrected-later-instant","steps":[
+      {"status":"checkedIn","tick":2,"http":201},
+      {"target":0,"reason":"incorrect_time","status":"checkedIn","tick":5,"http":201},
+      {"restore":true,"status":"arrived","tick":3,"http":409,"effective":"expected"},
+      {"status":"arrived","tick":5,"http":409,"effective":"expected"},
+      {"status":"arrived","tick":6,"http":201,"effective":"arrived"}
+    ]},
+    {"caseId":"equal-tuple-own-guest","steps":[
+      {"status":"arrived","tick":1,"http":201},
+      {"status":"arrived","tick":1,"guest":2,"http":201},
+      {"status":"arrived","tick":1,"otherBooking":true,"http":201}
+    ]}
+  ],
+  "invalid": [
+    {"caseId":"body-object","body":"[]","http":400,"path":"$","fieldCode":"object_required"},
+    {"caseId":"expected-ordinary","body":"{\"status\":\"expected\",\"occurredAt\":\"2026-10-25T00:29:00Z\"}","http":400,"path":"$.status","fieldCode":"unsupported_status"},
+    {"caseId":"missing-instant","body":"{\"status\":\"arrived\"}","http":400,"path":"$.occurredAt","fieldCode":"required"},
+    {"caseId":"not-string","body":"{\"status\":false,\"occurredAt\":\"2026-10-25T00:29:00Z\"}","http":400,"path":"$.status","fieldCode":"string_required"},
+    {"caseId":"offset","body":"{\"status\":\"arrived\",\"occurredAt\":\"2026-10-25T00:29:00+00:00\"}","http":400,"path":"$.occurredAt","fieldCode":"invalid_utc_instant"},
+    {"caseId":"eight-digits","body":"{\"status\":\"arrived\",\"occurredAt\":\"2026-10-25T00:29:00.12345678Z\"}","http":400,"path":"$.occurredAt","fieldCode":"invalid_length"},
+    {"caseId":"invalid-date","body":"{\"status\":\"arrived\",\"occurredAt\":\"2026-02-30T00:29:00Z\"}","http":400,"path":"$.occurredAt","fieldCode":"invalid_utc_instant"},
+    {"caseId":"scope-selector","body":"{\"status\":\"arrived\",\"occurredAt\":\"2026-10-25T00:29:00Z\",\"untrusted-field\":true}","http":400,"path":"$","fieldCode":"unexpected_member"},
+    {"caseId":"duplicate-member","body":"{\"status\":\"arrived\",\"status\":\"noShow\",\"occurredAt\":\"2026-10-25T00:29:00Z\"}","http":400,"path":"$","fieldCode":"unexpected_member"},
+    {"caseId":"malformed","body":"{","http":400,"path":"$","fieldCode":"invalid_json"},
+    {"caseId":"oversized","http":413,"path":"$","fieldCode":"size_limit"}
+  ]
+}

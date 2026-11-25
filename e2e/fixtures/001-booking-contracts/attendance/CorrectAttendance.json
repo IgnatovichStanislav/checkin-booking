@@ -1,0 +1,41 @@
+{
+  "scenarioIds": ["A05"],
+  "path": "SAL",
+  "baseInstant": "2026-10-25T00:29:00Z",
+  "cases": [
+    {"caseId":"compatible-later-observation",
+      "reports":[{"status":"arrived","tick":2},{"status":"checkedIn","tick":5}],
+      "steps":[
+        {"target":0,"status":"expected","tick":2,"reason":"incorrect_report","http":201,"effective":"checkedIn"},
+        {"target":0,"status":"noShow","tick":3,"reason":"incorrect_status","http":201,"effective":"checkedIn"},
+        {"target":0,"status":"expected","tick":2,"reason":"incorrect_report","http":200,"retryOf":0,"effective":"checkedIn"},
+        {"target":0,"status":"noShow","tick":3,"reason":"incorrect_time","http":201,"effective":"checkedIn"},
+        {"target":0,"status":"noShow","tick":3,"reason":"incorrect_time","actor":"other-actor","http":201,"effective":"checkedIn"},
+        {"target":0,"status":"noShow","tick":4,"reason":"incorrect_time","actor":"other-actor","http":201,"effective":"checkedIn"},
+        {"target":1,"status":"noShow","tick":4,"reason":"incorrect_time","actor":"other-actor","http":409,"effective":"checkedIn"},
+        {"target":0,"status":"noShow","tick":5,"reason":"incorrect_time","http":409,"effective":"checkedIn"},
+        {"target":0,"status":"noShow","tick":6,"reason":"incorrect_time","http":409,"effective":"checkedIn"},
+        {"target":1,"status":"expected","tick":5,"reason":"incorrect_status","http":409,"effective":"checkedIn"}
+      ]},
+    {"caseId":"incompatible-later-check-out",
+      "reports":[{"status":"checkedIn","tick":2},{"status":"checkedOut","tick":5}],
+      "steps":[{"target":0,"status":"expected","tick":2,"reason":"incorrect_report","http":409,"effective":"checkedOut"}]},
+    {"caseId":"cannot-remove-retained-arrival",
+      "reports":[{"status":"arrived","tick":2},{"status":"checkedIn","tick":5}],
+      "steps":[{"target":1,"status":"expected","tick":5,"reason":"incorrect_report","http":409,"effective":"checkedIn"}]},
+    {"caseId":"retry-does-not-reapply-old-correction",
+      "reports":[{"status":"arrived","tick":2}],
+      "steps":[
+        {"target":0,"status":"expected","tick":2,"reason":"incorrect_report","http":201,"effective":"expected"},
+        {"target":0,"status":"noShow","tick":2,"reason":"incorrect_status","http":201,"effective":"noShow"},
+        {"target":0,"status":"expected","tick":2,"reason":"incorrect_report","http":200,"retryOf":0,"effective":"noShow"}
+      ]},
+    {"caseId":"historical-episode-is-isolated",
+      "reports":[{"status":"noShow","tick":2}],
+      "restore":true,
+      "steps":[{"target":0,"status":"arrived","tick":3,"reason":"incorrect_status","http":201,"effective":"expected","historicalEffective":"arrived"}]},
+    {"caseId":"prior-position-keeps-effective-time",
+      "reports":[{"status":"arrived","tick":2},{"status":"checkedIn","tick":5}],
+      "steps":[{"target":1,"status":"checkedIn","tick":1,"reason":"incorrect_time","http":409,"effective":"checkedIn"}]}
+  ]
+}

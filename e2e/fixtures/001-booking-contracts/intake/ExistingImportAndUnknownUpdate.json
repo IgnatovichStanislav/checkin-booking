@@ -1,0 +1,52 @@
+{
+  "method": "ExistingImportAndUnknownUpdate",
+  "scenarioIds": [
+    "A01"
+  ],
+  "path": "SAL",
+  "input": "restricted/snapshot.json",
+  "sourceInstant": "2026-09-01T00:00:00.1234567Z",
+  "receiptInstant": "2026-10-25T00:30:00Z",
+  "cases": [
+    {
+      "caseId": "older-post",
+      "effect": "usePut",
+      "status": 409
+    },
+    {
+      "caseId": "newer-post",
+      "effect": "usePut",
+      "status": 409
+    },
+    {
+      "caseId": "erased-older-post",
+      "effect": "usePut",
+      "status": 409
+    },
+    {
+      "caseId": "unknown-put",
+      "effect": "missing",
+      "status": 404
+    },
+    {
+      "caseId": "immutable-created",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "immutable-source",
+      "effect": "invalid",
+      "status": 400
+    },
+    {
+      "caseId": "expired-proposal",
+      "effect": "expired",
+      "status": 410
+    },
+    {
+      "caseId": "reactivate",
+      "effect": "apply",
+      "status": 200
+    }
+  ]
+}

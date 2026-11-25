@@ -1,0 +1,38 @@
+{
+  "method": "FirstImport",
+  "scenarioIds": [
+    "INT-01",
+    "SAL-01"
+  ],
+  "path": "SAL",
+  "input": "restricted/snapshot.json",
+  "sourceInstant": "2026-09-01T00:00:00.1234567Z",
+  "receiptInstant": "2026-10-25T00:30:00Z",
+  "cases": [
+    {
+      "caseId": "first",
+      "effect": "create",
+      "status": 201
+    },
+    {
+      "caseId": "first-before",
+      "effect": "create",
+      "status": 201
+    },
+    {
+      "caseId": "first-at",
+      "effect": "expired",
+      "status": 410
+    },
+    {
+      "caseId": "first-after",
+      "effect": "expired",
+      "status": 410
+    },
+    {
+      "caseId": "first-failed",
+      "effect": "create",
+      "status": 503
+    }
+  ]
+}

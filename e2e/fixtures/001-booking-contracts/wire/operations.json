@@ -1,0 +1,110 @@
+[
+  {
+    "method": "post",
+    "path": "/api/v1/bookings",
+    "operationId": "importBooking",
+    "body": "Snapshot",
+    "success": "Mappings",
+    "codes": "200 201",
+    "errors": "400 401 403 409 410 413 503"
+  },
+  {
+    "method": "put",
+    "path": "/api/v1/bookings/{bookingId}",
+    "operationId": "updateBooking",
+    "body": "Snapshot",
+    "success": "Mappings",
+    "codes": "200",
+    "errors": "400 401 403 404 409 410 413 503"
+  },
+  {
+    "method": "get",
+    "path": "/api/v1/bookings/{bookingId}/status",
+    "operationId": "getBookingStatus",
+    "body": null,
+    "success": "Status",
+    "codes": "200",
+    "errors": "401 403 404"
+  },
+  {
+    "method": "post",
+    "path": "/api/v1/bookings/{bookingId}/guests/{guestId}/attendance-events",
+    "operationId": "reportAttendance",
+    "body": "Attendance",
+    "success": "AttendanceReceipt",
+    "codes": "200 201",
+    "errors": "400 401 403 404 409 413"
+  },
+  {
+    "method": "post",
+    "path": "/api/v1/bookings/{bookingId}/guests/{guestId}/attendance-events/{attendanceEventId}/corrections",
+    "operationId": "correctAttendance",
+    "body": "Correction",
+    "success": "AttendanceReceipt",
+    "codes": "200 201",
+    "errors": "400 401 403 404 409 413"
+  },
+  {
+    "method": "post",
+    "path": "/api/v1/hotels/{propertyId}/subscriptions",
+    "operationId": "createSubscription",
+    "body": "SubscriptionInput",
+    "success": "Subscription",
+    "codes": "201",
+    "errors": "400 401 403 404 413"
+  },
+  {
+    "method": "get",
+    "path": "/api/v1/hotels/{propertyId}/subscriptions",
+    "operationId": "listSubscriptions",
+    "body": null,
+    "success": "Subscription[]",
+    "codes": "200",
+    "errors": "401 403 404"
+  },
+  {
+    "method": "get",
+    "path": "/api/v1/hotels/{propertyId}/subscriptions/{subscriptionId}",
+    "operationId": "getSubscription",
+    "body": null,
+    "success": "Subscription",
+    "codes": "200",
+    "errors": "401 403 404"
+  },
+  {
+    "method": "put",
+    "path": "/api/v1/hotels/{propertyId}/subscriptions/{subscriptionId}",
+    "operationId": "updateSubscription",
+    "body": "SubscriptionInput",
+    "success": "Subscription",
+    "codes": "200",
+    "errors": "400 401 403 404 413"
+  },
+  {
+    "method": "put",
+    "path": "/api/v1/hotels/{propertyId}/subscriptions/{subscriptionId}/signing-key",
+    "operationId": "rotateSigningKey",
+    "body": "Rotation",
+    "success": "Subscription",
+    "codes": "200",
+    "errors": "400 401 403 404 413"
+  },
+  {
+    "method": "get",
+    "path": "/api/v1/hotels/{propertyId}/subscriptions/{subscriptionId}/deliveries",
+    "operationId": "listDeliveries",
+    "body": null,
+    "success": "Delivery[]",
+    "codes": "200",
+    "errors": "401 403 404"
+  },
+  {
+    "method": "post",
+    "path": "/api/v1/hotels/{propertyId}/subscriptions/{subscriptionId}/deliveries/{deliveryId}/retries",
+    "operationId": "retryDelivery",
+    "body": null,
+    "success": "Delivery",
+    "codes": "202",
+    "errors": "401 403 404 409"
+  }
+]

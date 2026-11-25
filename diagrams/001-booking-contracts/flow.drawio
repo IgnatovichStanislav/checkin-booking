@@ -1,0 +1,144 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="booking-data-flow" name="Before">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1800" pageHeight="600">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="hotels" value="Hotels / PMS" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="40" y="240" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="receive" value="Receive booking data" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="260" y="240" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="convert" value="Convert to our format" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="480" y="240" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="queue" value="Queue for processing" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="700" y="240" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="rules" value="Apply booking rules" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="920" y="240" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="save" value="Save booking" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="1140" y="240" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="share" value="Share updates with connected systems" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="1400" y="160" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="view" value="View booking and status" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;spacing=12;">
+          <mxGeometry x="1400" y="320" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-0" edge="1" parent="1" source="hotels" target="receive" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#64748b;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-1" edge="1" parent="1" source="receive" target="convert" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#64748b;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-2" edge="1" parent="1" source="convert" target="queue" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#64748b;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-3" edge="1" parent="1" source="queue" target="rules" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#64748b;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-4" edge="1" parent="1" source="rules" target="save" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#64748b;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-5" edge="1" parent="1" source="save" target="share" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#64748b;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-6" edge="1" parent="1" source="save" target="view" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#64748b;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="booking-after" name="After">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageScale="1" pageWidth="1330" pageHeight="820">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="legend-unchanged" value="Unchanged" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;">
+          <mxGeometry x="40" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-added" value="Added" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="208" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-changed" value="(changed)" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;">
+          <mxGeometry x="376" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-removed" value="(removed)" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#ffffff;strokeColor=#b85450;dashed=1;">
+          <mxGeometry x="544" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend-open" value="Open question" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#e1d5e7;strokeColor=#9673a6;">
+          <mxGeometry x="712" y="40" width="150" height="38" as="geometry"/>
+        </mxCell>
+        <mxCell id="salou" value="Salou VIP PMS" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;">
+          <mxGeometry x="40" y="150" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="intake" value="CHECKIN · authorize, validate and map full snapshot (changed)" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;">
+          <mxGeometry x="330" y="150" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="commit" value="Atomic commit · booking, restricted guests and outbox (changed)" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;">
+          <mxGeometry x="620" y="150" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="receipt" value="HTTP acknowledgment and ID mappings" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="940" y="150" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="publisher" value="Outbox publisher" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="620" y="285" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="kafka" value="Kafka · keyed opaque references (changed)" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#fff2cc;strokeColor=#d6b656;">
+          <mxGeometry x="620" y="415" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="worker" value="Registration worker · load scoped data" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="620" y="550" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="pds" value="Pinned fictional destination" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="940" y="550" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="status" value="CHECKIN status + notification outbox" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="320" y="550" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="hotel" value="Hotel · status lookup or signed callback" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
+          <mxGeometry x="40" y="550" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="future" value="H10 webhook / Cassis poll · future adapters" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;">
+          <mxGeometry x="40" y="315" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="salou-to-intake" source="salou" target="intake" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="intake-to-commit" source="intake" target="commit" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="commit-to-receipt" source="commit" target="receipt" value="after commit" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="commit-to-publisher" source="commit" target="publisher" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="publisher-to-kafka" source="publisher" target="kafka" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="kafka-to-worker" source="kafka" target="worker" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="worker-to-pds" source="worker" target="pds" value="submit" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;exitY=0.3;entryY=0.3;exitX=1;entryX=0;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="pds-to-worker" source="pds" target="worker" value="result" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;exitY=0.78;entryY=0.78;exitX=0;entryX=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="worker-to-status" source="worker" target="status" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="status-to-hotel" source="status" target="hotel" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="future-to-intake" source="future" target="intake" value="shared rules" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;dashed=1;">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

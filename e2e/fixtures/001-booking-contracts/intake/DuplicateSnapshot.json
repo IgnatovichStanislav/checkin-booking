@@ -1,0 +1,33 @@
+{
+  "method": "DuplicateSnapshot",
+  "scenarioIds": [
+    "INT-02",
+    "SAL-01"
+  ],
+  "path": "SAL",
+  "input": "restricted/snapshot.json",
+  "sourceInstant": "2026-09-01T00:00:00.1234567Z",
+  "receiptInstant": "2026-10-25T00:30:00Z",
+  "cases": [
+    {
+      "caseId": "reordered-post",
+      "effect": "duplicate",
+      "status": 200
+    },
+    {
+      "caseId": "reordered-put",
+      "effect": "duplicate",
+      "status": 200
+    },
+    {
+      "caseId": "erased-post",
+      "effect": "open",
+      "status": 410
+    },
+    {
+      "caseId": "erased-put",
+      "effect": "open",
+      "status": 410
+    }
+  ]
+}

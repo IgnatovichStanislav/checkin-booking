@@ -1,0 +1,28 @@
+{
+  "srcBookingId": "sal:%/é",
+  "createdAt": "2026-08-01T00:00:00Z",
+  "updatedAt": "2026-09-01T00:00:00.1234567Z",
+  "arrivalDate": "2026-10-24",
+  "departureDate": "2026-10-26",
+  "reservationStatus": "confirmed",
+  "guests": [
+    {
+      "srcGuestId": "G1",
+      "firstName": "Fictional",
+      "lastName": "Sample-A",
+      "dateOfBirth": "2000-02-29",
+      "passport": {
+        "number": "SYNTHETIC-A",
+        "issuingCountry": "ES",
+        "expiresOn": "2020-01-01"
+      }
+    },
+    {
+      "srcGuestId": "G2",
+      "firstName": "Invented",
+      "lastName": "Sample-B",
+      "dateOfBirth": "2002-03-01",
+      "passport": null
+    }
+  ]
+}
