@@ -1,0 +1,76 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="verification-flow" name="Verification flow">
+    <mxGraphModel dx="1200" dy="850" grid="1" gridSize="10" page="1" pageWidth="1240" pageHeight="850">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="developer" value="Developer / task request" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#000000;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="100" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="isolation" value="Isolated task worktree (changed)&#10;V07: create or reuse; preserve unrelated edits" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="230" y="85" width="230" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="verification" value="Local / Windows + Linux CI (changed)&#10;V01–V04: shared checks; bounded execution" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="510" y="85" width="260" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="evidence" value="Fresh safe evidence (changed)&#10;V03/V05: phase failures, test results,&#10;source baseline; incomplete = failure" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="820" y="85" width="290" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="application" value="Existing application unit/contract suite&#10;Decision / wire proof only" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#000000;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="430" y="255" width="260" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="inventory" value="Existing static skill inventory check&#10;Routes / targets; no behavioral proof" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#000000;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="740" y="255" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="behavior" value="Added worktree behavioral cases&#10;V07: new task + existing-task follow-up&#10;Disposable workspace; independent traces" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="100" y="385" width="320" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="packet" value="Verification packet (changed)&#10;V06/V08: tests, evals and limitations distinct&#10;Complete scenario/path matrix" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="510" y="385" width="320" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="owner" value="Owner / separate-session reviewers&#10;Existing G1/G2/G3 gates retained&#10;Passing checks do not authorize merging" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#000000;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="900" y="385" width="280" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="future" value="Future runtime proof remains PENDING&#10;Integration: PostgreSQL / Kafka / PDS boundaries&#10;Backend E2E: API + workers + real stand&#10;UI: component + browser tests&#10;Supplied by their implementation features" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="100" y="565" width="460" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="scope" value="Scope boundary&#10;No booking contract, state or hotel/PMS/PDS flow changes.&#10;No automated judge service or coverage dashboard added.&#10;V01–V08 are feature-local acceptance IDs." style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="660" y="580" width="480" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="Legend: white = existing / future as labeled&#10;Green = added; amber = changed&#10;Red dashed = removed (none); purple = open question (none)" style="rounded=1;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="20" y="15" width="1160" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="task-to-worktree" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;" edge="1" parent="1" source="developer" target="isolation">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="worktree-to-checks" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;" edge="1" parent="1" source="isolation" target="verification">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="checks-to-evidence" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;" edge="1" parent="1" source="verification" target="evidence">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="checks-to-application" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;" edge="1" parent="1" source="verification" target="application">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="checks-to-inventory" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;" edge="1" parent="1" source="verification" target="inventory">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="worktree-to-eval" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;" edge="1" parent="1" source="isolation" target="behavior">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="evidence-to-packet" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;" edge="1" parent="1" source="evidence" target="packet">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="eval-to-packet" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;" edge="1" parent="1" source="behavior" target="packet">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="packet-to-owner" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;" edge="1" parent="1" source="packet" target="owner">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="future-proof-pending" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;dashed=1;" edge="1" parent="1" source="future" target="packet">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
