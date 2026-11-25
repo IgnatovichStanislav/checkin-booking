@@ -39,7 +39,7 @@ internal static class ScenarioEvidence
     private static HashSet<string> ReadCatalog()
     {
         var catalog = File.ReadLines(Path.Combine(AppContext.BaseDirectory, "scenario-catalog.md"))
-            .Select(line => Regex.Match(line, @"^\| ((?:INT|H10|SAL|CAS|BRK|KFK|PDS)-[0-9]{2}) \|"))
+            .Select(line => Regex.Match(line, @"^\| ((?:INT|H01|SAL|CAS|BRK|KFK|PDS)-[0-9]{2}) \|"))
             .Where(match => match.Success).Select(match => match.Groups[1].Value).ToArray();
         Require(catalog.Length > 0 && catalog.Length == catalog.Distinct().Count(), "Invalid scenario catalog.");
         return catalog.ToHashSet(StringComparer.Ordinal);

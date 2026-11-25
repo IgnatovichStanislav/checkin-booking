@@ -23,7 +23,7 @@ Deliver the Salou VIP wire contracts, a mapper to the shared full-snapshot Booki
 | --- | --- |
 | src/Booking.Contracts | Shared BookingDto with scoped source key, source times, dates, status, cancellation instant and full guest input. Separate safe response, reference and notification records. Keep restricted records out of diagnostic formatting, including generated record ToString. |
 | src/Booking.Domain | Pure typed decisions over prior and incoming state. Return effects such as apply, ignore, conflict, reconcile, amend or cancel. No counters claiming delivery, mutable repository or host. Depends only on shared contract types. |
-| src/Booking.Application/Salou | Provider wire records, bounded decoder, Salou-to-BookingDto mapping and HTTP result mapping from decisions. References contracts/domain. Future H10 and Cassis adapters own their formats. |
+| src/Booking.Application/Salou | Provider wire records, bounded decoder, Salou-to-BookingDto mapping and HTTP result mapping from decisions. References contracts/domain. Future H01 and Cassis adapters own their formats. |
 | tests/Unit/Booking.ContractTests | Wire round-trips, mapping, rules and safe-output assertions. One MSTest project references the three libraries. |
 | e2e/fixtures/001-booking-contracts | JSON input and expected decisions grouped by scenario and case. Shared synthetic IDs and deterministic times. Restricted synthetic fields only in designated input fixtures. Failure messages use paths and codes. |
 | test-results/ | Per-run TRX and identity-free scenario evidence. Ignored by Git. |
@@ -34,7 +34,7 @@ Review [research](research.md), the [data model](data-model.md), [HTTP contract]
 
 001 runs without credentials, ports or processes beyond the tests. It tests decisions and wire representations. The stand in 002 supplies isolated services and ports. A separately scoped intake host and persistence implementation using that stand must authenticate, authorize, transact, reconcile, erase and serve HTTP before the Salou runtime cases can pass. A local Compose stack alone cannot establish any of those properties.
 
-003 consumes the committed outbox, publishes immutable references and tests broker redelivery, offset order and durable dead letters. 004 implements fictional destination protocols, pinned submissions, notification delivery and reconciliation against actual simulator results. A future delivery host owns callback signing, subscription administration and attempt history. 005 reads safe results to visualize coverage. H10 and Cassis need their own provider contracts. None of these projects or services is scaffolded in 001.
+003 consumes the committed outbox, publishes immutable references and tests broker redelivery, offset order and durable dead letters. 004 implements fictional destination protocols, pinned submissions, notification delivery and reconciliation against actual simulator results. A future delivery host owns callback signing, subscription administration and attempt history. 005 reads safe results to visualize coverage. H01 and Cassis need their own provider contracts. None of these projects or services is scaffolded in 001.
 
 ## Constitution check
 

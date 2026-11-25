@@ -5,9 +5,9 @@ Stable IDs for the required scenarios in root AGENTS.md. Fixtures, tests, specs,
 ## ID rules
 
 - Format `<AREA>-NN`. Never renumber or reuse an ID; mark retired IDs `deprecated` and keep the row.
-- Areas: INT all intake paths, H10 shared H10 webhooks, SAL Salou VIP POST, CAS Cassis West polling, BRK any broker (reused by forks), KFK Kafka-specific, PDS registration.
+- Areas: INT all intake paths, H01 shared H01 webhooks, SAL Salou VIP POST, CAS Cassis West polling, BRK any broker (reused by forks), KFK Kafka-specific, PDS registration.
 - Tag every test with scenario metadata supported by the chosen framework (for example, xUnit `[Trait("Scenario", "INT-03")]`). The framework is not selected yet. One test may cover several IDs; every in-scope ID needs at least one test. Preserve an explicit mapping to result IDs.
-- Intake paths in "Applies to": H10 = H10 Central/East webhooks, SAL = Salou VIP POST, CAS = Cassis West poll.
+- Intake paths in "Applies to": H01 = H01 Central/East webhooks, SAL = Salou VIP POST, CAS = Cassis West poll.
 - Fixture layout and file formats are decided in feature 001; until then "Fixtures" stays empty.
 - Synthetic data only. Fixtures reference guests by synthetic IDs; never put identity data in this file.
 
@@ -15,21 +15,21 @@ Stable IDs for the required scenarios in root AGENTS.md. Fixtures, tests, specs,
 
 | ID | Scenario | Applies to | Expected outcome | Fixtures | Status |
 | --- | --- | --- | --- | --- | --- |
-| INT-01 | First snapshot | H10, SAL, CAS | Booking applied and outbox row inserted in one transaction | | planned |
-| INT-02 | Duplicate snapshot (equal updatedAt, identical normalized data) | H10, SAL, CAS | No booking or outbox effect | | planned |
-| INT-03 | Stale snapshot (older updatedAt) | H10, SAL, CAS | Ignored; no booking or outbox effect | | planned |
-| INT-04 | Conflicting snapshot (equal updatedAt, different data) | H10, SAL, CAS | Conflict recorded and surfaced; no tie-break; reconcile with source | | planned |
-| INT-05 | Invalid snapshot | H10, SAL, CAS | Rejected with safe reason; no booking or outbox effect | | planned |
-| INT-06 | Concurrent delivery of the same booking | H10, SAL, CAS | Atomic guard prevents duplicate effects per accepted snapshot; state never regresses and ends at the newest non-conflicting snapshot. Distinct increasing updates may each apply | | planned |
+| INT-01 | First snapshot | H01, SAL, CAS | Booking applied and outbox row inserted in one transaction | | planned |
+| INT-02 | Duplicate snapshot (equal updatedAt, identical normalized data) | H01, SAL, CAS | No booking or outbox effect | | planned |
+| INT-03 | Stale snapshot (older updatedAt) | H01, SAL, CAS | Ignored; no booking or outbox effect | | planned |
+| INT-04 | Conflicting snapshot (equal updatedAt, different data) | H01, SAL, CAS | Conflict recorded and surfaced; no tie-break; reconcile with source | | planned |
+| INT-05 | Invalid snapshot | H01, SAL, CAS | Rejected with safe reason; no booking or outbox effect | | planned |
+| INT-06 | Concurrent delivery of the same booking | H01, SAL, CAS | Atomic guard prevents duplicate effects per accepted snapshot; state never regresses and ends at the newest non-conflicting snapshot. Distinct increasing updates may each apply | | planned |
 
-## H10 shared webhooks
+## H01 shared webhooks
 
 | ID | Scenario | Applies to | Expected outcome | Fixtures | Status |
 | --- | --- | --- | --- | --- | --- |
-| H10-01 | Same booking ID in h10-central and h10-east | H10 | Two distinct bookings by providerId:propertyId:bookingId | | planned |
-| H10-02 | Property not authorized for the integration | H10 | Rejected; no booking effect | | planned |
-| H10-03 | Webhook retry of an accepted event | H10 | Acknowledged again; no duplicate effect | | planned |
-| H10-04 | Missing event | H10 | Reconciliation retrieves a provider update Kafka never received; detection cadence and provider query contract are specified per feature | | planned |
+| H01-01 | Same booking ID in h01-central and h01-east | H01 | Two distinct bookings by providerId:propertyId:bookingId | | planned |
+| H01-02 | Property not authorized for the integration | H01 | Rejected; no booking effect | | planned |
+| H01-03 | Webhook retry of an accepted event | H01 | Acknowledged again; no duplicate effect | | planned |
+| H01-04 | Missing event | H01 | Reconciliation retrieves a provider update Kafka never received; detection cadence and provider query contract are specified per feature | | planned |
 
 ## Salou VIP POST
 

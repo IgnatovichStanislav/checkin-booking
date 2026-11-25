@@ -102,7 +102,7 @@
         <mxCell id="hotel" value="Hotel · status lookup or signed callback" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#d5e8d4;strokeColor=#82b366;">
           <mxGeometry x="40" y="550" width="220" height="70" as="geometry"/>
         </mxCell>
-        <mxCell id="future" value="H10 webhook / Cassis poll · future adapters" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;">
+        <mxCell id="future" value="H01 webhook / Cassis poll · future adapters" vertex="1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;spacing=8;fillColor=#dae8fc;strokeColor=#6c8ebf;">
           <mxGeometry x="40" y="315" width="220" height="70" as="geometry"/>
         </mxCell>
         <mxCell id="salou-to-intake" source="salou" target="intake" value="" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;endArrow=block;html=0;fontSize=13;labelBackgroundColor=#ffffff;">

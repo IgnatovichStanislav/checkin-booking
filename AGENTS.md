@@ -6,7 +6,7 @@ Build a local .NET test stand that receives PMS bookings, registers stays and gu
 
 Flow: hotel/PMS -> map booking -> broker -> save booking -> register stay/guests with fictional Police Department System (PDS) -> receive result -> expose status to hotel/API/React monitoring UI.
 
-Stack: .NET, PostgreSQL (durable state/outbox), Redis (disposable cache), webhooks, React + TypeScript monitoring/test UI. Redis/UI are optional for the first broker example. Use Docker Desktop/local services. PDS is a simulator; this is not H10's real architecture or legal guidance.
+Stack: .NET, PostgreSQL (durable state/outbox), Redis (disposable cache), webhooks, React + TypeScript monitoring/test UI. Redis/UI are optional for the first broker example. Use Docker Desktop/local services. PDS is a simulator; this is not H01's real architecture or legal guidance.
 
 Current workspace contains guidance/tooling, diagrams and evals, not an implemented booking application. The user removed Kafke_Booking/, Input_Schemas/, Outbox_Schemas/ and RabbitMQ_Booking/. Create projects/contracts only when requested and needed; do not restore old drafts. Roadmap: agree contracts/local ports and setup/teardown -> Kafka -> monitoring/Redis as needed. Other brokers (e.g. RabbitMQ, Pub/Sub) are out of scope here and will be implemented in separate forks reusing the same booking rules, fixtures and scenario IDs. Output adapters (PMS POST, webhook, file export, GET) still need contracts.
 
@@ -40,12 +40,12 @@ For staged feature work, read agents/WORKFLOW.md for roles, review gates and han
 
 | Fictional hotel | Property ID | Intake |
 | --- | --- | --- |
-| H10 Central, Spain | h10-central | Shared H10 PMS webhooks |
-| H10 East, Spain | h10-east | Shared H10 PMS webhooks |
+| H01 Central, Spain | h01-central | Shared H01 PMS webhooks |
+| H01 East, Spain | h01-east | Shared H01 PMS webhooks |
 | Salou VIP, Spain | salou-vip | Separate integration; REST POST to our contract |
 | Cassis West, France | cassis-west | Separate PMS; our application polls |
 
-Salou VIP replaces Salou Central. Resolve provider from authenticated integration/configuration. H10 records require a property ID validated against that integration; single-property integrations resolve it from verified configuration.
+Salou VIP replaces Salou Central. Resolve provider from authenticated integration/configuration. H01 records require a property ID validated against that integration; single-property integrations resolve it from verified configuration.
 
 Separate provider payloads from internal broker events. All paths map to one full-snapshot BookingDto. Reuse mappers for matching shapes; otherwise use separate mappers. Handle polling pagination/cursors outside the booking mapper; advance cursors only after durable acceptance.
 
@@ -79,7 +79,7 @@ Correlate PDS results with a stable registration request ID; retries must not du
 ## Required scenarios
 
 - All intake: first/duplicate/stale/conflicting/invalid snapshots and concurrent delivery.
-- H10: same booking ID across hotels, property authorization, webhook retry, missing-event reconciliation.
+- H01: same booking ID across hotels, property authorization, webhook retry, missing-event reconciliation.
 - Salou VIP: POST retry after timeout, unauthorized property.
 - Cassis West: pagination, overlapping timestamp boundaries, interrupted polls and durable cursor recovery.
 - Brokers: crash after DB commit/before ack, no duplicate booking/outbox effect, bounded retry and durable dead-letter handoff. Kafka: keyed ordering, offset commit after DB commit, replay from offset.

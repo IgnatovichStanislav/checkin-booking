@@ -246,7 +246,7 @@ create a preview; report the tooling limitation.
 
 ### Scenario IDs
 
-- e2e/fixtures/scenarios.md is the catalog of stable scenario IDs (INT, H10, SAL, CAS, BRK, KFK, PDS). It is adopted in feature 001.
+- e2e/fixtures/scenarios.md is the catalog of stable scenario IDs (INT, H01, SAL, CAS, BRK, KFK, PDS). It is adopted in feature 001.
 - Specs reference IDs in acceptance scenarios; tasks name the IDs each test covers; tests carry scenario metadata supported by the selected test framework; fixtures are named or tagged with their IDs.
 - BRK IDs are broker-agnostic and reused by forks; only KFK IDs are Kafka-specific.
 - Adding or retiring an ID is a spec change (section 10, contract change point). Select the test framework and metadata-to-results mapping in the plan; an xUnit Trait is an example, not a selected dependency.
@@ -259,7 +259,7 @@ Generated from data, never hand-drawn; the catalog, fixtures and test output are
 
 | Visual | Source | Shows | Used at |
 | --- | --- | --- | --- |
-| Coverage matrix | scenarios.md + test results + explicit test-to-scenario mapping | Scenario ID x intake path (H10, SAL, CAS; `all` for BRK, KFK, PDS) -> passed / failed / pending / n/a | G3 packet, converge |
+| Coverage matrix | scenarios.md + test results + explicit test-to-scenario mapping | Scenario ID x intake path (H01, SAL, CAS; `all` for BRK, KFK, PDS) -> passed / failed / pending / n/a | G3 packet, converge |
 | Scenario timeline | Fixture files | Per event: updatedAt, receivedAt, arrival order, expected booking/outbox/PDS effect | Review of INT, CAS, BRK, KFK and PDS fixtures and failures |
 | Failure detail | Test output | Expected vs actual state transitions for each failed ID | G3 packet, blocking review |
 
