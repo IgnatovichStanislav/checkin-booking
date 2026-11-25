@@ -26,6 +26,8 @@ Use root secrets/ for development-only encryption keys and credentials; recreate
 
 ## AI workflow
 
+For every concrete repository task, including small documentation edits and follow-ups, read agents/WORKFLOW.md section 4 and complete its worktree startup steps before inspecting task files.
+
 For staged feature work, read agents/WORKFLOW.md for roles, review gates and handoffs. Stable scenario IDs live in e2e/fixtures/scenarios.md; map in-scope IDs to tests and actual results. This guidance configures no runtime and does not launch agents automatically. Planned folder and project boundaries are documented in agents/LAYOUT.md; create them only when the relevant feature needs them.
 
 ## Working rules

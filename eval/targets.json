@@ -166,5 +166,19 @@
     "runbook": "cases/kafka-unrelated-constraint.md",
     "sourceCommit": null,
     "status": "pass"
+  },
+  {
+    "id": "worktree-new-task",
+    "skill": "../agents/skills/speckit-specify/SKILL.md",
+    "runbook": "cases/worktree-new-task.md",
+    "sourceCommit": "ff049e3cd3e01a639be14327a2c76fadc3b1354b",
+    "status": "pass"
+  },
+  {
+    "id": "worktree-follow-up",
+    "skill": "../agents/skills/speckit-specify/SKILL.md",
+    "runbook": "cases/worktree-follow-up.md",
+    "sourceCommit": "ff049e3cd3e01a639be14327a2c76fadc3b1354b",
+    "status": "pass"
   }
 ]

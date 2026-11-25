@@ -131,3 +131,84 @@ Windows checks against 3a01370 plus the Group C working changes:
 - Review follow-up verified that nested source and recursive intake fixture files cannot evade the digest under directories named test-results. A valid receipt with zero selected tests preserved platform exit 0, failed verification with exit 1 and exported only the manifest and receipt. The full runner regression passed in `test-results/runner-check-71580d98be794fbf960e4bee66b580b4/`, and the real Windows runner passed all 36 tests in `test-results/unit-contracts-82d7ba215915429e9cae08aaf8e70762/`.
 
 Linux and hosted CI remain pending Group D. No booking runtime tests were added in this group.
+
+## Hosted CI verification (Group D)
+
+The feature worktree rebased cleanly onto main at a5eeab2. The CI matrix runs the runner regressions and the full suite on Windows and Linux. The upload step takes the exact export directory emitted by that invocation. Independent review approved the receipt checks at 495ae1e after they were changed to specify receipt presence separately for each case.
+
+| Hosted case | Source | Verified on Windows and Linux |
+| --- | --- | --- |
+| [Successful verification](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45596840719) | 495ae1e6d5fb1923a4e75b2c335270402afcb0bc | Runner regressions passed, 36 test results passed, source and policy verified, and the current run's four JSON records uploaded. |
+| [Early failure](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45597154183) | 5dcd6ba070db6a213e4ae9d2bf5e9496243c6332 | Runner regressions passed. The deliberate preflight failure failed the job, left restore and tests unrun, and uploaded only the run manifest. |
+| [Returned test failure](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45597139982) | 95372f0df432d2c74d4fe27dd10ad757ed366ae0 | Runner regressions passed. One assertion failed out of 36 tests. The receipt preserved platform exit 2, evidence joined successfully, and the four safe JSON records uploaded. The synthetic marker was absent from the downloaded artifacts and hosted logs. |
+
+The artifact checks compared the exact names, source commits, phase outcomes and receipt bindings. The first returned-failure attempt also failed the regression step because the disposable test used a local name already used by another fixture. Its replacement isolated the local name and passed the regression step on both platforms. Both disposable branches and their worktree were removed after verification. The downloaded artifacts are in the ignored test-results/hosted-group-d/ directory.
+
+The automated worktree eval inventory, manual behavioral cases and final scenario coverage packet remain pending. The graph refresh completed without a parser warning.
+
+## Evaluation inventory and worktree behavior (Group E)
+
+The inventory CLI verified 52 skill routes and 26 targets. The six disposable regression cases passed locally and in [hosted static CI](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45598961148) at 98219f4. The hosted job ran only inventory and regression checks. It did not run or grade the behavioral cases.
+
+Fresh sessions ran both behavioral prompts in disposable repositories. Initial standalone CLI attempts were blocked by host policy during instruction reads. The subsequent Desktop attempts under the original prompts failed isolation or ordering checks. The prompts were then corrected to explicitly load agents/WORKFLOW.md, as specified by the approved plan. The original outcomes were retained.
+
+| Case | Grade at 98219f4 | Observed outcome |
+| --- | --- | --- |
+| New task | Fail | Created the isolated worktree from main and made only the requested correction. Verified the clean task checkout before reading the document, but reported its path, branch and clean baseline only after reading it. |
+| Follow-up | Fail | Reused the matching worktree and left only the requested README edit. Searched main's README in parallel with Git routing before verifying the matching checkout. |
+
+Independent Git and file checks confirmed that both revised sessions preserved main and all unrelated sentinel bytes. The follow-up preserved the worktree list and refs. The ordering checks used the sessions' command records and a clarification on the reporting time. The standalone CLI trace was available only for the blocked attempts. Baselines, prompts, state checks, command records and grades are retained in ignored eval/results/.
+
+T022 and T023 were executed and graded. V07 and SC-005 remain open until both cases pass in fresh sessions. The next behavioral verification must retain the original grades and the existing rubric.
+
+### Worktree workflow correction and reruns
+
+At ff049e3, the repository guidance applies worktree startup to every concrete task. The ordered steps keep task-file searches out of the Git routing batch and require a progress update after verifying the selected checkout but before reading task files. Both cases ran concurrently in separate fresh, disposable repositories using the existing prompts and grading criteria. The earlier failures above remain part of the record.
+
+| Case | Independent grade at ff049e3 | Verified outcome |
+| --- | --- | --- |
+| New task | Pass | Created one task worktree from main. Reported its absolute path, branch and clean status before reading the task file. Left only the requested spelling correction unstaged and uncommitted. |
+| Follow-up | Pass | Reused the exact precreated worktree. Reported its path, branch and existing untracked file before searching the README. Left only the requested sentence and preserved the worktree list and refs. |
+
+The independent reviewer checked the fixture worktrees, refs, statuses, diffs and all seven resulting hashes. Both main checkouts and all unrelated file bytes matched their baselines. Timing was graded from the chronological session records and quoted progress updates. Each grade covers one observed run. The two ignored eval/results/group-e-ff049e3 evidence directories retain the baseline, prompt, command record, after-state, grade and final answer.
+
+V07 and SC-005 now pass. [Static CI](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45600613701) and [backend CI](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45600613432) passed at ff049e3. The backend checks were repeat verification of the existing suite. They provide no booking runtime evidence.
+
+## Final verification and G3 handoff
+
+### Requirements review
+
+| Requirement | Result | Evidence |
+| --- | --- | --- |
+| FR-006 and SC-007 | Pass | The [testing guide](../../agents/TESTING.md) states purpose, current availability and execution policy for unit/contract, integration, backend E2E, frontend component/browser, static inventory, manual behavioral and tooling smoke checks. It identifies development and review gates. |
+| FR-010 and SC-006 | Pass | [Scenario coverage](scenario-coverage.md) represents all 90 catalog/path cells. It names passed contract methods for 28 applicable cells and gives a reason for every pending or inapplicable cell. No runtime cells are marked passed. |
+| FR-012 | Pass for entry criteria | The guide covers approved interfaces/infrastructure, unique per-run setup, bounded readiness, owned teardown, explicit failure controls, and observable durable outcomes. It assigns future proof to the local stand, intake/provider, Kafka, PDS and UI owners. |
+| FR-013 | Pass | The guide distinguishes job execution from branch protection. Separate-session review and the Owner's merge decision remain defined in WORKFLOW.md. |
+
+### Observed acceptance evidence
+
+| Scope | Final evidence |
+| --- | --- |
+| V01–V03 / SC-001–002 | [Hosted Windows and Linux checks](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45601115572) at de6e85b passed runner regressions and 36 tests per platform. Downloaded manifests, receipts and compiled maps were checked for source/run binding, policy verification, complete results and matching mappings. Group C recorded local native and RTK runs, isolated output roots, 23 policy checks and failures for invalid or missing evidence. |
+| V04–V05 / SC-003 | Hosted success and both controlled failure runs were checked in Group D. Early failure stopped before restore or test and exported the manifest only. The deliberate assertion failure preserved platform exit 2, joined the failure and exported safe JSON. The synthetic marker was absent from artifacts and hosted logs. No runtime services were started. |
+| V06 / SC-004 | The real inventory reports 52 skill routes and 26 eval targets. All six local fixture checks passed, including independent negative cases. [Hosted index check](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45601115709) passed at de6e85b. |
+| V07 / SC-005 | Two fresh, independently graded runs passed at ff049e3. Each preserved main and unrelated hashes. The follow-up reused the matching worktree. Earlier failures remain recorded. |
+| V08 / SC-006–007 | The matrix and guide checks above passed. Missing application proof is explicit for every applicable pending cell. |
+
+### Failure timelines
+
+- [Early hosted failure](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45597154183): preflight failed with the controlled SDK reason → restore through evidence did not run → exported the run manifest.
+- [Hosted assertion failure](https://github.com/IgnatovichStanislav/checkin-booking/actions/runs/45597139982): preflight, restore, build and policy passed → 35 methods passed, one failed with platform exit 2 → evidence joined and safe reports uploaded.
+- Earlier worktree eval failures exposed routing and progress-report ordering gaps. The revised startup rules were checked in the two fresh reruns recorded above.
+
+### Verification boundaries
+
+The tested backend scope has no changes after de6e85b. The final changes are guide, matrix and diagram updates, with no changes to runner, test, catalog, fixture or workflow inputs. The existing hosted results still apply to those inputs. The local inventory and six regression checks were rerun for this handoff.
+
+The latest source graph refresh was recorded in Group E. It completed without a parser warning. The final group changed documentation and design diagrams. A fresh source graph was unnecessary. Actual OS-signal cancellation remains unverified; the missing-receipt regression covers interrupted evidence. The booking runtime scenarios in the matrix remain assigned to future implementation work.
+
+[Flow](../../diagrams/006-layered-testing-verification/flow.drawio), [sequence](../../diagrams/006-layered-testing-verification/sequence.drawio), [data](../../diagrams/006-layered-testing-verification/data.drawio) and [attachment policy](../../diagrams/006-layered-testing-verification/attachment-policy-proposal.drawio) were compared with the implemented hooks, receipts, CI and worktree guidance. All five pages passed XML, unique-ID and edge endpoint checks and were exported and visually inspected using installed draw.io 32.7.4. Stale phase order, status, labels and connector overlaps were corrected. No renderer dependency was added.
+
+### Convergence verdict
+
+A separate read-only verifier reviewed 474bc2b against the approved spec and plan and recommends G3. V01–V08 and SC-001–SC-007 are satisfied for feature 006. The verifier checked all 90 cells against both downloaded result sets and found no blocking discrepancy or additional work within the approved scope. The limits above remain recorded. G3 merge remains the Owner's decision.

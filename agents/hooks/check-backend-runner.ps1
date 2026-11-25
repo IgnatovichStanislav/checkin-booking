@@ -39,12 +39,13 @@ function Invoke-CheckedGit([string[]]$GitArgs) {
     Assert-Check ($result.ExitCode -eq 0) 'fixture Git setup'
 }
 
-function Invoke-RunnerCase([string]$Name, [int]$ExpectedExit) {
+function Invoke-RunnerCase([string]$Name, [int]$ExpectedExit, [switch]$ExpectReceipt) {
     $reports = Join-Path $workspace 'test-results'
     $before = if (Test-Path -LiteralPath $reports) { @(Get-ChildItem -LiteralPath $reports -Directory).Name }
+    $stepOutput = Join-Path $workspace "step-output-$([guid]::NewGuid().ToString('N')).txt"
     $previousOutput = $env:GITHUB_OUTPUT
     try {
-        $env:GITHUB_OUTPUT = $null
+        $env:GITHUB_OUTPUT = $stepOutput
         $run = Invoke-BackendProcess $shell @('-NoProfile', '-File', $runner) -Capture
     } finally { $env:GITHUB_OUTPUT = $previousOutput }
     $new = @(Get-ChildItem -LiteralPath $reports -Directory | Where-Object Name -NotIn $before)
@@ -54,6 +55,15 @@ function Invoke-RunnerCase([string]$Name, [int]$ExpectedExit) {
     $script:caseManifest = Read-EvidenceJson $caseRoot 'run.json'
     $reexport = Read-EvidenceJson $caseRoot 'export/run.json'
     Assert-Check ($caseManifest.runId -ceq $reexport.runId -and $caseManifest.result -ceq $reexport.result) "$Name export binding"
+    $exportPath = Join-Path $caseRoot 'export'
+    $outputLines = @(Get-Content -LiteralPath $stepOutput)
+    Assert-Check ($outputLines.Count -eq 1 -and $outputLines[0] -ceq "export_path=$exportPath") "$Name current run output"
+    $allowed = @('run.json')
+    if ($ExpectReceipt) { $allowed += 'execution.json' }
+    if ($caseManifest.phases.evidence.status -ceq 'passed') { $allowed += 'scenario-map.json', 'scenario-results.json' }
+    $entries = @(Get-ChildItem -LiteralPath $exportPath -Force)
+    Assert-Check ($entries.Count -eq $allowed.Count -and
+        @($entries | Where-Object { $_.PSIsContainer -or $_.Name -cnotin $allowed }).Count -eq 0) "$Name export allowlist"
     Write-Host "$Name passed"
 }
 
@@ -119,7 +129,7 @@ try {
     $nativeRunner = [regex]::Replace($runnerSource, '(?m)^    \$rtkCommand = .+$', '    $$rtkCommand = $$null')
     Assert-Check ($nativeRunner -cne $runnerSource) 'native fixture setup'
     [IO.File]::WriteAllText($runner, $nativeRunner)
-    Invoke-RunnerCase 'Native runner' 0
+    Invoke-RunnerCase 'Native runner' 0 -ExpectReceipt
     Assert-Check ($caseManifest.environment.execution -ceq 'native' -and
         $caseManifest.phases.evidence.status -ceq 'passed') 'native evidence'
 } finally { [IO.File]::WriteAllText($runner, $runnerSource) }
@@ -180,7 +190,7 @@ try {
     $priorProbe = $env:BOOKING_FAILURE_PROBE
     try {
         $env:BOOKING_FAILURE_PROBE = $sentinel
-        Invoke-RunnerCase 'Returned test failure' 2
+        Invoke-RunnerCase 'Returned test failure' 2 -ExpectReceipt
     } finally { $env:BOOKING_FAILURE_PROBE = $priorProbe }
     Assert-Check ($caseManifest.phases.test.exitCode -eq 2 -and $caseManifest.phases.evidence.status -ceq 'passed') 'native failure and safe evidence'
     Assert-Check (!$caseOutput.Contains($sentinel)) 'safe console'
@@ -256,7 +266,7 @@ function Invoke-BackendProcess {
     $priorSelection = $env:BOOKING_FIXTURE_ZERO_SELECTION
     try {
         $env:BOOKING_FIXTURE_ZERO_SELECTION = 'yes'
-        Invoke-RunnerCase 'Zero selected tests cannot pass' 1
+        Invoke-RunnerCase 'Zero selected tests cannot pass' 1 -ExpectReceipt
         $zeroReceipt = Read-EvidenceJson $caseRoot 'export/execution.json'
         $exported = @(Get-ChildItem -LiteralPath (Join-Path $caseRoot 'export') -File).Name | Sort-Object
         Assert-Check ($caseManifest.phases.test.status -ceq 'passed' -and $caseManifest.phases.test.exitCode -eq 0 -and

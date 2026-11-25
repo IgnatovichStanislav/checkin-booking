@@ -1,10 +1,10 @@
 <mxfile host="app.diagrams.net">
-  <diagram id="before" name="Before: UML sequence — attachment staging">
+  <diagram id="before" name="Before: UML sequence — observed attachment staging">
     <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="1220" pageHeight="1000">
       <root>
         <mxCell id="0" value="" />
         <mxCell id="1" parent="0" value="" />
-        <mxCell id="scope" value="Approved amendment; implementation proof pending. V05 attachment privacy. UML sequence; no booking flow changes.&#10;White = existing; green = added; amber = changed; red dashed = removed. Owner approved 2026-11-25." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+        <mxCell id="scope" value="V05 attachment privacy. The pre-policy canary showed MSTest staging the attachment before the consumer received it.&#10;White = existing; green = added; amber = changed; red dashed = removed. Owner approved 2026-11-25." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
           <mxGeometry x="20" y="15" width="1180" height="70" as="geometry" />
         </mxCell>
         <mxCell id="actor0" value="Owned test" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
@@ -102,12 +102,12 @@
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram id="after" name="After approved amendment: UML sequence">
+  <diagram id="after" name="After: UML sequence — implemented attachment policy">
     <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="1220" pageHeight="1000">
       <root>
         <mxCell id="0" value="" />
         <mxCell id="1" parent="0" value="" />
-        <mxCell id="scope" value="Approved amendment; implementation proof pending. V05 attachment privacy. UML sequence; no booking flow changes.&#10;White = existing; green = added; amber = changed; red dashed = removed. Owner approved 2026-11-25." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+        <mxCell id="scope" value="V05 attachment privacy. The implemented full check rejects unsupported paths before loading the test executable.&#10;White = existing; green = added; amber = changed; red dashed = removed. Owner approved 2026-11-25." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
           <mxGeometry x="20" y="15" width="1180" height="70" as="geometry" />
         </mxCell>
         <mxCell id="actor0" value="Runner" style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
@@ -161,7 +161,7 @@
         <mxCell id="inspect-to" value="" style="opacity=0;" vertex="1" parent="1">
           <mxGeometry x="350" y="250" width="1" height="1" as="geometry" />
         </mxCell>
-        <mxCell id="inspect" value="1: inspect supported owned test shape [before execution]" style="html=0;fontSize=12;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;" edge="1" parent="1" source="inspect-from" target="inspect-to">
+        <mxCell id="inspect" value="1: inspect built PE metadata before loading tests" style="html=0;fontSize=12;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;" edge="1" parent="1" source="inspect-from" target="inspect-to">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="0" y="-10" as="offset" />
           </mxGeometry>
@@ -186,7 +186,7 @@
         <mxCell id="separator" value="" style="shape=line;dashed=1;strokeColor=#000000;" vertex="1" parent="1">
           <mxGeometry x="21" y="490" width="1175" height="1" as="geometry" />
         </mxCell>
-        <mxCell id="allow" value="[supported test shape; attachment policy satisfied]" style="text;whiteSpace=wrap;html=0;align=left;fontSize=13;" vertex="1" parent="1">
+        <mxCell id="allow" value="[policy passes and the parent verifies artifact and module digests] [V05]" style="text;whiteSpace=wrap;html=0;align=left;fontSize=13;" vertex="1" parent="1">
           <mxGeometry x="35" y="515" width="1100" height="35" as="geometry" />
         </mxCell>
         <mxCell id="execute-from" value="" style="opacity=0;" vertex="1" parent="1">
@@ -217,12 +217,12 @@
         <mxCell id="safe-event-to" value="" style="opacity=0;" vertex="1" parent="1">
           <mxGeometry x="1070" y="750" width="1" height="1" as="geometry" />
         </mxCell>
-        <mxCell id="safe-event" value="4b: safe event consumer / real exit preserved" style="html=0;fontSize=12;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;" edge="1" parent="1" source="safe-event-from" target="safe-event-to">
+        <mxCell id="safe-event" value="4b: deliver terminal test identity and state" style="html=0;fontSize=12;labelBackgroundColor=#ffffff;endArrow=block;endFill=1;" edge="1" parent="1" source="safe-event-from" target="safe-event-to">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="0" y="-10" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="limit" value="Guard design approved; actual execution checks pending. This is not an arbitrary-code filesystem sandbox.&#10;No guest identity/credentials are permitted in diagnostics; stdout discard remains group C." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
+        <mxCell id="limit" value="V05 canaries verified rejection before test bodies run or stage attachments. The guard checks supported owned code.&#10;The full check discards stdout and stderr. The execution receipt preserves the platform exit independently." style="rounded=0;whiteSpace=wrap;html=0;fillColor=#ffffff;strokeColor=#666666;fontSize=13;" vertex="1" parent="1">
           <mxGeometry x="140" y="850" width="940" height="65" as="geometry" />
         </mxCell>
       </root>

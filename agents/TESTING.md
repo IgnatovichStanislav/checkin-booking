@@ -7,12 +7,24 @@ Run the current backend checks from the repository root with PowerShell 7:
 ```
 
 The script restores locked dependencies, builds in Release and runs the existing
-MSTest contract suite with scenario evidence. It uses RTK for supported commands
-when installed and native dotnet otherwise. SDK selection comes from global.json.
-Each invocation creates a fresh directory under ignored test-results/ containing
-booking-contracts.trx, scenario-map.json and scenario-results.json. Restore, build,
-test and evidence failures return a nonzero exit code. Skipped or missing tests
-also fail the evidence check.
+MSTest contract suite. SDK selection comes from global.json. It uses RTK for
+supported build commands when available and native dotnet otherwise.
+
+Each invocation creates a fresh directory under ignored test-results/. Its run
+manifest records preflight, restore, build, attachment policy, test, evidence
+and export outcomes. The attachment policy inspects the built assemblies before
+loading the test executable. Source and artifact digests bind the approved
+policy verdict to the binaries and fixtures used by the child. Test attachments
+are unsupported in this full-check mode. The child validates the binding and
+records platform exit and evidence status in its execution receipt.
+
+The suite directory holds the safe test-event XML, compiled scenario map and
+joined results. The export directory holds the allowlisted JSON records for that
+run. The parent discards raw child stdout and stderr in memory. Early failures
+can export the manifest alone. A returned test failure retains its actual exit
+and qualifying joined evidence. Missing, skipped or stale evidence fails
+verification. A standalone evidence run lacks the parent's binding and reports
+its source and policy verification as false.
 
 For a focused development check:
 
@@ -71,6 +83,7 @@ The static eval check can run locally:
 
 ```powershell
 python eval/check_index.py
+python -m unittest discover -s eval -p test_check_index.py
 ```
 
 This command does not run behavioral cases, application tests or live integration
@@ -97,21 +110,34 @@ behavioral eval cannot substitute for missing application runtime evidence.
 
 ## Current CI
 
-.github/workflows/backend-tests.yml runs the same script on Windows and Linux for
-every pull request and push, and supports manual execution. Both jobs have bounded
-execution time and publish only the named test reports, including available
-reports after a failure. A build failure may leave no reports. Generated reports
-remain outside Git; artifacts expire after seven days. Fixtures and failure
-diagnostics must remain synthetic and must not disclose guest identity fields or
-credentials.
+.github/workflows/backend-tests.yml runs the disposable runner regressions and
+the full suite on Windows and Linux on pull requests and pushes. It also
+supports manual execution. The runner emits the exact current export directory
+through GITHUB_OUTPUT, and the upload step uses it even after a failed run when
+available. Artifacts expire after seven days. Use synthetic fixtures. Keep guest
+identity fields and credentials out of diagnostics and reports.
 
-The workflow runs the current unit/contract suite. Integration and backend E2E
-coverage remain pending; no placeholder jobs report them as passed. The workflow
-is ready for repository CI, but its hosted execution must be verified after push.
+Hosted checks have verified successful, early-failure and returned-test-failure
+runs. See the [verification evidence](../specs/006-layered-testing-verification/implementation-evidence.md#hosted-ci-verification-group-d).
+Integration and backend E2E coverage remain pending.
 The Owner must configure branch protection to require both unit/contract jobs if
 merge enforcement is desired; a workflow file alone does not block merging.
 
-## Adding runtime coverage
+## Runtime test entry criteria
+
+Before introducing a runtime suite, its feature owner must record:
+
+| Criterion | Required evidence | Current owner or dependency |
+| --- | --- | --- |
+| Approved interfaces and infrastructure | Accepted runtime contracts, local dependency versions, ports and secret supply. | Feature 002 for the local stand. The intake persistence/API work and each provider adapter own their runtime contracts. |
+| Isolated setup | Unique per-run service names, volumes, ports and test data for local runs and CI. | Feature 002. |
+| Bounded readiness | Finite readiness checks with observable dependency and application health before sending requests. | Feature 002 and the service feature that owns each readiness endpoint. |
+| Owned teardown | Teardown can identify and remove only resources created for that invocation. Preserve safe evidence after failure. | Feature 002 and the runtime CI owner. |
+| Explicit failure controls | A reproducible trigger for retries, timeouts, crashes, redelivery or simulator failures at the relevant boundaries. | Intake/persistence and each provider adapter for intake failures, feature 003 for Kafka, and feature 004 for PDS outcomes. |
+| Observable durable outcomes | Assertions inspect the expected durable writes, delivery/offset effects, cursors or registration state. Bound waits on observed state. | Intake/persistence, feature 003 and feature 004. The future UI feature owns monitoring tests. |
+
+The [scenario coverage report](../specs/006-layered-testing-verification/scenario-coverage.md)
+tracks pending runtime evidence by scenario and intake path.
 
 Feature 002 must define isolated local and CI stack setup, readiness checks,
 runtime secret supply and teardown. Each run owns its service names, volumes and
