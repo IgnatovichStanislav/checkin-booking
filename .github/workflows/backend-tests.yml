@@ -1,0 +1,49 @@
+name: Backend tests
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit-contracts:
+    name: Unit and contract tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      DOTNET_NOLOGO: 'true'
+      DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+      - name: Restore, build and test backend contracts
+        run: ./agents/hooks/test-backend.ps1
+      - name: Upload test evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-unit-contracts-${{ matrix.os }}
+          path: |
+            test-results/unit-contracts-*/booking-contracts.trx
+            test-results/unit-contracts-*/scenario-map.json
+            test-results/unit-contracts-*/scenario-results.json
+          if-no-files-found: warn
+          retention-days: 7

@@ -56,6 +56,7 @@ on Sol medium. Owner review and merge gates remain unchanged.
 - Each worktree needs its own git-ignored root secrets/ and, once Compose exists, isolated service/volume names and ports. A git-ignored .env may hold non-secret local settings; runtime secrets come from secrets/. Never share mutable databases or volumes between concurrent features.
 - Run graph refresh inside the worktree; graphs are per worktree.
 - Only the Owner merges, from the main worktree. Finish 001 contracts before parallel features. At most 2-3 parallel worktrees.
+- After merging a completed feature, verify its branch tip is in the destination branch and its worktree is clean. Preserve any needed local evidence or files outside the worktree, then run `rtk git worktree remove <feature-worktree-path>` from the main worktree. Verify removal with `rtk git worktree list`. If Git refuses because local files remain, report the blocker and leave the worktree in place.
 
 ## 5. Pipeline per feature
 
