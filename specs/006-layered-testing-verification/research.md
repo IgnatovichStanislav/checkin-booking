@@ -39,4 +39,3 @@ The pinned Microsoft.Testing.Platform 2.5.3 package supports TestingPlatformBuil
 Primary references at the locked Microsoft source revision: [managed test identity conversion](https://github.com/microsoft/testfx/blob/0b1d8b5f7b2186835e2cf26292f3478f7cca087e/src/Adapter/MSTest.TestAdapter/TestingPlatformAdapter/MSTestTestNodeConverter.cs), [builder hook](https://github.com/microsoft/testfx/blob/0b1d8b5f7b2186835e2cf26292f3478f7cca087e/src/Platform/Microsoft.Testing.Extensions.TrxReport/TestingPlatformBuilderHook.cs), [stock reporter options](https://github.com/microsoft/testfx/blob/0b1d8b5f7b2186835e2cf26292f3478f7cca087e/src/Platform/Microsoft.Testing.Extensions.TrxReport/TrxCommandLine.cs). No external judge/model calls were made.
 
 All design choices above use existing repository capabilities. No unresolved dependency, port or service choice remains. Actual hosted results and behavioral traces are implementation-stage evidence, not assumptions of success.
-

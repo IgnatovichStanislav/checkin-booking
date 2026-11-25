@@ -48,4 +48,3 @@ No behavioral/model execution is automatically launched by the commands above.
 Use the unchanged catalog and real test/result metadata to fill all scenario/path cells under the existing verifier handoff. At the baseline there are 90 cells; derive actual applicability from the catalog. Contract decisions may pass while runtime proof stays pending. Include both behavioral grades and live limitations, safe report locations, actual hosted outcomes and diagram consistency.
 
 Refresh the worktree graph after implementation source changes using the existing hook, reporting parser failures; planning documentation alone does not require rebuilding it. Resolve blocking review findings before asking the Owner to merge.
-

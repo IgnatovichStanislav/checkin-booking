@@ -46,4 +46,3 @@ The evaluated agent receives only its prompt and ordinary project context; gradi
 ## Review packet
 
 Include source IDs, actual commands/outcomes, safe report locations, a complete catalog/path matrix with proof levels and reasons, behavioral case grades/limits, diagram consistency and unresolved findings. This is existing workflow evidence, not feature 005 visualization.
-

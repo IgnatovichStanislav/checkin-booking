@@ -49,4 +49,3 @@ Export sanitized copies built from explicit field allowlists. Do not copy arbitr
 The review packet joins catalog IDs/path applicability with the explicit test mapping and real results. Each runtime verdict is passed/failed/pending/inapplicable with a reason where required; supporting contract passes remain separately labeled.
 
 Behavioral records contain case/baseline/prompt/trace/checks/grade and live limitations. Private harness/model metadata and raw traces remain ignored under eval/results/. Public summaries contain findings and verification evidence without attribution/session links.
-

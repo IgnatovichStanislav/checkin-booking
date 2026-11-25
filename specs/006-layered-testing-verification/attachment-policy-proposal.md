@@ -59,4 +59,3 @@ Neither choice permits logging guest identity or credentials. Group B is not com
 Independent read-only review recommends Owner approval of this amendment. Its two implementation clarifications are included above: external disposable canaries and explicit post-build phase/entry-point semantics. The two-page diagram parses with unique per-page IDs and valid edge endpoints; rendered layout remains unverified.
 
 The guard is not implemented and has no cross-platform or hosted execution proof yet. Group B's clean unit results do not override its actual failed attachment canary. Automatic command review rejected both recursive probe cleanup and a narrower three-file cleanup with the generic reason blocked by policy. The synthetic fault probe remains in ignored test-results/group-b-failure-d13ee031-b110-4559-9957-f7c83a6da65f; no sentinel contents or raw diagnostics were committed or uploaded.
-

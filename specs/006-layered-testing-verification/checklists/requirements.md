@@ -36,4 +36,3 @@
 This is a specification check, not an application test result, behavioral eval grade
 or G1/G2 approval. Implementation evidence remains a later-stage deliverable.
 The plan must inventory real test gaps and select the concrete negative-case checks.
-

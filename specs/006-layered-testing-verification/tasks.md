@@ -133,4 +133,3 @@ Canonical entity names below refer to the corresponding titled sections of data-
 T018 and T019 touch different files and have no incomplete dependency on one another. They can be assigned independently when isolated/session ownership is coordinated. Within US1, the collector and receipt share the same test/evidence source, so do not mark them parallel. US2 hosted proof follows real local behavior. US4 requires actual source-bound results for its final packet.
 
 Deliver A first, then B/C as the local MVP. Review each group before continuing. Complete E and D when their required local behavior and access are available, then F/final. No extra Owner approval is introduced between reviewed groups; existing G3 ownership and contract-change gates remain.
-

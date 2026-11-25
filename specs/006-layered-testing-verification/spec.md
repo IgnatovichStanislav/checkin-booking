@@ -136,4 +136,3 @@ The Owner can see passed checks, pending proof and remaining review gates withou
 **Dependencies**: Feature 001 supplies contracts/decision tests; 002 supplies isolated infrastructure; later intake/persistence work supplies transactions/HTTP; 003 supplies Kafka proof; 004 supplies PDS proof; UI work supplies component/browser proof. This feature establishes verification without waiting for those services.
 
 **Design review**: [Verification flow](../../diagrams/006-layered-testing-verification/flow.drawio) shows existing capabilities, proposed verification and future runtime layers. No hotel/PMS/PDS data flow or state transition changes are proposed.
-

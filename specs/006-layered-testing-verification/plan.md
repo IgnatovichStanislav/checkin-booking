@@ -143,4 +143,3 @@ No constitution violation or additional dependency is proposed. One required-ide
 ## Approved attachment amendment
 
 The Owner approved pre-execution attachment rejection on 2026-11-25 after the actual canary proved MSTest stages files before publishing events. The guard is an internal metadata inspection step using the existing runtime. Group B delivers/test-drives the guard and receipt policy field; group C integrates its before-load parent phase and artifact attestation. No genuine forbidden attachment is executed in the supported full check. Standalone source/policy flags remain false until a verified parent attestation is supplied. See [decision and independent review](attachment-policy-proposal.md).
-
