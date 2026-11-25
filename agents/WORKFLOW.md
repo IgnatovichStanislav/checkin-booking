@@ -48,10 +48,12 @@ on Sol medium. Owner review and merge gates remain unchanged.
 
 ## 4. Worktrees
 
-- One feature = one branch = one worktree: `git worktree add -b feature/NNN-name ..\cb-wt\NNN-name main`.
+- Start every concrete repository problem, feature or task in an isolated worktree, including discussion, investigation, specification and planning. A request to discuss that work authorizes creating a local branch/worktree; it does not approve implementation, contracts, dependencies or later review gates.
+- Before substantive investigation or any edit, inspect the current worktrees, branch and working-tree status. Reuse the matching task worktree when one exists; otherwise create one with `rtk git worktree add -b codex/<task-name> ..\cb-wt\<task-name> main`. Report the selected absolute path and branch. Continue follow-up discussion and work in that same worktree.
+- One feature/task = one branch = one worktree. Do not edit application code, tests, CI or documentation in the main worktree unless the Owner explicitly requests that specific edit there. If work accidentally starts in main, stop edits, preserve all existing changes and transfer only the task's changes into its isolated worktree before continuing. Never reset, overwrite or move unrelated Owner changes.
 - Many agents share the worktree, one session at a time. Close a session before opening the next.
 - Handoff through a scoped commit when authorized, or an explicit uncommitted diff. Never commit unrelated work. The next agent verifies the recorded base and current diff instead of relying on chat history.
-- Coordinate spec numbers with the Owner before creating a worktree. For the installed generic specify skill, provide `SPECIFY_FEATURE_DIRECTORY=specs/NNN-name` explicitly; branch names do not select spec directories. Do not run a second branch-creation script after creating the worktree.
+- An initial discussion or investigation may use an unnumbered task worktree. Coordinate spec numbers with the Owner before assigning a number or creating specs/NNN-name; reuse the existing task worktree. For the installed generic specify skill, provide `SPECIFY_FEATURE_DIRECTORY=specs/NNN-name` explicitly; branch names do not select spec directories. Do not run a second branch-creation script after creating the worktree.
 - Use a fresh PowerShell window per worktree. Verify the active feature directory before each stage; the installed workflow writes the per-checkout pointer to ignored .specify/feature.json.
 - Each worktree needs its own git-ignored root secrets/ and, once Compose exists, isolated service/volume names and ports. A git-ignored .env may hold non-secret local settings; runtime secrets come from secrets/. Never share mutable databases or volumes between concurrent features.
 - Run graph refresh inside the worktree; graphs are per worktree.
@@ -80,7 +82,7 @@ Fixes found in review are applied by the Implementer (or Author for spec/plan) i
 
 ## 6. Session rules
 
-1. Inspect `git status` and record the baseline. Prefer a clean feature worktree; preserve existing changes and never reset them to satisfy this rule.
+1. Before substantive task discussion, investigation or edits, verify and report the isolated worktree's absolute path, branch and `git status` baseline per section 4. A main-worktree location is not permission to work there. Preserve existing changes and never reset them to satisfy this rule.
 2. Load in order: AGENTS.md -> agents/README.md -> constitution.md -> specs/NNN-name/ -> the one skill for this stage. Never the whole catalog, graph or caches.
 3. One stage (or one task group) per session; the prompt names where to stop.
 4. End with the handoff report (section 8) and a commit or a diff for the Owner.
