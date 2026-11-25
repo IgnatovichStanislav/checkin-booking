@@ -2,7 +2,7 @@
 
 **Branch**: `codex/layered-testing-verification` | **Date**: 2026-11-25 | **Spec**: [spec.md](spec.md)
 
-**Status**: Independently reviewed; no blocking findings remain. Owner G2 approval pending. G1 approved in commit bf47a41 after rebasing onto the Owner's main at a594070. See [plan review](plan-review.md).
+**Status**: G2 approved by the Owner on 2026-11-25 after independent review resolved all blocking findings. G1 approved in commit bf47a41 after rebasing onto the Owner's main at a594070. See [plan review](plan-review.md).
 
 ## Summary
 

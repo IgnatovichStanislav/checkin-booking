@@ -3,6 +3,8 @@
 **Date**: 2026-11-25
 **Outcome**: Independent read-only review recommends Owner G2 approval. No blocking findings remain. This is not G2 approval or implementation verification.
 
+**Owner decision**: G2 approved on 2026-11-25. The review findings below remain the record supporting that decision.
+
 ## Findings and corrections
 
 | Finding | Resolution |
@@ -29,4 +31,4 @@ The branch was rebased onto origin/main a594070, preserving the Owner's UML guid
 
 ## Next gate
 
-Owner G2 approval of plan and diagrams, then task breakdown and separate consistency analysis. Implementation must not start before those gates. No dependency, service, port or booking contract change is proposed.
+Following Owner G2 approval, task breakdown and separate consistency analysis precede implementation. No dependency, service, port or booking contract change is proposed.
