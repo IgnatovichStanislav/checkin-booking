@@ -35,15 +35,13 @@ jobs:
         with:
           global-json-file: global.json
       - name: Restore, build and test backend contracts
+        id: backend
         run: ./agents/hooks/test-backend.ps1
       - name: Upload test evidence
-        if: always()
+        if: always() && steps.backend.outputs.export_path != ''
         uses: actions/upload-artifact@v7
         with:
           name: backend-unit-contracts-${{ matrix.os }}
-          path: |
-            test-results/unit-contracts-*/booking-contracts.trx
-            test-results/unit-contracts-*/scenario-map.json
-            test-results/unit-contracts-*/scenario-results.json
-          if-no-files-found: warn
+          path: ${{ steps.backend.outputs.export_path }}
+          if-no-files-found: error
           retention-days: 7
