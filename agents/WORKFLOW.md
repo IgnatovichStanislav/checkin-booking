@@ -49,7 +49,10 @@ on Sol medium. Owner review and merge gates remain unchanged.
 ## 4. Worktrees
 
 - Start every concrete repository problem, feature or task in an isolated worktree, including discussion, investigation, specification and planning. A request to discuss that work authorizes creating a local branch/worktree; it does not approve implementation, contracts, dependencies or later review gates.
-- Before substantive investigation or any edit, inspect the current worktrees, branch and working-tree status. Reuse the matching task worktree when one exists; otherwise create one with `rtk git worktree add -b codex/<task-name> ..\cb-wt\<task-name> main`. Report the selected absolute path and branch. Continue follow-up discussion and work in that same worktree.
+- Complete these startup steps in order for every concrete repository task, including a small edit or follow-up:
+  1. Read the repository guidance and inspect Git worktree, branch and status metadata in the starting checkout. Keep this step to guidance and Git routing. Start task-file reads, searches, diffs and edits only after step 3, even when tools can run in parallel.
+  2. Reuse the matching task worktree when one exists. Otherwise create one with `rtk git worktree add -b codex/<task-name> ..\cb-wt\<task-name> main`. Verify the selected checkout's absolute path, branch and current Git status from that checkout.
+  3. Send a progress update with the selected path, branch and status baseline. Then read or search task files and continue all follow-up work from that checkout. A tool result or final handoff does not satisfy the progress update.
 - One feature/task = one branch = one worktree. Do not edit application code, tests, CI or documentation in the main worktree unless the Owner explicitly requests that specific edit there. If work accidentally starts in main, stop edits, preserve all existing changes and transfer only the task's changes into its isolated worktree before continuing. Never reset, overwrite or move unrelated Owner changes.
 - Many agents share the worktree, one session at a time. Close a session before opening the next.
 - Handoff through a scoped commit when authorized, or an explicit uncommitted diff. Never commit unrelated work. The next agent verifies the recorded base and current diff instead of relying on chat history.
@@ -82,7 +85,7 @@ Fixes found in review are applied by the Implementer (or Author for spec/plan) i
 
 ## 6. Session rules
 
-1. Before substantive task discussion, investigation or edits, verify and report the isolated worktree's absolute path, branch and `git status` baseline per section 4. A main-worktree location is not permission to work there. Preserve existing changes and never reset them to satisfy this rule.
+1. Complete the ordered worktree startup in section 4 before substantive task discussion, investigation or edits. Use the selected checkout for task commands and preserve existing changes.
 2. Load in order: AGENTS.md -> agents/README.md -> constitution.md -> specs/NNN-name/ -> the one skill for this stage. Never the whole catalog, graph or caches.
 3. One stage (or one task group) per session; the prompt names where to stop.
 4. End with the handoff report (section 8) and a commit or a diff for the Owner.
