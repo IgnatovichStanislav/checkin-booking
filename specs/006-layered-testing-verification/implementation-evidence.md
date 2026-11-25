@@ -102,3 +102,15 @@ The amended implementation started on Windows at `9f3c8257884d4f535a0d22842c624a
 The first fixture build exposed a missing direct reference to the pinned framework extensions assembly that contains `TestContext`. After that was added, the dynamic fixture was rejected as unresolved before known dynamic dependencies were given their explicit unsupported code. It remained rejected throughout. Earlier staging evidence and the policy-blocked cleanup of the old ignored probe remain recorded in the amendment.
 
 For group C, call `check-attachment-policy.ps1 -AssemblyPath` with the ordered test, application, contracts and domain DLL paths. Exit 0 accompanies a single JSON verdict with `policyVersion: 1`, `outcome: "passed"`, a null `failureCode`, positive `assembliesChecked` and `methodsChecked` counts, and `assemblySha256` containing lowercase hashes in input order. Exit 1 accompanies a fixed safe failure verdict. The hashes cover the checked DLL subset. The parent must compare them against its own declared inputs in the same order and bind the passed verdict to the larger artifact digest, which also covers the copied data and manifests. Only the future before-load parent phase and matching child attestation can set `policyVerified` and verification eligibility. Parent integration, Linux and hosted execution, and full-check source binding remain unverified.
+
+## Group B review fixes
+
+At `ba1298c`, the baseline guard incorrectly accepted a custom data source and two owned method references without matching declarations. A copy of that guard reproduced all three findings against disposable compiled inputs. No fixture assembly was loaded or executed.
+
+The guard now rejects owned interface declarations that reach the MSTest `ITestDataSource` interface, including custom attributes that implement it through another owned interface. Owned method references must match a single definition, including the calling convention, generic arity, required parameter count, parameter and return types. The comparison preserves the assembly-qualified type identity, generic arguments, modifiers and array shape.
+
+| Check | Observed result |
+| --- | --- |
+| `./agents/hooks/check-attachment-policy-tests.ps1` | Exit 0, 22 checks passed. `CustomDataSource` was rejected with `unsupported-execution`. `MissingOwnedMethod` and `MismatchedOwnedGenericSignature` were rejected with `unresolved-metadata` despite same-name overloads. `MatchingOwnedGenericMethod` and the four real DLLs passed. Rejected fixtures left no body marker, platform receipt or staged output. |
+| Direct Debug DLL with `--scenario-evidence <fresh-directory>` | Process and platform exit 0. All 36 results passed, and the receipt, XML and joined report had matching run IDs. Only the four allowlisted records were generated. Source verification, policy verification and eligibility remained false for the standalone invocation. |
+| `./agents/hooks/refresh-graph.ps1` | Exit 0, 1,398 nodes and 2,830 edges. The bounded query found `FindOwnedDefinition` and `ValidateOwnedMethod`. The extractor produced no symbols for the top-level guard wrapper and the existing Langfuse stack script. |

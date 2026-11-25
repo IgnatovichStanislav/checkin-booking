@@ -132,7 +132,8 @@ public static class AttachmentPolicy
             foreach (var implementation in type.GetInterfaceImplementations())
             {
                 string implemented = signatures.Resolve(reader.GetInterfaceImplementation(implementation).Interface);
-                Require(!implemented.StartsWith("Microsoft.Testing.Platform.Extensions.TestFramework.", StringComparison.Ordinal)
+                Require(implemented != MsTest + "ITestDataSource"
+                    && !implemented.StartsWith("Microsoft.Testing.Platform.Extensions.TestFramework.", StringComparison.Ordinal)
                     && !implemented.StartsWith("Microsoft.Testing.Platform.Extensions.TestHostControllers.", StringComparison.Ordinal),
                     Unsupported);
             }
@@ -234,6 +235,8 @@ public static class AttachmentPolicy
 
         if (member.GetKind() == MemberReferenceKind.Field)
             member.DecodeFieldSignature(signatures, null);
+        else if (signatures.FindOwnedDefinition(member.Parent) is { } owned)
+            signatures.ValidateOwnedMethod(member, name, owned.Module, owned.Type);
         else
             member.DecodeMethodSignature(signatures, null);
     }
@@ -381,10 +384,77 @@ public static class AttachmentPolicy
         public void Dispose() => Pe.Dispose();
     }
 
-    private sealed class SignatureTypes(Module module, Dictionary<string, Module> modules)
+    private sealed class SignatureTypes(Module module, Dictionary<string, Module> modules, bool forComparison = false)
         : ISignatureTypeProvider<string, object?>
     {
         private readonly HashSet<EntityHandle> resolving = new();
+
+        internal (Module Module, TypeDefinitionHandle Type)? FindOwnedDefinition(EntityHandle handle)
+        {
+            var reader = module.Reader;
+            if (handle.Kind == HandleKind.TypeDefinition)
+                return (module, (TypeDefinitionHandle)handle);
+            if (handle.Kind == HandleKind.TypeSpecification)
+            {
+                var signature = reader.GetBlobReader(reader.GetTypeSpecification((TypeSpecificationHandle)handle).Signature);
+                if (signature.ReadSignatureTypeCode() != SignatureTypeCode.GenericTypeInstance)
+                    return null;
+                Require(signature.ReadSignatureTypeCode() == SignatureTypeCode.TypeHandle, Unresolved);
+                return FindOwnedDefinition(signature.ReadTypeHandle());
+            }
+            if (handle.Kind != HandleKind.TypeReference)
+                return null;
+
+            var reference = reader.GetTypeReference((TypeReferenceHandle)handle);
+            var scope = reference.ResolutionScope;
+            string name = reader.GetString(reference.Name);
+            if (scope.Kind == HandleKind.TypeReference)
+            {
+                if (FindOwnedDefinition(scope) is not { } owner)
+                    return null;
+                var ownerReader = owner.Module.Reader;
+                var nested = ownerReader.GetTypeDefinition(owner.Type).GetNestedTypes()
+                    .Where(type => ownerReader.StringComparer.Equals(ownerReader.GetTypeDefinition(type).Name, name)).ToArray();
+                Require(nested.Length == 1, Unresolved);
+                return (owner.Module, nested[0]);
+            }
+
+            Module target = module;
+            if (scope.Kind == HandleKind.AssemblyReference)
+            {
+                string assembly = reader.GetString(reader.GetAssemblyReference((AssemblyReferenceHandle)scope).Name);
+                if (!modules.TryGetValue(assembly, out var owned))
+                    return null;
+                target = owned;
+            }
+
+            string ns = reader.GetString(reference.Namespace);
+            var matches = target.Reader.TypeDefinitions.Where(type =>
+            {
+                var definition = target.Reader.GetTypeDefinition(type);
+                return definition.GetDeclaringType().IsNil && target.Reader.StringComparer.Equals(definition.Name, name)
+                    && target.Reader.StringComparer.Equals(definition.Namespace, ns);
+            }).ToArray();
+            Require(matches.Length == 1, Unresolved);
+            return (target, matches[0]);
+        }
+
+        internal void ValidateOwnedMethod(MemberReference reference, string name, Module target, TypeDefinitionHandle owner)
+        {
+            var expected = reference.DecodeMethodSignature(new SignatureTypes(module, modules, forComparison: true), null);
+            var targetReader = target.Reader;
+            var targetSignatures = new SignatureTypes(target, modules, forComparison: true);
+            int matches = targetReader.GetTypeDefinition(owner).GetMethods()
+                .Select(targetReader.GetMethodDefinition)
+                .Count(method => targetReader.StringComparer.Equals(method.Name, name)
+                    && Equal(expected, method.DecodeSignature(targetSignatures, null)));
+            Require(matches == 1, Unresolved);
+        }
+
+        private static bool Equal(MethodSignature<string> expected, MethodSignature<string> actual) =>
+            expected.Header.RawValue == actual.Header.RawValue && expected.GenericParameterCount == actual.GenericParameterCount
+            && expected.RequiredParameterCount == actual.RequiredParameterCount && expected.ReturnType == actual.ReturnType
+            && expected.ParameterTypes.SequenceEqual(actual.ParameterTypes, StringComparer.Ordinal);
 
         internal string Resolve(EntityHandle handle)
         {
@@ -410,26 +480,32 @@ public static class AttachmentPolicy
         public string GetTypeFromDefinition(MetadataReader reader, TypeDefinitionHandle handle, byte rawTypeKind)
         {
             var definition = reader.GetTypeDefinition(handle);
-            return Name(reader, definition.Namespace, definition.Name);
+            string name = Name(reader, definition.Namespace, definition.Name);
+            if (!forComparison)
+                return name;
+            var declaringType = definition.GetDeclaringType();
+            string identity = declaringType.IsNil ? NamedIdentity(module.Name, name) : Resolve(declaringType) + Frame(name);
+            return rawTypeKind + ":" + identity;
         }
 
         public string GetTypeFromReference(MetadataReader reader, TypeReferenceHandle handle, byte rawTypeKind)
         {
             var reference = reader.GetTypeReference(handle);
             string name = Name(reader, reference.Namespace, reference.Name);
+            string assemblyName = module.Name;
             var scope = reference.ResolutionScope;
             if (scope.Kind == HandleKind.TypeReference)
-                name = Resolve(scope) + "+" + name;
+            {
+                string owner = Resolve(scope);
+                return forComparison ? rawTypeKind + ":" + owner + Frame(name) : owner + "+" + name;
+            }
             else if (scope.Kind == HandleKind.AssemblyReference && !scope.IsNil)
             {
-                string assembly = reader.GetString(reader.GetAssemblyReference((AssemblyReferenceHandle)scope).Name);
-                if (modules.TryGetValue(assembly, out var owned))
-                {
-                    var target = owned.Reader;
-                    Require(target.TypeDefinitions.Any(type => GetTypeFromDefinition(target, type, 0) == name), Unresolved);
-                }
+                assemblyName = reader.GetString(reader.GetAssemblyReference((AssemblyReferenceHandle)scope).Name);
+                if (modules.ContainsKey(assemblyName))
+                    Require(FindOwnedDefinition(handle) is not null, Unresolved);
                 else
-                    Require(ApprovedReferences.Contains(assembly), Unresolved);
+                    Require(ApprovedReferences.Contains(assemblyName), Unresolved);
             }
             else
                 Require(scope.Kind == HandleKind.ModuleDefinition && !scope.IsNil && MetadataTokens.GetRowNumber(scope) == 1, Unresolved);
@@ -440,23 +516,31 @@ public static class AttachmentPolicy
                 || name is "System.Runtime.CompilerServices.UnsafeAccessorAttribute"
                     or "System.Runtime.CompilerServices.ModuleInitializerAttribute"
                     or "System.Runtime.InteropServices.UnmanagedCallersOnlyAttribute"), Unsupported);
-            return name;
+            return forComparison ? rawTypeKind + ":" + NamedIdentity(assemblyName, name) : name;
         }
 
         public string GetTypeFromSpecification(MetadataReader reader, object? context, TypeSpecificationHandle handle, byte rawTypeKind)
             => Resolve(handle);
 
         public string GetPrimitiveType(PrimitiveTypeCode type) => type.ToString();
-        public string GetGenericInstantiation(string genericType, System.Collections.Immutable.ImmutableArray<string> arguments) => genericType;
+        public string GetGenericInstantiation(string genericType, System.Collections.Immutable.ImmutableArray<string> arguments) =>
+            forComparison ? "generic:" + Frame(genericType) + string.Concat(arguments.Select(Frame)) : genericType;
         public string GetGenericMethodParameter(object? context, int index) => "!!" + index;
         public string GetGenericTypeParameter(object? context, int index) => "!" + index;
-        public string GetArrayType(string elementType, ArrayShape shape) => elementType + "[]";
-        public string GetSZArrayType(string elementType) => elementType + "[]";
-        public string GetByReferenceType(string elementType) => elementType + "&";
-        public string GetPointerType(string elementType) => elementType + "*";
+        public string GetArrayType(string elementType, ArrayShape shape) => forComparison
+            ? $"array:{Frame(elementType)}{shape.Rank}:{string.Join(",", shape.Sizes)}:{string.Join(",", shape.LowerBounds)}"
+            : elementType + "[]";
+        public string GetSZArrayType(string elementType) => forComparison ? "vector:" + Frame(elementType) : elementType + "[]";
+        public string GetByReferenceType(string elementType) => forComparison ? "byref:" + Frame(elementType) : elementType + "&";
+        public string GetPointerType(string elementType) => forComparison ? "pointer:" + Frame(elementType) : elementType + "*";
         public string GetFunctionPointerType(MethodSignature<string> signature) => throw new PolicyFailure(Unsupported);
-        public string GetModifiedType(string modifier, string unmodifiedType, bool isRequired) => unmodifiedType;
-        public string GetPinnedType(string elementType) => elementType;
+        public string GetModifiedType(string modifier, string unmodifiedType, bool isRequired) => forComparison
+            ? "mod:" + isRequired + ":" + Frame(modifier) + Frame(unmodifiedType) : unmodifiedType;
+        public string GetPinnedType(string elementType) => forComparison ? "pinned:" + Frame(elementType) : elementType;
+
+        private static string NamedIdentity(string assembly, string name) => Frame(assembly) + Frame(name);
+
+        private static string Frame(string value) => value.Length + ":" + value;
 
         private static string Name(MetadataReader reader, StringHandle ns, StringHandle type)
         {

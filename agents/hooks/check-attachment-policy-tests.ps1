@@ -28,6 +28,25 @@ function Assert-PolicyCase([string] $Name, [string[]] $InputPaths, [string] $Exp
     "$Name $expectedOutcome"
 }
 
+function Build-PolicyFixture([string] $Name, [string] $ProjectPath) {
+    if (Get-Command rtk -ErrorAction SilentlyContinue) {
+        $null = & rtk dotnet build $ProjectPath --nologo --verbosity quiet 2>&1
+    }
+    else {
+        $null = & dotnet build $ProjectPath --nologo --verbosity quiet 2>&1
+    }
+    if ($LASTEXITCODE -ne 0) { throw "Could not compile disposable case $Name." }
+}
+
+function Assert-FixtureUntouched([string] $Name, [string] $CaseRoot) {
+    if ([AppDomain]::CurrentDomain.GetAssemblies().GetName().Name -contains $Name -or
+        (Test-Path -LiteralPath (Join-Path $CaseRoot 'body-reached')) -or
+        (Get-ChildItem -LiteralPath $CaseRoot -Recurse -Directory -Filter 'MSTest-*') -or
+        (Get-ChildItem -LiteralPath $CaseRoot -Recurse -File -Include 'execution.json', 'unused.txt', '*.trx')) {
+        throw "Disposable case $Name loaded or reached platform execution or staged output."
+    }
+}
+
 $testAssemblyNames = 'Booking.ContractTests', 'Booking.Application', 'Booking.Contracts', 'Booking.Domain'
 $testModules = @($testAssemblyNames | ForEach-Object { Join-Path $BuildDirectory "$_.dll" })
 $resolvedBuild = (Resolve-Path -LiteralPath $BuildDirectory).ProviderPath
@@ -118,6 +137,23 @@ $fixtures = [ordered]@{
         code = 'public void Probe() => MarkReached(); [System.Runtime.CompilerServices.ModuleInitializer] internal static void Initialize() => MarkReached();'
         expected = 'unsupported-execution'
     }
+    CustomDataSource = @{
+        code = '[CustomRows] public void Probe() => MarkReached();'
+        additional = @'
+public interface ICustomRows : ITestDataSource { }
+public sealed class CustomRowsAttribute : Attribute, ICustomRows
+{
+    public System.Collections.Generic.IEnumerable<object[]> GetData(System.Reflection.MethodInfo method)
+    {
+        File.WriteAllText("body-reached", "data source executed");
+        yield return Array.Empty<object>();
+    }
+
+    public string GetDisplayName(System.Reflection.MethodInfo method, object[] data) => "Probe";
+}
+'@
+        expected = 'unsupported-execution'
+    }
 }
 
 foreach ($name in $fixtures.Keys) {
@@ -145,29 +181,92 @@ public sealed class ProbeTests$($fixture.parent)
 }
 "@
     Set-Content -LiteralPath (Join-Path $caseRoot 'Probe.cs') -Value $source
-    if (Get-Command rtk -ErrorAction SilentlyContinue) {
-        $null = & rtk dotnet build $projectPath --nologo --verbosity quiet 2>&1
-    }
-    else {
-        $null = & dotnet build $projectPath --nologo --verbosity quiet 2>&1
-    }
-    if ($LASTEXITCODE -ne 0) { throw "Could not compile disposable case $name." }
-
+    Build-PolicyFixture $name $projectPath
     $assembly = Join-Path $caseRoot "bin/Debug/net10.0/$name.dll"
     Push-Location $caseRoot
     try {
         Assert-PolicyCase -Name $name -InputPaths @($assembly) -ExpectedFailure $fixture.expected
-        if ([AppDomain]::CurrentDomain.GetAssemblies().GetName().Name -contains $name -or
-            (Test-Path -LiteralPath 'body-reached') -or
-            (Get-ChildItem -Recurse -Directory -Filter 'MSTest-*') -or
-            (Get-ChildItem -Recurse -File -Include 'execution.json', 'unused.txt', '*.trx')) {
-            throw "Disposable case $name loaded or reached platform execution or staged output."
-        }
+        Assert-FixtureUntouched $name $caseRoot
         $casesChecked++
     }
     finally {
         Pop-Location
     }
+}
+
+$referenceRoot = Join-Path $workspace 'owned-method-references'
+$libraryProject = @'
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>PolicyFixtureLibrary</AssemblyName>
+  </PropertyGroup>
+</Project>
+'@
+$method = 'public static T Select<TArgument>(List<string> input, T fallback) => fallback;'
+$libraryVersions = [ordered]@{
+    MatchingMethod = $method
+    MissingMethod = ''
+    DifferentSignature = $method.Replace('List<string>', 'List<int>')
+}
+$libraryPaths = @{}
+foreach ($name in $libraryVersions.Keys) {
+    $target = New-Item -ItemType Directory -Path (Join-Path $referenceRoot $name) -Force
+    $libraryPath = Join-Path $target.FullName 'Library.csproj'
+    Set-Content -LiteralPath $libraryPath -Value $libraryProject
+    Set-Content -LiteralPath (Join-Path $target.FullName 'Library.cs') -Value @"
+using System.Collections.Generic;
+namespace PolicyFixture;
+public class Api<T>
+{
+    $($libraryVersions[$name])
+    public static T Select<TArgument>(List<bool> input, T fallback) => fallback;
+}
+"@
+    Build-PolicyFixture $name $libraryPath
+    $libraryPaths[$name] = Join-Path $target.FullName 'bin/Debug/net10.0/PolicyFixtureLibrary.dll'
+}
+
+$caller = New-Item -ItemType Directory -Path (Join-Path $referenceRoot 'caller')
+$callerPath = Join-Path $caller.FullName 'PolicyFixtureCaller.csproj'
+$libraryXml = [Security.SecurityElement]::Escape($libraryPaths.MatchingMethod)
+Set-Content -LiteralPath $callerPath -Value @"
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PolicyFixtureLibrary" HintPath="$libraryXml" />
+  </ItemGroup>
+</Project>
+"@
+Set-Content -LiteralPath (Join-Path $caller.FullName 'Caller.cs') -Value @'
+using System.Collections.Generic;
+using System.IO;
+using PolicyFixture;
+public static class Caller
+{
+    public static void Main()
+    {
+        File.WriteAllText("body-reached", "caller executed");
+        Api<string>.Select<int>(new List<string>(), "fallback");
+    }
+}
+'@
+Build-PolicyFixture 'PolicyFixtureCaller' $callerPath
+$callerDll = Join-Path $caller.FullName 'bin/Debug/net10.0/PolicyFixtureCaller.dll'
+Push-Location $referenceRoot
+try {
+    Assert-PolicyCase -Name 'MatchingOwnedGenericMethod' -InputPaths @($callerDll, $libraryPaths.MatchingMethod) -ExpectedFailure ''
+    Assert-PolicyCase -Name 'MissingOwnedMethod' -InputPaths @($callerDll, $libraryPaths.MissingMethod) -ExpectedFailure 'unresolved-metadata'
+    Assert-PolicyCase -Name 'MismatchedOwnedGenericSignature' -InputPaths @($callerDll, $libraryPaths.DifferentSignature) -ExpectedFailure 'unresolved-metadata'
+    Assert-FixtureUntouched 'PolicyFixtureCaller' $referenceRoot
+    Assert-FixtureUntouched 'PolicyFixtureLibrary' $referenceRoot
+    $casesChecked += 3
+}
+finally {
+    Pop-Location
 }
 
 $malformed = Join-Path $workspace 'malformed.dll'
