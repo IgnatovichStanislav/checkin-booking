@@ -10,6 +10,8 @@ Open [the local UI](http://localhost:3300) and sign in as `owner@checkin.test`. 
 
 ## Storage and lifecycle
 
+From the repository root, run `pwsh -File eval/langfuse/dashboard.ps1` to start Langfuse if needed and print the dashboard and score analytics links. Add `-Open` to open score analytics in your browser. You can also ask a project agent, “Give me the Checkin Langfuse dashboard and score analytics links.”
+
 By default the host folder is a sibling of the main checkout, named `<main-checkout-name>_Langfuse`. For the Checkin_Booking checkout this is `../Checkin_Booking_Langfuse`. To use another disk, set an absolute path before the first start and keep using that same setting:
 
 ```powershell

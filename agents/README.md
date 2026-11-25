@@ -5,6 +5,7 @@ Resolve a task against this table first. Open `skills/<name>/SKILL.md` relative 
 | Task | Skill name |
 | --- | --- |
 | Code navigation / graph refresh | graphify |
+| Open the local Langfuse dashboard or give me the score analytics link | langfuse-dashboard |
 | General C# fallback | csharp-expert |
 | C# refactoring | csharp-refactoring |
 | .NET build diagnosis | msbuild |
