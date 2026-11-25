@@ -29,20 +29,26 @@ internal sealed record MethodEvidence(
 
 internal sealed record MethodOutcome(MethodEvidence Method, string? TrxOutcome, string Status);
 internal sealed record EvidenceReport(Guid TestRunId, MethodOutcome[] BusinessEvidence, MethodOutcome[] HarnessChecks);
+internal sealed record ExecutionReceipt(int SchemaVersion, int? PlatformExitCode, string TestOutcome,
+    string EvidenceOutcome, string? FailureCode, Guid? RunId, string? SourceDigest, Guid? JoinedRunId,
+    bool SourceVerified, bool VerificationEligible);
 
 internal static class ScenarioEvidence
 {
     internal const string MapFileName = "scenario-map.json";
     internal const string TrxFileName = "booking-contracts.trx";
     internal const string ReportFileName = "scenario-results.json";
+    internal const string ReceiptFileName = "execution.json";
     private const string RequiredTestsFileName = "required-tests.json";
     private const string FixtureRoot = "e2e/fixtures/001-booking-contracts/";
-    private static readonly XNamespace Trx = "http://microsoft.com/schemas/VisualStudio/TeamTest/2010";
+    internal static readonly XNamespace Trx = "http://microsoft.com/schemas/VisualStudio/TeamTest/2010";
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web) { WriteIndented = true };
     private static readonly Lazy<HashSet<string>> Catalog = new(ReadCatalog);
 
     [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
     private sealed record RequiredTestIdentity(string Assembly, string Class, string Method);
+
+    private sealed record RunContext(Guid RunId, string SourceDigest);
 
     internal static void ValidateRequiredIdentities(
         IEnumerable<(string Assembly, string Class, string Method)> required,
@@ -179,33 +185,136 @@ internal static class ScenarioEvidence
         return new(FixtureRoot + path, ids);
     }
 
-    internal static async Task<int> RunAsync(string directory, Func<string[], Task<int>> execute)
+    internal static async Task<int> RunAsync(EvidenceInvocation invocation, Func<SafeTestEvidence, string[], Task<int>> execute)
     {
-        string runDirectory = Path.GetFullPath(directory);
-        Require(!Directory.Exists(runDirectory), "Evidence requires a fresh run directory.");
+        string runDirectory = Path.TrimEndingDirectorySeparator(Path.GetFullPath(invocation.Directory));
+        Require(!Path.Exists(runDirectory), "Evidence requires a fresh run directory.");
         Directory.CreateDirectory(runDirectory);
 
-        string mapPath = Path.Combine(runDirectory, MapFileName);
-        WriteNew(mapPath, CompiledMap());
+        var receipt = new ExecutionReceipt(1, null, "pending", "pending", null, null, null, null, false, false);
+        if (invocation.ContextPath is { } contextPath)
+        {
+            try
+            {
+                var context = ReadRunContext(contextPath, runDirectory);
+                receipt = receipt with { RunId = context.RunId, SourceDigest = context.SourceDigest };
+            }
+            catch (Exception error) when (error is IOException or UnauthorizedAccessException or InvalidDataException
+                or JsonException or ArgumentException or NotSupportedException)
+            {
+                return Complete(runDirectory, receipt with { EvidenceOutcome = "failed", FailureCode = "invalid-run-context" });
+            }
+        }
+
+        var methods = CompiledMap();
+        WriteNew(Path.Combine(runDirectory, MapFileName), methods);
+        var collector = new SafeTestEvidence(methods);
         var started = DateTimeOffset.UtcNow;
-        int exitCode = await execute(["--report-trx", "--report-trx-filename", TrxFileName, "--results-directory", runDirectory]);
+        int exitCode;
+        try
+        {
+            exitCode = await execute(collector, ["--results-directory", runDirectory]);
+        }
+        catch (Exception)
+        {
+            return Complete(runDirectory, receipt with
+            {
+                TestOutcome = "incomplete", EvidenceOutcome = "incomplete", FailureCode = "platform-execution-incomplete"
+            });
+        }
+
+        receipt = receipt with { PlatformExitCode = exitCode, TestOutcome = exitCode == 0 ? "passed" : "failed" };
+        return Complete(runDirectory, JoinObservedResults(runDirectory, methods, collector, started, receipt));
+    }
+
+    private static ExecutionReceipt JoinObservedResults(string runDirectory, MethodEvidence[] methods, SafeTestEvidence collector,
+        DateTimeOffset started, ExecutionReceipt receipt)
+    {
+        XDocument trx;
+        try
+        {
+            trx = collector.CreateReport(started, DateTimeOffset.UtcNow);
+        }
+        catch (InvalidDataException)
+        {
+            return receipt with { EvidenceOutcome = "failed", FailureCode = "invalid-test-event" };
+        }
 
         try
         {
-            var methods = JsonSerializer.Deserialize<MethodEvidence[]>(File.ReadAllText(mapPath), Json);
-            Require(methods is not null, "Missing scenario map.");
-            string trxPath = Path.Combine(runDirectory, TrxFileName);
-            using var reader = XmlReader.Create(trxPath, new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit });
-            var report = Join(methods!, XDocument.Load(reader), started);
+            var report = Join(methods, trx, started);
+            var rows = report.BusinessEvidence.Concat(report.HarnessChecks).ToArray();
+            bool incomplete = rows.Any(row => row.Status == "pending");
+            bool failed = rows.Any(row => row.Status == "failed");
+            if ((receipt.PlatformExitCode == 0 && failed) || (receipt.PlatformExitCode != 0 && !incomplete && !failed))
+                return receipt with { EvidenceOutcome = "failed", FailureCode = "platform-result-mismatch" };
+
+            if (rows.All(row => row.TrxOutcome is null))
+                return receipt with { EvidenceOutcome = "incomplete", FailureCode = "missing-test-results" };
+
+            using (var file = new FileStream(Path.Combine(runDirectory, TrxFileName), FileMode.CreateNew, FileAccess.Write))
+                trx.Save(file);
             WriteNew(Path.Combine(runDirectory, ReportFileName), report);
-            bool incomplete = report.BusinessEvidence.Concat(report.HarnessChecks).Any(row => row.Status != "passed");
-            return exitCode == 0 && incomplete ? 1 : exitCode;
+            return receipt with
+            {
+                JoinedRunId = report.TestRunId,
+                EvidenceOutcome = incomplete ? "incomplete" : "passed",
+                FailureCode = incomplete ? "missing-test-results" : failed ? "platform-tests-failed" : null
+            };
         }
-        catch (Exception error) when (exitCode != 0 && error is IOException or InvalidDataException or XmlException or JsonException)
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException or InvalidDataException or XmlException)
         {
-            Console.Error.WriteLine("The test run did not produce valid scenario evidence.");
-            return exitCode;
+            return receipt with { EvidenceOutcome = "failed", FailureCode = "invalid-scenario-evidence" };
         }
+    }
+
+    private static RunContext ReadRunContext(string contextPath, string runDirectory)
+    {
+        string path = Path.GetFullPath(contextPath);
+        Require(Path.GetFileName(path) == "run.json"
+            && string.Equals(Path.Combine(Path.GetDirectoryName(path)!, "suite"), runDirectory,
+                OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal),
+            "Invalid run context.");
+        using var file = File.OpenRead(path);
+        using var context = JsonDocument.Parse(file);
+        var root = context.RootElement;
+        var version = ContextProperty(root, "schemaVersion");
+        var run = ContextProperty(root, "runId");
+        var source = ContextProperty(root, "source");
+        var evidence = ContextProperty(root, "evidence");
+        var digest = ContextProperty(source, "digest");
+        var suite = ContextProperty(evidence, "suite");
+        Require(version.ValueKind == JsonValueKind.Number && version.TryGetInt32(out int schemaVersion) && schemaVersion == 1
+            && run.ValueKind == JsonValueKind.String && run.TryGetGuid(out var runId) && runId != Guid.Empty
+            && digest.ValueKind == JsonValueKind.String && Regex.IsMatch(digest.GetString()!, @"\A[0-9a-f]{64}\z")
+            && suite.ValueKind == JsonValueKind.String && suite.GetString() == "suite", "Invalid run context.");
+        return new(run.GetGuid(), digest.GetString()!);
+    }
+
+    private static JsonElement ContextProperty(JsonElement element, string name)
+    {
+        Require(element.ValueKind == JsonValueKind.Object, "Invalid run context.");
+        var fields = element.EnumerateObject().Where(property => property.NameEquals(name)).Take(2).ToArray();
+        Require(fields.Length == 1, "Invalid run context.");
+        return fields[0].Value;
+    }
+
+    private static int Complete(string runDirectory, ExecutionReceipt receipt)
+    {
+        int platformExit = receipt.PlatformExitCode.GetValueOrDefault();
+        try
+        {
+            WriteNew(Path.Combine(runDirectory, ReceiptFileName), receipt);
+        }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+        {
+            Console.Error.WriteLine("invalid-execution-receipt");
+            return platformExit != 0 ? platformExit : 1;
+        }
+
+        if (receipt.FailureCode is { } code)
+            Console.Error.WriteLine(code);
+        return platformExit != 0 ? platformExit : receipt.EvidenceOutcome == "passed" ? 0 : 1;
     }
 
     private static void WriteNew<T>(string path, T value)

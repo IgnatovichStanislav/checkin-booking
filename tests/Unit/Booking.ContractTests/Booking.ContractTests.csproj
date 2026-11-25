@@ -8,6 +8,12 @@
     <StartupObject>Booking.ContractTests.EvidenceEntryPoint</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <TestingPlatformBuilderHook Include="97f32ea1-2d18-4c29-ad48-60552aa1e502">
+      <DisplayName>Booking contract evidence</DisplayName>
+      <TypeFullName>Booking.ContractTests.SafeEvidenceBuilderHook</TypeFullName>
+    </TestingPlatformBuilderHook>
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="../../../src/Booking.Contracts/Booking.Contracts.csproj" />
     <ProjectReference Include="../../../src/Booking.Domain/Booking.Domain.csproj" />
     <ProjectReference Include="../../../src/Booking.Application/Booking.Application.csproj" />

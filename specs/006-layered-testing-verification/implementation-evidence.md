@@ -59,3 +59,29 @@ The evidence entry point now compares the required inventory with reflected asse
 | Direct executable with `--filter 'FullyQualifiedName~Booking.ContractTests.EvidenceCases'` after the fix | Platform exit 0. Passed 12, failed 0, skipped 0. |
 | Direct executable unfiltered after the fix | Platform exit 0. Passed 29, failed 0, skipped 0. The suite includes 17 contract and 12 harness methods. |
 | `./agents/hooks/refresh-graph.ps1` | Exit 0. The graph parsed with 1,119 nodes and 2,280 edges. The bounded query found `ReflectedIdentity`. The incremental extraction reported no parser errors for the changed files. |
+
+## Group B checks
+
+The Windows worktree started at `8c7491babf841d05912ee9056e30ef2873cbe5e8`. The requirements checklist had 17 checked items. The existing SDK and package lock were used.
+
+| Check | Observed result |
+| --- | --- |
+| `rtk dotnet build tests/Unit/Booking.ContractTests/Booking.ContractTests.csproj --no-restore` | Exit 0, zero warnings and errors. |
+| Direct Debug DLL with `--filter 'FullyQualifiedName~Booking.ContractTests.EvidenceCases'` | Exit 0. Passed 19, failed 0, skipped 0. The initial 18/19 run exposed an invalid synthetic test setup that supplied two states to a property bag that accepts one. |
+| Direct Debug DLL, unfiltered | Exit 0. Passed 36, failed 0, skipped 0. |
+| Direct Debug DLL with `--scenario-evidence <fresh-directory>` | Process and platform exit 0. The four files were `booking-contracts.trx`, `execution.json`, `scenario-map.json` and `scenario-results.json`. The joined XML and JSON had the same run ID as the receipt and covered 17 contract and 19 harness passes. `sourceVerified` and `verificationEligible` were both false. |
+| Direct Debug DLL with `--scenario-evidence <run-directory>/suite --run-context <run-directory>/run.json` | Process and platform exit 0. All 36 results joined and the receipt matched the parent UUID and digest. Source verification and eligibility remained false. |
+| Direct Debug DLL in a disposable source copy with one failing harness test | Process and platform exit 2, test outcome failed, evidence outcome passed. The probe placed a synthetic sentinel in the assertion, stdout, stderr and a `TestContext.AddResultFile` candidate. The four constructed records contained no sentinel. Native MSTest copied the attachment into the suite and the platform listed its path on stdout. This run exposed a privacy blocker. |
+| `./agents/hooks/refresh-graph.ps1` | Exit 0. Graph parsed with 1,176 nodes and 2,454 edges. A bounded query found `SafeTestEvidence`, `JoinObservedResults` and `ReadRunContext`. No parser errors were reported. |
+
+| Requirement | Passing methods |
+| --- | --- |
+| Capture allowlisted terminal outcomes and ignore diagnostic properties and nonterminal updates | `CapturesOnlyKnownTerminalFields` |
+| Reject absent, unknown or ambiguous method identities, duplicate terminal events and unsupported states | `RejectsMissingAmbiguousAndUnknownTerminalIdentities`, `RejectsDuplicateTerminalEventsAndInvalidStates` |
+| Reject invalid arguments and absent, malformed or mismatched context | `RejectsInvalidEvidenceArguments`, `RejectsMissingMalformedAndMismatchedRunContext` |
+| Preserve the observed exit and bind the receipt to the context and joined run | `BindsReceiptToContextAndJoinedRunWhilePreservingPlatformFailure`, `UsesOnlyFreshRunFiles` |
+| Reject mismatched exits, incomplete results and interruption as verification passes | `ReceiptsDistinguishStandalonePassMismatchedExitAndInterruptedRun`, `IncompleteRunCannotReturnSuccess` |
+
+The child accepts `--scenario-evidence <fresh-directory> [--run-context <parent-run-json-path>]`. A context is version 1 with a nonempty UUID `runId`, lowercase SHA-256 `source.digest`, and `evidence.suite` equal to `suite` beneath the `run.json` directory. Standalone executions leave the run and source bindings null. Both source verification flags remain false pending the actual source/build attestation.
+
+The pinned adapter stages files before it publishes the terminal event, so the data consumer cannot prevent that copy. The remaining attachment behavior blocks the privacy requirement. Parent stdout/stderr capture and source/build attestation remain part of group C. [MSTest staging implementation](https://github.com/microsoft/testfx/blob/0b1d8b5f7b2186835e2cf26292f3478f7cca087e/src/Adapter/MSTest.TestAdapter/TestingPlatformAdapter/MSTestTestFramework.cs) and [result recorder](https://github.com/microsoft/testfx/blob/0b1d8b5f7b2186835e2cf26292f3478f7cca087e/src/Adapter/MSTest.TestAdapter/TestingPlatformAdapter/MtpTestResultRecorder.cs).

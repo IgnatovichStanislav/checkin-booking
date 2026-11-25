@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Text.Json;
 using System.Xml.Linq;
+using Microsoft.Testing.Platform.Extensions.Messages;
+using Microsoft.Testing.Platform.TestHost;
 
 namespace Booking.ContractTests;
 
@@ -248,17 +250,15 @@ public sealed class EvidenceCases
         {
             string old = Path.Combine(temp.FullName, ScenarioEvidence.TrxFileName);
             stale.Save(old);
-            await Assert.ThrowsExactlyAsync<InvalidDataException>(() => ScenarioEvidence.RunAsync(temp.FullName,
-                _ => throw new AssertFailedException("Evidence must reject an existing directory before running tests.")));
+            await Assert.ThrowsExactlyAsync<InvalidDataException>(() => ScenarioEvidence.RunAsync(new(temp.FullName, null),
+                (_, _) => throw new AssertFailedException("Evidence must reject an existing directory before running tests.")));
 
             string current = Path.Combine(temp.FullName, "current");
-            int exit = await ScenarioEvidence.RunAsync(current, args =>
+            int exit = await ScenarioEvidence.RunAsync(new(current, null), async (collector, args) =>
             {
-                CollectionAssert.AreEqual(new[] { "--report-trx", "--report-trx-filename", ScenarioEvidence.TrxFileName,
-                    "--results-directory", current }, args);
-                Report(DateTimeOffset.UtcNow, [Definition(first, FirstId)], [Result(FirstId, "Failed")])
-                    .Save(Path.Combine(current, ScenarioEvidence.TrxFileName));
-                return Task.FromResult(2);
+                CollectionAssert.AreEqual(new[] { "--results-directory", current }, args);
+                await ObserveAsync(collector, new FailedTestNodeStateProperty(), Identifier(first));
+                return 2;
             });
 
             Assert.AreEqual(2, exit);
@@ -269,6 +269,8 @@ public sealed class EvidenceCases
             Assert.AreEqual("failed", rows.Single(row => row.GetProperty("method").GetProperty("method").GetString() == first.Method)
                 .GetProperty("status").GetString());
             Assert.IsTrue(rows.Any(row => row.GetProperty("status").GetString() == "pending"));
+            Assert.AreEqual(new ExecutionReceipt(1, 2, "failed", "incomplete", "missing-test-results", null, null,
+                json.RootElement.GetProperty("testRunId").GetGuid(), false, false), ReadReceipt(current));
         }
         finally
         {
@@ -284,21 +286,288 @@ public sealed class EvidenceCases
         try
         {
             string current = Path.Combine(temp.FullName, "current");
-            int exit = await ScenarioEvidence.RunAsync(current, _ =>
+            int exit = await ScenarioEvidence.RunAsync(new(current, null), async (collector, _) =>
             {
-                Report(DateTimeOffset.UtcNow, [Definition(first, FirstId)], [Result(FirstId, "Passed")])
-                    .Save(Path.Combine(current, ScenarioEvidence.TrxFileName));
-                return Task.FromResult(0);
+                await ObserveAsync(collector, PassedTestNodeStateProperty.CachedInstance, Identifier(first));
+                return 0;
             });
 
             Assert.AreEqual(1, exit);
             Assert.IsTrue(File.Exists(Path.Combine(current, ScenarioEvidence.ReportFileName)));
+            var receipt = ReadReceipt(current);
+            Assert.AreEqual(0, receipt.PlatformExitCode);
+            Assert.AreEqual("passed", receipt.TestOutcome);
+            Assert.AreEqual("incomplete", receipt.EvidenceOutcome);
+            Assert.AreEqual("missing-test-results", receipt.FailureCode);
+            Assert.IsNotNull(receipt.JoinedRunId);
         }
         finally
         {
             temp.Delete(recursive: true);
         }
     }
+
+    [TestMethod, TestCategory("Evidence:harness")]
+    public async Task CapturesOnlyKnownTerminalFields()
+    {
+        string sentinel = "synthetic-evidence-privacy-sentinel";
+        var map = ScenarioEvidence.CompiledMap()[..7];
+        var collector = new SafeTestEvidence(map);
+        IProperty[] states =
+        [
+            PassedTestNodeStateProperty.CachedInstance, new FailedTestNodeStateProperty(new Exception(sentinel), sentinel),
+            new SkippedTestNodeStateProperty(sentinel), new ErrorTestNodeStateProperty(sentinel),
+            new TimeoutTestNodeStateProperty(sentinel)
+        ];
+        await ObserveAsync(collector, new DiscoveredTestNodeStateProperty(sentinel), Identifier(map[0]));
+        await ObserveAsync(collector, new InProgressTestNodeStateProperty(sentinel));
+        for (int index = 0; index < states.Length; index++)
+        {
+            await ObserveAsync(collector, states[index], Identifier(map[index]),
+                new StandardOutputProperty(sentinel), new StandardErrorProperty(sentinel),
+                new FileArtifactProperty(new FileInfo(sentinel), sentinel, sentinel));
+        }
+
+        XDocument trx = collector.CreateReport(Started, Started.AddSeconds(1));
+        var report = ScenarioEvidence.Join(map, trx, Started);
+        var rows = report.BusinessEvidence.Concat(report.HarnessChecks).ToDictionary(row => row.Method.Identity);
+        CollectionAssert.AreEqual(new[] { "Passed", "Failed", "Skipped", "Error", "Timeout" },
+            map.Take(states.Length).Select(method => rows[method.Identity].TrxOutcome).ToArray());
+        Assert.IsNull(rows[map[5].Identity].TrxOutcome);
+        Assert.IsNull(rows[map[6].Identity].TrxOutcome);
+        Assert.AreEqual(5, (int)Counters(trx).Attribute("total")!);
+        Assert.IsFalse(trx.ToString().Contains(sentinel, StringComparison.Ordinal), "Platform diagnostics entered the safe XML.");
+        Assert.IsTrue(trx.Descendants().All(node => node.Name.LocalName is "TestRun" or "Times" or "TestDefinitions"
+            or "UnitTest" or "TestMethod" or "Results" or "UnitTestResult" or "ResultSummary" or "Counters"));
+    }
+
+    [TestMethod, TestCategory("Evidence:harness")]
+    public async Task RejectsMissingAmbiguousAndUnknownTerminalIdentities()
+    {
+        var method = ScenarioEvidence.CompiledMap()[0];
+        var passed = PassedTestNodeStateProperty.CachedInstance;
+        var id = Identifier(method);
+        IProperty[][] invalidUpdates =
+        [
+            [passed],
+            [passed, id, Identifier(method with { Method = "AnotherMethod" })],
+            [passed, Identifier(method with { Method = "UnknownMethod" })],
+            [passed, Identifier(method, "AnotherAssembly")],
+            [passed, Identifier(method, arity: 1)]
+        ];
+        foreach (var update in invalidUpdates)
+        {
+            var collector = new SafeTestEvidence([method]);
+            await ObserveAsync(collector, update);
+            Assert.ThrowsExactly<InvalidDataException>(() => collector.CreateReport(Started, Started));
+        }
+
+        var ambiguous = new SafeTestEvidence([method, method with { Assembly = "AnotherAssembly" }]);
+        await ObserveAsync(ambiguous, passed, id);
+        Assert.ThrowsExactly<InvalidDataException>(() => ambiguous.CreateReport(Started, Started));
+    }
+
+    [TestMethod, TestCategory("Evidence:harness")]
+    public async Task RejectsDuplicateTerminalEventsAndInvalidStates()
+    {
+        var method = ScenarioEvidence.CompiledMap()[0];
+        var passed = PassedTestNodeStateProperty.CachedInstance;
+        var id = Identifier(method);
+        var collector = new SafeTestEvidence([method]);
+        await ObserveAsync(collector, passed, id);
+        await ObserveAsync(collector, new FailedTestNodeStateProperty(), id);
+        Assert.ThrowsExactly<InvalidDataException>(() => collector.CreateReport(Started, Started));
+
+        IProperty[][] invalidUpdates =
+        [
+            [id],
+            [id, new UnsupportedTestState()]
+        ];
+        foreach (var update in invalidUpdates)
+        {
+            collector = new SafeTestEvidence([method]);
+            await ObserveAsync(collector, update);
+            Assert.ThrowsExactly<InvalidDataException>(() => collector.CreateReport(Started, Started));
+        }
+    }
+
+    [TestMethod, TestCategory("Evidence:harness")]
+    public void RejectsInvalidEvidenceArguments()
+    {
+        Assert.IsNull(EvidenceEntryPoint.ParseArguments([]));
+        Assert.IsNull(EvidenceEntryPoint.ParseArguments(["--list-tests"]));
+        Assert.AreEqual(new EvidenceInvocation("suite", null),
+            EvidenceEntryPoint.ParseArguments(["--scenario-evidence", "suite"]));
+        Assert.AreEqual(new EvidenceInvocation("suite", "run.json"),
+            EvidenceEntryPoint.ParseArguments(["--scenario-evidence", "suite", "--run-context", "run.json"]));
+        string[][] invalid =
+        [
+            ["--scenario-evidence"], ["--scenario-evidence", ""], ["--scenario-evidence", "--list-tests"],
+            ["--scenario-evidence", "suite", "--run-context"], ["--scenario-evidence", "suite", "--run-context", "  "],
+            ["--scenario-evidence", "suite", "--run-context", "--report-trx"], ["--run-context", "run.json"],
+            ["--list-tests", "--scenario-evidence", "suite"],
+            ["--scenario-evidence", "suite", "--scenario-evidence", "other"],
+            ["--scenario-evidence", "suite", "--run-context", "run.json", "--run-context", "other"],
+            ["--scenario-evidence", "suite", "--report-trx"]
+        ];
+        foreach (var args in invalid)
+            Assert.ThrowsExactly<InvalidDataException>(() => EvidenceEntryPoint.ParseArguments(args));
+    }
+
+    [TestMethod, TestCategory("Evidence:harness")]
+    public async Task RejectsMissingMalformedAndMismatchedRunContext()
+    {
+        var temp = Directory.CreateTempSubdirectory("booking-context-");
+        try
+        {
+            string digest = new('a', 64);
+            string valid = ContextJson(digest);
+            string?[] invalid = [null, "{", "{}", valid.Replace(digest, "bad"), valid.Replace("suite\"}", "../outside\"}"),
+                valid.Replace("\"suite\"}", "\"different\"}"), valid.Replace("\"runId\"", "\"other\""),
+                valid.Replace("\"schemaVersion\":1", "\"schemaVersion\":1,\"schemaVersion\":1")];
+            for (int index = 0; index < invalid.Length; index++)
+            {
+                string parent = Directory.CreateDirectory(Path.Combine(temp.FullName, $"case-{index}")).FullName;
+                string context = Path.Combine(parent, "run.json");
+                if (invalid[index] is { } json)
+                    File.WriteAllText(context, json);
+                string suite = Path.Combine(parent, "suite");
+                int exit = await ScenarioEvidence.RunAsync(new(suite, context),
+                    (_, _) => throw new AssertFailedException("Invalid context must prevent platform execution."));
+                Assert.AreEqual(1, exit);
+                Assert.AreEqual(new ExecutionReceipt(1, null, "pending", "failed", "invalid-run-context", null, null,
+                    null, false, false), ReadReceipt(suite));
+                Assert.IsFalse(File.Exists(Path.Combine(suite, ScenarioEvidence.MapFileName)));
+            }
+
+            string wrongParent = Path.Combine(temp.FullName, "run.json");
+            File.WriteAllText(wrongParent, valid);
+            string mismatched = Path.Combine(temp.FullName, "another-run", "suite");
+            Assert.AreEqual(1, await ScenarioEvidence.RunAsync(new(mismatched, wrongParent),
+                (_, _) => throw new AssertFailedException("A different invocation context must prevent platform execution.")));
+            Assert.AreEqual("invalid-run-context", ReadReceipt(mismatched).FailureCode);
+        }
+        finally
+        {
+            temp.Delete(recursive: true);
+        }
+    }
+
+    [TestMethod, TestCategory("Evidence:harness")]
+    public async Task BindsReceiptToContextAndJoinedRunWhilePreservingPlatformFailure()
+    {
+        var temp = Directory.CreateTempSubdirectory("booking-receipt-");
+        try
+        {
+            string context = Path.Combine(temp.FullName, "run.json");
+            string suite = Path.Combine(temp.FullName, "suite");
+            string digest = new('b', 64);
+            File.WriteAllText(context, ContextJson(digest));
+            var map = ScenarioEvidence.CompiledMap();
+            int exit = await ScenarioEvidence.RunAsync(new(suite, context), async (collector, _) =>
+            {
+                await ObserveAsync(collector, new FailedTestNodeStateProperty(), Identifier(map[0]));
+                foreach (var method in map.Skip(1))
+                    await ObserveAsync(collector, PassedTestNodeStateProperty.CachedInstance, Identifier(method));
+                return 2;
+            });
+            Assert.AreEqual(2, exit);
+            using var result = JsonDocument.Parse(File.ReadAllText(Path.Combine(suite, ScenarioEvidence.ReportFileName)));
+            Assert.AreEqual(new ExecutionReceipt(1, 2, "failed", "passed", "platform-tests-failed", FirstId, digest,
+                result.RootElement.GetProperty("testRunId").GetGuid(), false, false), ReadReceipt(suite));
+        }
+        finally
+        {
+            temp.Delete(recursive: true);
+        }
+    }
+
+    [TestMethod, TestCategory("Evidence:harness")]
+    public async Task ReceiptsDistinguishStandalonePassMismatchedExitAndInterruptedRun()
+    {
+        var temp = Directory.CreateTempSubdirectory("booking-receipt-");
+        try
+        {
+            var map = ScenarioEvidence.CompiledMap();
+            async Task<int> AllPassed(SafeTestEvidence collector, int exit)
+            {
+                foreach (var method in map)
+                    await ObserveAsync(collector, PassedTestNodeStateProperty.CachedInstance, Identifier(method));
+                return exit;
+            }
+
+            string standalone = Path.Combine(temp.FullName, "standalone");
+            Assert.AreEqual(0, await ScenarioEvidence.RunAsync(new(standalone, null), (collector, _) => AllPassed(collector, 0)));
+            var receipt = ReadReceipt(standalone);
+            Assert.AreEqual(new ExecutionReceipt(1, 0, "passed", "passed", null, null, null,
+                receipt.JoinedRunId, false, false), receipt);
+            Assert.IsNotNull(receipt.JoinedRunId);
+
+            string mismatch = Path.Combine(temp.FullName, "mismatch");
+            Assert.AreEqual(2, await ScenarioEvidence.RunAsync(new(mismatch, null), (collector, _) => AllPassed(collector, 2)));
+            receipt = ReadReceipt(mismatch);
+            Assert.AreEqual(2, receipt.PlatformExitCode);
+            Assert.AreEqual("failed", receipt.TestOutcome);
+            Assert.AreEqual("failed", receipt.EvidenceOutcome);
+            Assert.AreEqual("platform-result-mismatch", receipt.FailureCode);
+            Assert.IsNull(receipt.JoinedRunId);
+            Assert.IsFalse(File.Exists(Path.Combine(mismatch, ScenarioEvidence.ReportFileName)));
+
+            string falseSuccess = Path.Combine(temp.FullName, "false-success");
+            Assert.AreEqual(1, await ScenarioEvidence.RunAsync(new(falseSuccess, null), async (collector, _) =>
+            {
+                await ObserveAsync(collector, new FailedTestNodeStateProperty(), Identifier(map[0]));
+                return 0;
+            }));
+            receipt = ReadReceipt(falseSuccess);
+            Assert.AreEqual(0, receipt.PlatformExitCode);
+            Assert.AreEqual("passed", receipt.TestOutcome);
+            Assert.AreEqual("failed", receipt.EvidenceOutcome);
+            Assert.AreEqual("platform-result-mismatch", receipt.FailureCode);
+
+            string empty = Path.Combine(temp.FullName, "empty");
+            Assert.AreEqual(1, await ScenarioEvidence.RunAsync(new(empty, null), (_, _) => Task.FromResult(0)));
+            receipt = ReadReceipt(empty);
+            Assert.AreEqual("incomplete", receipt.EvidenceOutcome);
+            Assert.AreEqual("missing-test-results", receipt.FailureCode);
+            Assert.IsNull(receipt.JoinedRunId);
+            Assert.IsFalse(File.Exists(Path.Combine(empty, ScenarioEvidence.ReportFileName)));
+
+            string interrupted = Path.Combine(temp.FullName, "interrupted");
+            Assert.AreEqual(1, await ScenarioEvidence.RunAsync(new(interrupted, null),
+                (_, _) => throw new OperationCanceledException("synthetic-evidence-privacy-sentinel")));
+            Assert.AreEqual(new ExecutionReceipt(1, null, "incomplete", "incomplete", "platform-execution-incomplete",
+                null, null, null, false, false), ReadReceipt(interrupted));
+            Assert.IsFalse(File.Exists(Path.Combine(interrupted, ScenarioEvidence.TrxFileName)));
+        }
+        finally
+        {
+            temp.Delete(recursive: true);
+        }
+    }
+
+    private sealed class UnsupportedTestState() : TestNodeStateProperty(null);
+
+    private static TestMethodIdentifierProperty Identifier(MethodEvidence method, string assembly = "", int arity = 0)
+    {
+        int split = method.Class.LastIndexOf('.');
+        return new(assembly, method.Class[..split], method.Class[(split + 1)..], method.Method, arity, [], "System.Void");
+    }
+
+    private static Task ObserveAsync(SafeTestEvidence collector, params IProperty[] properties) =>
+        collector.ConsumeAsync(null!, new TestNodeUpdateMessage(new SessionUid("session"), new TestNode
+        {
+            Uid = new TestNodeUid("synthetic-evidence-privacy-sentinel"),
+            DisplayName = "synthetic-evidence-privacy-sentinel",
+            Properties = new PropertyBag(properties)
+        }), CancellationToken.None);
+
+    private static ExecutionReceipt ReadReceipt(string directory) =>
+        JsonSerializer.Deserialize<ExecutionReceipt>(File.ReadAllText(Path.Combine(directory, ScenarioEvidence.ReceiptFileName)),
+            new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
+
+    private static string ContextJson(string digest) =>
+        $$$"""{"schemaVersion":1,"runId":"{{{FirstId}}}","source":{"digest":"{{{digest}}}"},"evidence":{"suite":"suite"}}""";
 
     private static MethodEvidence Find(MethodEvidence[] methods, string name) => methods.Single(method => method.Method == name);
 
