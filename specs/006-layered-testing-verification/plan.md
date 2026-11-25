@@ -22,7 +22,7 @@ The public CI artifact will contain only allowlisted metadata/results. The suppo
 | Dependencies | No new package or service. Existing action references retained; no new judge/model infrastructure. |
 | Testing | Existing business/evidence tests; new runner checks in PowerShell; Python stdlib inventory regression checks; manual fresh-session evals. |
 | Performance | No new latency/throughput target. Fail early at prerequisites; retain bounded CI and do not rerun successful checks without a reason. |
-| Scope | V01–V08, 13 requirements; current booking test assertions and tool behavior only. |
+| Scope | V01–V08, 14 requirements including the approved attachment policy; current booking test assertions and tool behavior only. |
 
 ## Constitution Check
 

@@ -38,7 +38,7 @@ This adds a small internal metadata guard, not a dependency, service, framework 
 
 ## Proposed acceptance changes
 
-T007 gains the attachment-policy guard and negative checks. T005/V05 gains a preflight-rejection attachment canary, replacing the infeasible expectation that a genuine registered attachment runs yet never reaches MSTest staging. Existing assertion/stdout/metadata sentinel checks remain. The source/build binding and full-suite required identities still apply.
+T007 gains the attachment-policy guard and V05 preflight-rejection canaries, replacing the infeasible expectation that a genuine registered attachment runs yet never reaches MSTest staging. Existing T005 assertion/stdout/metadata collector checks remain complete. The source/build binding and full-suite required identities still apply.
 
 The guide documents attachments as unsupported in this backend full-check mode. Browser artifacts and future runtime test frameworks remain separately scoped; this proposal does not authorize changing them.
 

@@ -5,6 +5,8 @@
 
 All 13 functional requirements, seven success criteria and eight verification cases map to planned tasks. Phase ordering, source/build binding, privacy checks and pending-runtime distinctions are consistent with the approved design.
 
+**Approved attachment amendment**: A focused independent read-only recheck at f2969e6 passed all 14 requirements, including new FR-014. T007 owns the nonloading guard and disposable canaries; T008 owns policyVerified; T009–T012 own parent before-load integration, phase/digest binding and safe output. Rejected canaries must have no test-body effects, platform exit or staged file. No test or rendered-layout verification was claimed by this analysis.
+
 ## Findings resolved
 
 - T008 now explicitly cites each constrained receipt field and its nullable/outcome/run/source/TRX binding rules in the implementing task.
