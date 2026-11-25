@@ -196,6 +196,52 @@ Changing an existing shared diagram: add a page `Before` (copy of current) and `
 | Implement | Update only if code diverges from the approved plan; that divergence is an escalation | - |
 | Verify | Check diagrams still match code; list mismatches | - |
 
+### UML convention
+
+Use UML notation for sequence, state, activity, class and component diagrams. Choose
+the smallest view that explains the decision; do not draw every class or method.
+The stage table above determines required artifacts. Add other views only when
+they clarify an in-scope design decision or the Owner requests them. Routine fixes
+and documentation edits do not require new diagrams unless they change a modeled
+interaction, state, contract or boundary.
+
+| Question | Diagram and notation |
+| --- | --- |
+| Who calls whom, and in what order? | Sequence: named participant lifelines, ordered messages, dashed return arrows, and `alt`, `opt` or `loop` fragments with guards where needed. Distinguish asynchronous sends from synchronous calls. |
+| Which status transitions are allowed? | State machine: initial state, named states and transitions labeled `trigger [guard] / effect` as applicable. Use a final node only for an actual terminal state. Keep reservation, check-in and PDS lifecycles separate. |
+| How does a process branch or run concurrently? | Activity: actions, guarded decision/merge nodes and fork/join bars; use swimlanes when responsibility matters. |
+| Which domain types relate to each other? | Class: relevant types, associations, multiplicities and relationship names. Use inheritance or composition only when the model requires those semantics. |
+| Which projects or services own responsibilities? | Component: named components, provided/required interfaces and directed dependencies. Label external systems and storage boundaries. |
+
+`flow.drawio` may remain a labeled data-flow overview, and `data.drawio` may use
+entity-relationship notation for storage. Identify the notation in the page title
+or legend; do not label a generic box-and-arrow view as UML. Keep different views
+on separate named pages. The existing change colours describe review status;
+arrowheads, line styles and labels must still convey the chosen notation without
+depending on colour alone.
+
+### Content and maintenance
+
+- Read the relevant spec, plan, contracts and existing diagrams before drawing. During implementation, verify names and interactions against source. Mark proposals and unresolved details explicitly; a diagram does not approve a contract or make a proposed component exist.
+- Use the same names as the authoritative artifacts. Link each feature diagram from its spec or plan, state its scope and design status, and include relevant scenario IDs for failure or recovery paths.
+- For durability sequences, show transaction boundaries, durable acceptance, broker confirmation, offset commit, retries and durable dead-letter handoff where in scope. Show uncertain PDS outcomes and reconciliation when relevant; never imply exactly-once delivery.
+- Update affected diagrams in the same change as an authorized design change. If implementation would diverge from an approved contract or plan, follow the existing escalation and approval gates before changing that design. Avoid unrelated layout or cell-ID churn.
+
+### Verification and handoff
+
+Before handoff, parse each changed `.drawio` file as XML and check that cell IDs
+are unique within each page and edge endpoints reference existing cells. Inspect
+the rendered pages for readable labels, visible arrowheads, overlaps and clipped
+content using an available draw.io viewer or export tool. XML validation alone
+does not verify UML semantics or visual layout. If rendering is unavailable,
+report visual inspection as unverified.
+
+Compare each changed view with the authoritative text and, when available, the
+implementation. Report diagram paths/pages, checks actually run, mismatches and
+unverified behavior in the review packet. A text/diagram mismatch remains a
+blocking finding. Do not add a dependency or install a drawing tool merely to
+create a preview; report the tooling limitation.
+
 ## 12. Scenario IDs and test visualization
 
 ### Scenario IDs

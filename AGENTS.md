@@ -34,7 +34,7 @@ For staged feature work, read agents/WORKFLOW.md for roles, review gates and han
 - Synthetic data only. Keep guest names, DOB and passports in restricted registration storage, outside broker records, logs and screenshots; never expose credentials. PDS receives only required synthetic registration data.
 - Keep changes/dependencies small. Run focused checks and report actual results, failures and unverified behavior. Do not run/change another example's services or delete its volumes. Cloud provisioning/deployment needs explicit authorization.
 - Keep shared guidance, skills and hooks under agents/. Do not create project .codex/.claude configuration or change global hooks during routine work. Hooks are explicitly invoked scripts; custom folders do not guarantee native skill discovery.
-- Use editable draw.io files in diagrams/ for diagrams.
+- Use editable draw.io files in diagrams/ for diagrams. Before creating or updating design diagrams, read agents/WORKFLOW.md section 11 and follow its UML convention, stage requirements and verification rules.
 
 ## Intake and identity
 
