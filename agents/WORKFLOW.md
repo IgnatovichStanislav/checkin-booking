@@ -123,7 +123,7 @@ Done when every in-scope scenario ID in e2e/fixtures/scenarios.md has a test tha
 | 003 | Kafka path | - | proposed |
 | 004 | PDS simulator and registration states | - | proposed |
 | 005 | Test result visualization (coverage matrix, timelines) | - | proposed |
-| 006 | Layered testing and development verification | `..\cb-wt\layered-testing-verification` | group A reviewed; attachment amendment approved; group B in progress |
+| 006 | Layered testing and development verification | `..\cb-wt\layered-testing-verification` | verification complete; G3 pending |
 
 Rows marked proposed describe sequencing, not created features or existing worktrees. Feature 006 was explicitly numbered by the Owner on 2026-11-25. Check existing specs and reservations before allocation.
 

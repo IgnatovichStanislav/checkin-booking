@@ -208,3 +208,7 @@ The tested backend scope has no changes after de6e85b. The final changes are gui
 The latest source graph refresh was recorded in Group E. It completed without a parser warning. The final group changed documentation and design diagrams. A fresh source graph was unnecessary. Actual OS-signal cancellation remains unverified; the missing-receipt regression covers interrupted evidence. The booking runtime scenarios in the matrix remain assigned to future implementation work.
 
 [Flow](../../diagrams/006-layered-testing-verification/flow.drawio), [sequence](../../diagrams/006-layered-testing-verification/sequence.drawio), [data](../../diagrams/006-layered-testing-verification/data.drawio) and [attachment policy](../../diagrams/006-layered-testing-verification/attachment-policy-proposal.drawio) were compared with the implemented hooks, receipts, CI and worktree guidance. All five pages passed XML, unique-ID and edge endpoint checks and were exported and visually inspected using installed draw.io 32.7.4. Stale phase order, status, labels and connector overlaps were corrected. No renderer dependency was added.
+
+### Convergence verdict
+
+A separate read-only verifier reviewed 474bc2b against the approved spec and plan and recommends G3. V01–V08 and SC-001–SC-007 are satisfied for feature 006. The verifier checked all 90 cells against both downloaded result sets and found no blocking discrepancy or additional work within the approved scope. The limits above remain recorded. G3 merge remains the Owner's decision.

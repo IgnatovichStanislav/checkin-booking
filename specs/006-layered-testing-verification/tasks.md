@@ -80,7 +80,7 @@ A task may be checked only after its named evidence exists. Application runtime 
 
 - [x] T027 Refresh the per-worktree graph after source changes using agents/hooks/refresh-graph.ps1, report parser/coverage failures and compare diagrams/006-layered-testing-verification/*.drawio with implementation; parse XML and inspect rendered layout if an existing viewer/export is available, otherwise retain the unverified visual-layout limitation. Scenarios: V08; no correctness claim from graph topology.
 - [x] T028 Run only required final local/hosted/static/behavioral checks not already valid for the current source, using specs/006-layered-testing-verification/quickstart.md; record literal results and remaining blockers in implementation-evidence.md. Scenarios: V01–V08; do not rerun unchanged successful checks just for output.
-- [ ] T029 Obtain separate read-only final verification/convergence judgment against spec.md, plan.md, task results, scenario-coverage.md and actual safe evidence; resolve blocking findings through scoped implementer/reviewer handoffs and prepare the Owner G3 merge packet in specs/006-layered-testing-verification/implementation-evidence.md. Scenarios: V01–V08; merging remains Owner-only.
+- [x] T029 Obtain separate read-only final verification/convergence judgment against spec.md, plan.md, task results, scenario-coverage.md and actual safe evidence; resolve blocking findings through scoped implementer/reviewer handoffs and prepare the Owner G3 merge packet in specs/006-layered-testing-verification/implementation-evidence.md. Scenarios: V01–V08; merging remains Owner-only.
 
 ## Dependencies and execution groups
 
