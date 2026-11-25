@@ -48,7 +48,7 @@ internal static class ScenarioEvidence
     [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
     private sealed record RequiredTestIdentity(string Assembly, string Class, string Method);
 
-    private sealed record RunContext(Guid RunId, string SourceDigest);
+    private sealed record RunContext(Guid RunId, string SourceDigest, bool Attested);
 
     internal static void ValidateRequiredIdentities(
         IEnumerable<(string Assembly, string Class, string Method)> required,
@@ -198,10 +198,14 @@ internal static class ScenarioEvidence
             try
             {
                 var context = ReadRunContext(contextPath, runDirectory);
-                receipt = receipt with { RunId = context.RunId, SourceDigest = context.SourceDigest };
+                receipt = receipt with
+                {
+                    RunId = context.RunId, SourceDigest = context.SourceDigest,
+                    SourceVerified = context.Attested, PolicyVerified = context.Attested
+                };
             }
             catch (Exception error) when (error is IOException or UnauthorizedAccessException or InvalidDataException
-                or JsonException or ArgumentException or NotSupportedException)
+                or JsonException or ArgumentException or NotSupportedException or InvalidOperationException or FormatException)
             {
                 return Complete(runDirectory, receipt with { EvidenceOutcome = "failed", FailureCode = "invalid-run-context" });
             }
@@ -260,6 +264,7 @@ internal static class ScenarioEvidence
             {
                 JoinedRunId = report.TestRunId,
                 EvidenceOutcome = incomplete ? "incomplete" : "passed",
+                VerificationEligible = !incomplete && receipt.SourceVerified && receipt.PolicyVerified,
                 FailureCode = incomplete ? "missing-test-results" : failed ? "platform-tests-failed" : null
             };
         }
@@ -289,7 +294,45 @@ internal static class ScenarioEvidence
             && run.ValueKind == JsonValueKind.String && run.TryGetGuid(out var runId) && runId != Guid.Empty
             && digest.ValueKind == JsonValueKind.String && Regex.IsMatch(digest.GetString()!, @"\A[0-9a-f]{64}\z")
             && suite.ValueKind == JsonValueKind.String && suite.GetString() == "suite", "Invalid run context.");
-        return new(run.GetGuid(), digest.GetString()!);
+        var sourceDigest = digest.GetString()!;
+        bool attested = root.TryGetProperty("buildAttestation", out _) || root.TryGetProperty("attachmentPolicy", out _)
+            || root.TryGetProperty("phases", out _);
+        if (attested)
+            VerifyAttestation(root, sourceDigest);
+        return new(run.GetGuid(), sourceDigest, attested);
+    }
+
+    private static void VerifyAttestation(JsonElement root, string sourceDigest)
+    {
+        var build = ContextProperty(root, "buildAttestation");
+        var policy = ContextProperty(root, "attachmentPolicy");
+        var phases = ContextProperty(root, "phases");
+        string artifactDigest = ContextProperty(build, "artifactDigest").GetString()!;
+        Require(Regex.IsMatch(artifactDigest ?? "", @"\A[0-9a-f]{64}\z")
+            && ContextProperty(build, "sourceDigest").GetString() == sourceDigest
+            && ContextProperty(policy, "artifactDigest").GetString() == artifactDigest
+            && ContextProperty(policy, "policyVersion").GetInt32() == 1
+            && ContextProperty(policy, "outcome").GetString() == "passed"
+            && ContextProperty(policy, "failureCode").ValueKind == JsonValueKind.Null
+            && ContextProperty(ContextProperty(phases, "build"), "status").GetString() == "passed"
+            && ContextProperty(ContextProperty(phases, "policy"), "status").GetString() == "passed"
+            && ContextProperty(ContextProperty(phases, "test"), "status").GetString() == "running",
+            "Invalid build or policy attestation.");
+
+        string directory = Path.GetDirectoryName(typeof(ScenarioEvidence).Assembly.Location)!;
+        var assemblyDigests = ContextProperty(policy, "assemblySha256");
+        Require(assemblyDigests.ValueKind == JsonValueKind.Array
+            && assemblyDigests.GetArrayLength() == BuildAttestation.OwnedAssemblies.Length
+            && ContextProperty(policy, "assembliesChecked").GetInt32() == BuildAttestation.OwnedAssemblies.Length
+            && ContextProperty(policy, "methodsChecked").GetInt32() > 0,
+            "Invalid policy assembly list.");
+        for (int index = 0; index < BuildAttestation.OwnedAssemblies.Length; index++)
+        {
+            string name = BuildAttestation.OwnedAssemblies[index];
+            Require(assemblyDigests[index].GetString() == BuildAttestation.AssemblyDigest(directory, name),
+                "Policy assembly digest mismatch.");
+        }
+        Require(artifactDigest == BuildAttestation.ArtifactDigest(directory), "Build artifact digest mismatch.");
     }
 
     private static JsonElement ContextProperty(JsonElement element, string name)

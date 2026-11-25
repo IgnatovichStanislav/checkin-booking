@@ -35,7 +35,7 @@ public static class AttachmentPolicy
     {
         "System.Type.GetTypeFromHandle", "System.Type.op_Equality", "System.Type.get_Assembly",
         "System.Type.get_FullName", "System.Type.GetMethods",
-        "System.Reflection.Assembly.GetTypes", "System.Reflection.Assembly.GetName",
+        "System.Reflection.Assembly.GetTypes", "System.Reflection.Assembly.GetName", "System.Reflection.Assembly.get_Location",
         "System.Reflection.AssemblyName.get_Name", "System.Reflection.MemberInfo.get_Name",
         "System.Reflection.MemberInfo.get_DeclaringType", "System.Reflection.MemberInfo.IsDefined",
         "System.Reflection.CustomAttributeExtensions.GetCustomAttributes",

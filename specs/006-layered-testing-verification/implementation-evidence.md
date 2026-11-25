@@ -116,3 +116,17 @@ The guard now rejects owned interface declarations that reach the MSTest `ITestD
 | `./agents/hooks/refresh-graph.ps1` | Exit 0, 1,398 nodes and 2,830 edges. The bounded query found `FindOwnedDefinition` and `ValidateOwnedMethod`. The extractor produced no symbols for the top-level guard wrapper and the existing Langfuse stack script. |
 
 The follow-up at `8837eb3` extended the same declaration check to owned fields. The baseline inspector accepted the mismatched generic field fixture. The updated inspector rejected it with `unresolved-metadata` and accepted the matching generic field and method together. The fixture remained unloaded and unexecuted, with no body marker, platform receipt or staging. The policy self-check passed all 23 cases. The guard passed four real modules and the direct evidence run joined 36 passes. The graph refreshed with 1,399 nodes and 2,838 edges, and a bounded query found `ValidateOwnedField`.
+# Runner verification update (Group C)
+
+Group B received independent approval at 3a01370. Group C reuses its inspector before loading the test executable. A fresh build directory supplies the tested binaries, and the parent and child compare the build digest and policy-checked assembly hashes. The exported records carry the run and source binding.
+
+Windows checks against 3a01370 plus the Group C working changes:
+
+- `pwsh -NoProfile -File ./agents/hooks/test-backend.ps1`: two concurrent invocations each passed seven phases and all 36 tests. They created separate evidence directories and returned exit 0. The receipt confirmed source, policy and verification eligibility.
+- `pwsh -NoProfile -File ./agents/hooks/check-backend-runner.ps1`: passed the source-digest, missing SDK, native runner, restore/build native exit, before-launch attachment rejection, real assertion failure, mismatched policy digest, stale copied fixture, missing receipt and export failure checks. The real failing test returned exit 2 with valid joined evidence and no synthetic sentinel in the retained suite/export reports or captured summary.
+- The existing joined-evidence tests cover incomplete required results. The runner regression simulates a missing receipt by substituting the child process in a disposable copy. Actual cancellation by an OS signal was not exercised.
+- Output evidence: `test-results/unit-contracts-af92c201140943c0a2117c42ad4d237b/export/` and `test-results/unit-contracts-a2fb6224e82a47d9acc335f8d3450805/export/`. Disposable runner checks used `test-results/runner-check-f58dfc8751f0477cba14706070bb6a4d/`. These directories are local and ignored.
+
+- The attachment policy self-check passed 23 cases against the Group C build. Worktree graph refresh completed with 1,431 nodes and 2,926 edges. No parser warning was reported.
+
+Linux and hosted CI remain pending Group D. No booking runtime tests were added in this group.
