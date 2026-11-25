@@ -1,9 +1,9 @@
 name: Check shared skill index
 on:
   pull_request:
-    paths: ['agents/README.md', 'agents/skills/**', 'eval/**', '.github/workflows/skill-index.yml']
+    paths: ['agents/README.md', 'agents/WORKFLOW.md', 'agents/skills/**', 'eval/**', '.github/workflows/skill-index.yml']
   push:
-    paths: ['agents/README.md', 'agents/skills/**', 'eval/**', '.github/workflows/skill-index.yml']
+    paths: ['agents/README.md', 'agents/WORKFLOW.md', 'agents/skills/**', 'eval/**', '.github/workflows/skill-index.yml']
 permissions:
   contents: read
 jobs:
@@ -12,3 +12,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: python3 eval/check_index.py
+      - run: python3 -m unittest discover -s eval -p test_check_index.py
